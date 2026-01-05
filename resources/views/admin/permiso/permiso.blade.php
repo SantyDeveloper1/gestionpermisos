@@ -314,8 +314,7 @@
                                 <tr id="permisoRow{{ $permiso->id_permiso }}">
                                     <td class="text-center">{{ $loop->iteration }}</td>
                                     <td>
-                                        <strong>{{ $permiso->docente->user->last_name }}</strong><br>
-                                        <small class="text-muted">{{ $permiso->docente->user->name }}</small>
+                                        <strong>{{ $permiso->docente->user->last_name }}, {{ $permiso->docente->user->name }}</strong><br>
                                     </td>
                                     <td>{{ $permiso->tipoPermiso->nombre }}</td>
                                     <td class="text-center">

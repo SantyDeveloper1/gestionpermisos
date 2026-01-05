@@ -113,6 +113,40 @@ class DocenteController extends Controller
     }
 
     /**
+     * Obtener datos de un docente específico
+     */
+    public function actionShow($idDocente)
+    {
+        try {
+            $docente = Docente::with([
+                'user:id,document_number,name,last_name,email,phone,status',
+                'grado',
+                'categoria',
+                'contrato'
+            ])->where('idDocente', $idDocente)->first();
+
+            if (!$docente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Docente no encontrado'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'docente' => $docente
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener docente: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los datos del docente'
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar información del docente
      */
     public function actionUpdate(Request $request, $idDocente)
@@ -122,16 +156,22 @@ class DocenteController extends Controller
             [
                 'dni' => 'required|string|max:20',
                 'nombre' => 'required|string|max:255',
+                'apellido' => 'required|string|max:255',
                 'correo' => 'required|email|max:255',
                 'telefono' => 'nullable|string|max:20',
-                'categoria' => 'nullable|string|max:100',
-                'condicion' => 'nullable|string|max:50'
+                'grado_id' => 'required|exists:grados_academicos,idGrados_academicos',
+                'categoria_id' => 'required|exists:categorias_docente,idCategori_docente',
+                'tipo_contrato_id' => 'required|exists:tipos_contrato,idTipo_contrato'
             ],
             [
                 'dni.required' => 'El DNI es obligatorio.',
                 'nombre.required' => 'El nombre del docente es obligatorio.',
+                'apellido.required' => 'El apellido del docente es obligatorio.',
                 'correo.required' => 'El correo electrónico es obligatorio.',
-                'correo.email' => 'El formato del correo electrónico no es válido.'
+                'correo.email' => 'El formato del correo electrónico no es válido.',
+                'grado_id.required' => 'El grado académico es obligatorio.',
+                'categoria_id.required' => 'La categoría docente es obligatoria.',
+                'tipo_contrato_id.required' => 'El tipo de contrato es obligatorio.'
             ]
         );
 
@@ -186,18 +226,19 @@ class DocenteController extends Controller
                 ], 422);
             }
 
-            // Separar nombre y apellido
-            $nombreParts = explode(' ', $request->nombre, 2);
-            $nombre = $nombreParts[0] ?? '';
-            $apellido = $nombreParts[1] ?? '';
-
             // Actualizar datos del usuario
             $user->document_number = $request->dni;
-            $user->name = $nombre;
-            $user->last_name = $apellido;
+            $user->name = $request->nombre;
+            $user->last_name = $request->apellido;
             $user->email = $request->correo;
             $user->phone = $request->telefono;
             $user->save();
+
+            // Actualizar datos del docente
+            $docente->grado_id = $request->grado_id;
+            $docente->categoria_id = $request->categoria_id;
+            $docente->tipo_contrato_id = $request->tipo_contrato_id;
+            $docente->save();
 
             return response()->json([
                 'success' => true,

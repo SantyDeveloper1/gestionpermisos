@@ -925,7 +925,7 @@
                                     <th>Tipo</th>
                                     <th>Archivo</th>
                                     <th>Fecha Subida</th>
-                                    <th>Acciones</th>
+                                    <th class="all">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1011,7 +1011,14 @@
                                         </td>
                                         <td>
                                             <div class="action-buttons-evidence">
-                                                <a href="{{ url('admin/evidencia_recuperacion/ver/' . $evidencia->id_evidencia) }}" 
+                                                @php
+                                                    $fileExt = strtolower(pathinfo($evidencia->archivo, PATHINFO_EXTENSION));
+                                                    $isImage = in_array($fileExt, ['jpg', 'jpeg', 'png', 'gif']);
+                                                    $verUrl = $isImage 
+                                                        ? url('admin/evidencia_recuperacion/ver/' . $evidencia->id_evidencia)
+                                                        : asset($evidencia->archivo);
+                                                @endphp
+                                                <a href="{{ $verUrl }}" 
                                                    class="btn-action-evidence btn-view-evidence" 
                                                    title="Ver evidencia"
                                                    target="_blank">
@@ -1023,7 +1030,7 @@
                                                     <i class="fas fa-download"></i>
                                                 </button>
                                                 <button class="btn-action-evidence btn-delete-evidence"
-                                                    onclick="deleteEvidence('{{ $evidencia->id_evidencia }}')"
+                                                    onclick="deleteEvidencia('{{ $evidencia->id_evidencia }}')"
                                                     title="Eliminar evidencia">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -1122,6 +1129,7 @@
 
 @section('js')
     <script src="{{ asset('viewresources/admin/evidencia/insert.js?v=' . time()) }}"></script>
+    <script src="{{ asset('viewresources/admin/evidencia/delete.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/evidencia/preview_evidencia.js?v=' . time()) }}"></script>
     <script>
         // Inicialización

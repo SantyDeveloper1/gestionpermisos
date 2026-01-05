@@ -710,7 +710,7 @@
                                     <th>Horas a Recuperar</th>
                                     <th>Fecha Presentación</th>
                                     <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th class="all">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -718,13 +718,14 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
-                                        <div style="color: var(--dark-gray);">
-                                           {{ $plan->permiso->tipoPermiso->nombre }}
-                                        </div>
+                                            <div style="color: var(--dark-gray);">
+                                                {{ $plan->permiso->tipoPermiso->nombre }}
+                                            </div>
                                         </td>
                                         <td>
                                             <div>
-                                                <strong>{{ $plan->permiso->docente->user->last_name }}, {{ $plan->permiso->docente->user->name }}</strong>
+                                                <strong>{{ $plan->permiso->docente->user->last_name }},
+                                                    {{ $plan->permiso->docente->user->name }}</strong>
                                             </div>
                                         </td>
                                         <td>
@@ -771,7 +772,7 @@
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                                 @if($plan->estado_plan == 'PRESENTADO')
-                                                    <button class="btn-icon btn-approve" onclick="aprobarPlan({{ $plan->id_plan }})"
+                                                    <button class="btn-icon btn-approve" onclick="aprobarPlan('{{ $plan->id_plan }}')"
                                                         title="Aprobar Plan">
                                                         <i class="fas fa-check"></i>
                                                     </button>
@@ -1048,8 +1049,6 @@
                 const tipo = selectedOption.data('tipo') || selectedOption.attr('data-tipo');
                 const periodo = selectedOption.data('periodo') || selectedOption.attr('data-periodo');
 
-                console.log('Datos obtenidos:', { horas, docente, tipo, periodo }); // Debug
-
                 // Actualizar horas
                 $('#totalHorasDisplay').text(horas);
                 $('#totalHorasRecuperar').val(horas);
@@ -1120,4 +1119,7 @@
             return partes[2] + '-' + partes[1] + '-' + partes[0];
         }
     </script>
+
+    <!-- Scripts de funcionalidad -->
+    <script src="{{ asset('viewresources/admin/plan_recuperacion/aprobar.js?v=' . time()) }}"></script>
 @endsection

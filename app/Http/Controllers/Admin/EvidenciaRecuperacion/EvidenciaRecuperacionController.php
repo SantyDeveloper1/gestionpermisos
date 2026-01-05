@@ -114,7 +114,7 @@ class EvidenciaRecuperacionController extends Controller
                 'tipo_evidencia' => $validated['tipo_evidencia'],
                 'archivo' => $filePath,
                 'descripcion' => $validated['descripcion'] ?? null,
-                'fecha_subida' => now()
+                'fecha_subida' => \Carbon\Carbon::now('America/Lima')
             ]);
 
             // Obtener la evidencia recién creada
@@ -290,30 +290,40 @@ class EvidenciaRecuperacionController extends Controller
     public function actionDelete($id_evidencia)
     {
         try {
-            $evidencia = EvidenciaRecuperacion::findOrFail($id_evidencia);
+            // Buscar la evidencia usando DB::table debido a la clave primaria compuesta
+            $evidencia = \DB::table('evidencia_recuperacion')
+                ->where('id_evidencia', $id_evidencia)
+                ->first();
 
-            // Eliminar el archivo físico
-            if ($evidencia->archivo && \Storage::disk('public')->exists($evidencia->archivo)) {
-                \Storage::disk('public')->delete($evidencia->archivo);
+            if (!$evidencia) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Evidencia no encontrada'
+                ], 404);
             }
 
-            $evidencia->delete();
+            // Eliminar el archivo físico
+            $filePath = public_path($evidencia->archivo);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Eliminar el registro de la base de datos
+            \DB::table('evidencia_recuperacion')
+                ->where('id_evidencia', $id_evidencia)
+                ->where('id_sesion', $evidencia->id_sesion)
+                ->delete();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Evidencia eliminada exitosamente'
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Evidencia no encontrada'
-            ], 404);
         } catch (\Exception $e) {
             \Log::error('Error al eliminar evidencia: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al eliminar la evidencia'
+                'message' => 'Error al eliminar la evidencia: ' . $e->getMessage()
             ], 500);
         }
     }

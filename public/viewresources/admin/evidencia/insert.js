@@ -354,13 +354,22 @@ function scrollToUpload() {
  * Agregar una nueva fila a la tabla de evidencias dinámicamente
  */
 function agregarFilaEvidencia(evidencia) {
-    // Formatear fecha
-    const fecha = new Date(evidencia.created_at);
-    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+    // Formatear fecha - usar fecha_subida en lugar de created_at
+    let fechaFormateada = 'Fecha no disponible';
+    if (evidencia.fecha_subida) {
+        // Parsear la fecha correctamente
+        const fecha = new Date(evidencia.fecha_subida.replace(' ', 'T'));
+        if (!isNaN(fecha.getTime())) {
+            fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }) + ' ' + fecha.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    }
     
     // Determinar badge de tipo
     let tipoBadge = '';
@@ -438,10 +447,10 @@ function agregarFilaEvidencia(evidencia) {
             `<div style="color: var(--dark-gray);">${fechaFormateada}</div>`,
             // Columna 6: Acciones
             `<div class="action-buttons-evidence">
-                <a href="${_urlBase}/storage/${evidencia.archivo}" target="_blank" class="btn-action-evidence btn-view-evidence" title="Ver">
+                <a href="${['jpg', 'jpeg', 'png', 'gif'].includes(fileExt) ? _urlBase + '/admin/evidencia_recuperacion/ver/' + evidencia.id_evidencia : _urlBase + '/' + evidencia.archivo}" target="_blank" class="btn-action-evidence btn-view-evidence" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>
-                <a href="${_urlBase}/storage/${evidencia.archivo}" download class="btn-action-evidence btn-download-evidence" title="Descargar">
+                <a href="${_urlBase}/${evidencia.archivo}" download class="btn-action-evidence btn-download-evidence" title="Descargar">
                     <i class="fas fa-download"></i>
                 </a>
                 <button class="btn-action-evidence btn-delete-evidence" onclick="deleteEvidencia('${evidencia.id_evidencia}')" title="Eliminar">

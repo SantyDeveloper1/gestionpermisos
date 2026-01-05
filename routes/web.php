@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
 
             // DOCENTE
             Route::get('/docente', [DocenteController::class, 'actionDocente']);
+            Route::get('docente/show/{idDocente}', [DocenteController::class, 'actionShow']);
             Route::match(['get', 'post'], 'docente/insert', [DocenteController::class, 'actionInsert']);
             Route::post('docente/update/{idDocente}', [DocenteController::class, 'actionUpdate']);
             Route::put('docente/estado/{idDocente}', [DocenteController::class, 'actionEstado']);

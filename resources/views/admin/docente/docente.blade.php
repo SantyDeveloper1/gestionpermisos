@@ -261,7 +261,7 @@
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>DNI</label>
-                                <input type="text" class="form-control" id="txtDni" name="dni">
+                                <input type="text" class="form-control" id="txtDni" name="dni" readonly>
                             </div>
 
                             <div class="col-md-6 form-group">
@@ -272,27 +272,57 @@
 
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label>Correo</label>
-                                <input type="email" class="form-control" id="txtCorreo" name="correo">
+                                <label>Apellidos</label>
+                                <input type="text" class="form-control" id="txtApellido" name="apellido">
                             </div>
 
                             <div class="col-md-6 form-group">
-                                <label>Teléfono</label>
-                                <input type="text" class="form-control" id="txtTelefono" name="telefono">
+                                <label>Correo</label>
+                                <input type="email" class="form-control" id="txtCorreo" name="correo">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label>Categoría</label>
-                                <input type="text" class="form-control" id="txtCategoria" name="categoria">
+                                <label>Teléfono</label>
+                                <input type="text" class="form-control" id="txtTelefono" name="telefono">
                             </div>
 
                             <div class="col-md-6 form-group">
-                                <label>Condición</label>
-                                <select class="form-control" id="txtCondicion" name="condicion">
-                                    <option value="Nombrado">Nombrado</option>
-                                    <option value="Contratado">Contratado</option>
+                                <label>Grado Académico</label>
+                                <select class="form-control" id="txtGrado" name="grado_id">
+                                    <option value="">Seleccione...</option>
+                                    @foreach ($listGrados as $grado)
+                                        <option value="{{ $grado->idGrados_academicos }}">
+                                            {{ $grado->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Categoría Docente</label>
+                                <select class="form-control" id="txtCategoria" name="categoria_id">
+                                    <option value="">Seleccione...</option>
+                                    @foreach ($listCategorias as $cat)
+                                        <option value="{{ $cat->idCategori_docente }}">
+                                            {{ $cat->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Tipo de Contrato</label>
+                                <select class="form-control" id="txtCondicion" name="tipo_contrato_id">
+                                    <option value="">Seleccione...</option>
+                                    @foreach ($listContratos as $tc)
+                                        <option value="{{ $tc->idTipo_contrato }}">
+                                            {{ $tc->nombre }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -368,9 +398,9 @@
             });
         });
     </script>
-    <script src="{{ asset('viewresources/admin/docente/insert.js?=22122025') }}"></script>
-    <script src="{{ asset('viewresources/admin/docente/update.js?=22122025') }}"></script>
-    <script src="{{ asset('viewresources/admin/docente/delete.js?=22122025') }}"></script>
-    <script src="{{ asset('viewresources/admin/docente/state.js?=22122025') }}"></script>
+    <script src="{{ asset('viewresources/admin/docente/insert.js?=0512026') }}"></script>
+    <script src="{{ asset('viewresources/admin/docente/update.js?=0512026') }}"></script>
+    <script src="{{ asset('viewresources/admin/docente/delete.js?=0512026') }}"></script>
+    <script src="{{ asset('viewresources/admin/docente/state.js?=0512026') }}"></script>
 
 @endsection

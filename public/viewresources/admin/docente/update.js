@@ -54,33 +54,50 @@ function limpiarModalEdicion() {
 // ==================== CARGAR DATOS AL MODAL ====================
 window.showEditDocente = function(idDocente) {
     
-    const row = $(`#docRow${idDocente}`);
-
-    // Extraer datos de la fila
-    const dni = row.find('td:eq(1)').text().trim();
-    const nombreCompleto = row.find('td:eq(2)').text().trim();
-    const correo = row.find('td:eq(3)').text().trim();
-    const telefono = row.find('td:eq(4)').text().trim();
-    const categoria = row.find('td:eq(6) .badge').text().trim();
-    const condicion = row.find('td:eq(7) .badge').text().trim();
-
-    // Cargar datos en el formulario
-    $('#txtDni').val(dni);
-    $('#txtNombre').val(nombreCompleto);
-    $('#txtCorreo').val(correo);
-    $('#txtTelefono').val(telefono);
-    $('#txtCategoria').val(categoria);
-    
-    // Seleccionar la opción correcta en el select de condición
-    $('#txtCondicion option').each(function() {
-        if ($(this).text().trim() === condicion || $(this).val() === condicion) {
-            $(this).prop('selected', true);
+    // Hacer petición AJAX para obtener los datos completos del docente
+    $.ajax({
+        url: `${_urlBase}/admin/docente/show/${idDocente}`,
+        type: 'GET',
+        success: function(response) {
+            if (response.success && response.docente) {
+                const docente = response.docente;
+                
+                // Cargar datos básicos del usuario
+                $('#txtDni').val(docente.user.document_number || '');
+                $('#txtNombre').val(docente.user.name || '');
+                $('#txtApellido').val(docente.user.last_name || '');
+                $('#txtCorreo').val(docente.user.email || '');
+                $('#txtTelefono').val(docente.user.phone || '');
+                
+                // Seleccionar grado académico
+                $('#txtGrado').val(docente.grado_id || '');
+                
+                // Seleccionar categoría
+                $('#txtCategoria').val(docente.categoria_id || '');
+                
+                // Seleccionar tipo de contrato
+                $('#txtCondicion').val(docente.tipo_contrato_id || '');
+                
+                // Guardar ID del docente en el modal
+                $('#editDocenteModal').data('idDocente', idDocente);
+                $('#editDocenteModal').modal('show');
+            } else {
+                new PNotify({
+                    title: 'Error',
+                    text: 'No se pudieron cargar los datos del docente',
+                    type: 'error'
+                });
+            }
+        },
+        error: function(xhr) {
+            new PNotify({
+                title: 'Error',
+                text: 'Error al obtener los datos del docente',
+                type: 'error'
+            });
+            console.error('Error al cargar docente:', xhr);
         }
     });
-
-    // Guardar ID del docente en el modal
-    $('#editDocenteModal').data('idDocente', idDocente);
-    $('#editDocenteModal').modal('show');
 };
 
 // ==================== ACTUALIZAR CON AJAX ====================
@@ -96,10 +113,12 @@ function updateDocente() {
     const formData = {
         dni: $('#txtDni').val().trim(),
         nombre: $('#txtNombre').val().trim(),
+        apellido: $('#txtApellido').val().trim(),
         correo: $('#txtCorreo').val().trim(),
         telefono: $('#txtTelefono').val().trim(),
-        categoria: $('#txtCategoria').val().trim(),
-        condicion: $('#txtCondicion').val()
+        grado_id: $('#txtGrado').val(),
+        categoria_id: $('#txtCategoria').val(),
+        tipo_contrato_id: $('#txtCondicion').val()
     };
 
     // Validaciones básicas
