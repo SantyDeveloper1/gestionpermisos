@@ -16,7 +16,8 @@ function cargarDetallesPlan() {
             horasProgramadas: parseFloat(document.getElementById('hiddenHorasProgramadas').value),
             horasRecuperadas: parseFloat(document.getElementById('hiddenHorasRecuperadas').value),
             horasPendientes: parseFloat(document.getElementById('hiddenHorasPendientes').value),
-            docente: document.getElementById('hiddenDocente').value
+            docente: document.getElementById('hiddenDocente').value,
+            fechaFin: document.getElementById('hiddenFechaFin')?.value || null
         };
     } else {
         // Cargar datos desde el select normal
@@ -30,7 +31,8 @@ function cargarDetallesPlan() {
                 horasProgramadas: parseFloat(selectedOption.getAttribute('data-horas-programadas')),
                 horasRecuperadas: parseFloat(selectedOption.getAttribute('data-horas-recuperadas')),
                 horasPendientes: parseFloat(selectedOption.getAttribute('data-horas-pendientes')),
-                docente: selectedOption.getAttribute('data-docente')
+                docente: selectedOption.getAttribute('data-docente'),
+                fechaFin: selectedOption.getAttribute('data-fecha-fin')
             };
         } else {
             document.getElementById('planSummary').style.display = 'none';
@@ -43,6 +45,23 @@ function cargarDetallesPlan() {
     document.getElementById('horasTotales').textContent = planData.horasTotales;
     document.getElementById('horasRecuperadas').textContent = planData.horasRecuperadas;
     document.getElementById('horasPendientes').textContent = planData.horasPendientes;
+    
+    // Establecer fecha mínima para el input de fecha_sesion
+    if (planData.fechaFin) {
+        const fechaSesionInput = document.querySelector('input[name="fecha_sesion"]');
+        if (fechaSesionInput) {
+            fechaSesionInput.setAttribute('min', planData.fechaFin);
+            
+            // Mostrar mensaje informativo
+            const fechaFinFormateada = new Date(planData.fechaFin).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            console.log(`Fecha mínima establecida: ${fechaFinFormateada}`);
+        }
+    }
     
     // Mostrar resumen
     document.getElementById('planSummary').style.display = 'block';
@@ -63,6 +82,72 @@ function cargarDetallesPlan() {
             styling: 'bootstrap3',
             delay: 5000
         });
+    }
+}
+
+// Función para calcular horas a recuperar basado en hora inicio y hora fin
+function calcularHorasRecuperar() {
+    const horaInicio = document.getElementById('hora_inicio').value;
+    const horaFin = document.getElementById('hora_fin').value;
+    const horasInput = document.getElementById('horas_recuperadas');
+    
+    if (horaInicio && horaFin) {
+        // Crear objetos Date para calcular la diferencia
+        const inicio = new Date(`2000-01-01T${horaInicio}`);
+        const fin = new Date(`2000-01-01T${horaFin}`);
+        
+        // Calcular diferencia en milisegundos
+        let diferencia = fin - inicio;
+        
+        // Si la hora fin es menor que la hora inicio, asumimos que cruza medianoche
+        if (diferencia < 0) {
+            new PNotify({
+                title: 'Advertencia',
+                text: 'La hora de fin debe ser posterior a la hora de inicio',
+                type: 'warning',
+                styling: 'bootstrap3'
+            });
+            horasInput.value = '';
+            horasInput.classList.remove('is-valid');
+            horasInput.classList.add('is-invalid');
+            return;
+        }
+        
+        // Convertir a horas (redondeado a 0.5)
+        const horas = Math.round((diferencia / (1000 * 60 * 60)) * 2) / 2;
+        
+        // Validar que esté en el rango permitido
+        if (horas < 0.5) {
+            new PNotify({
+                title: 'Advertencia',
+                text: 'La sesión debe ser de al menos 30 minutos (0.5 horas)',
+                type: 'warning',
+                styling: 'bootstrap3'
+            });
+            horasInput.value = '';
+            horasInput.classList.remove('is-valid');
+            horasInput.classList.add('is-invalid');
+            return;
+        }
+        
+        if (horas > 8) {
+            new PNotify({
+                title: 'Advertencia',
+                text: 'La sesión no puede exceder 8 horas',
+                type: 'warning',
+                styling: 'bootstrap3'
+            });
+            horasInput.value = '';
+            horasInput.classList.remove('is-valid');
+            horasInput.classList.add('is-invalid');
+            return;
+        }
+        
+        // Asignar el valor calculado
+        horasInput.value = horas;
+        
+        // Validar las horas
+        validarHoras();
     }
 }
 
@@ -179,12 +264,34 @@ function validarPaso(paso) {
             return true;
             
         case 2:
-            // Validar que se haya ingresado horas
+            // Validar hora inicio
+            const horaInicio = document.getElementById('hora_inicio');
+            if (!horaInicio || !horaInicio.value) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Debe ingresar la hora de inicio',
+                    type: 'error'
+                });
+                return false;
+            }
+            
+            // Validar hora fin
+            const horaFin = document.getElementById('hora_fin');
+            if (!horaFin || !horaFin.value) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Debe ingresar la hora de fin',
+                    type: 'error'
+                });
+                return false;
+            }
+            
+            // Validar que se haya calculado las horas
             const horasInput = document.querySelector('input[name="horas_recuperadas"]');
             if (!horasInput || !horasInput.value) {
                 new PNotify({
                     title: 'Error',
-                    text: 'Debe ingresar las horas a recuperar',
+                    text: 'Las horas no se han calculado correctamente',
                     type: 'error'
                 });
                 return false;
@@ -233,6 +340,25 @@ function validarPaso(paso) {
                 return false;
             }
             
+            // Validar que la fecha de sesión no sea anterior a la fecha fin del permiso
+            if (planData && planData.fechaFin) {
+                const fechaSesion = document.querySelector('input[name="fecha_sesion"]').value;
+                if (fechaSesion < planData.fechaFin) {
+                    const fechaFinFormateada = new Date(planData.fechaFin).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    new PNotify({
+                        title: 'Error de Validación',
+                        text: `La fecha de sesión no puede ser anterior a la fecha fin del permiso (${fechaFinFormateada}). Las sesiones de recuperación deben programarse después de que finalice el período del permiso.`,
+                        type: 'error',
+                        delay: 5000
+                    });
+                    return false;
+                }
+            }
+            
             // Validar acumulación
             if (planData) {
                 const nuevoTotal = planData.horasRecuperadas + horas;
@@ -248,6 +374,8 @@ function validarPaso(paso) {
             
             // Guardar datos de sesión
             sessionData.horas = horas;
+            sessionData.horaInicio = horaInicio.value;
+            sessionData.horaFin = horaFin.value;
             sessionData.asignatura = asignaturaInput.value.trim();
             sessionData.semestre = semestreSelect.value;
             sessionData.semestreTexto = semestreSelect.options[semestreSelect.selectedIndex].text;
@@ -321,6 +449,8 @@ function cargarConfirmacion() {
     const tipoSesion = sessionData.tipoSesionTexto;
     const modalidad = sessionData.modalidadTexto;
     const horas = sessionData.horas;
+    const horaInicio = sessionData.horaInicio;
+    const horaFin = sessionData.horaFin;
     const fecha = sessionData.fecha;
     const estado = document.querySelector('select[name="estado_sesion"]').value;
     
@@ -331,10 +461,11 @@ function cargarConfirmacion() {
         <strong>${asignatura}</strong><br>
         <small style="color: var(--medium-gray);">Semestre: ${semestre} | Aula: ${aula}</small>
     `;
-    document.getElementById('confirmHoras').innerHTML = `
-        ${horas} horas<br>
+    document.getElementById('confirmHorario').innerHTML = `
+        ${horaInicio} - ${horaFin}<br>
         <small style="color: var(--medium-gray);">${tipoSesion} - ${modalidad}</small>
     `;
+    document.getElementById('confirmHoras').textContent = `${horas} horas`;
     document.getElementById('confirmFecha').textContent = formatFecha(fecha);
     document.getElementById('confirmEstado').textContent = estado === 'REALIZADA' ? 'Realizada' : 
                                                            estado === 'PROGRAMADA' ? 'Programada' : 
@@ -354,6 +485,7 @@ function registrarSesion() {
         processData: false,
         contentType: false,
         success: function(response) {
+            console.log('AJAX Response:', response);
             if (response.success) {
                 new PNotify({
                     title: '¡Éxito!',
@@ -364,7 +496,10 @@ function registrarSesion() {
                 
                 // Agregar la nueva fila a la tabla dinámicamente
                 if (response.sesion) {
+                    console.log('Llamando a agregarFilaSesion con:', response.sesion);
                     agregarFilaSesion(response.sesion);
+                } else {
+                    console.error('No se recibió el objeto sesion en la respuesta');
                 }
                 
                 // Limpiar formulario
@@ -396,8 +531,13 @@ function registrarSesion() {
 
 // Función para agregar una nueva fila a la tabla
 function agregarFilaSesion(sesion) {
-    const tbody = document.querySelector('.table-modern tbody');
-    if (!tbody) return;
+    console.log('agregarFilaSesion llamada con:', sesion);
+    const tbody = document.querySelector('.table-execution tbody');
+    console.log('tbody encontrado:', tbody);
+    if (!tbody) {
+        console.error('No se encontró el tbody de la tabla');
+        return;
+    }
     
     // Formatear fecha
     const fecha = new Date(sesion.fecha_sesion);
@@ -407,12 +547,31 @@ function agregarFilaSesion(sesion) {
         year: 'numeric'
     });
     
-    // Formatear hora de creación
-    const createdAt = new Date(sesion.created_at);
-    const horaCreacion = createdAt.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    // Formatear horario
+    let horarioHTML = '<small style="color: var(--medium-gray);">No especificado</small>';
+    if (sesion.hora_inicio && sesion.hora_fin) {
+        // Extraer solo la parte de la hora (HH:MM) del timestamp
+        let horaInicio = sesion.hora_inicio;
+        let horaFin = sesion.hora_fin;
+        
+        // Si viene en formato ISO (con T), extraer la hora
+        if (horaInicio.includes('T')) {
+            horaInicio = horaInicio.split('T')[1].substring(0, 5);
+        } else {
+            horaInicio = horaInicio.substring(0, 5);
+        }
+        
+        if (horaFin.includes('T')) {
+            horaFin = horaFin.split('T')[1].substring(0, 5);
+        } else {
+            horaFin = horaFin.substring(0, 5);
+        }
+        
+        horarioHTML = `
+            <span style="color: var(--dark-gray);">${horaInicio}</span>
+            <span style="color: var(--dark-gray);"> - ${horaFin}</span>
+        `;
+    }
     
     // Determinar icono y color de tipo de sesión
     let tipoSesionHTML = '';
@@ -449,31 +608,31 @@ function agregarFilaSesion(sesion) {
     // Determinar estado
     let estadoHTML = '';
     if (sesion.estado_sesion === 'VALIDADA') {
-        estadoHTML = `<span class="status-indicator-execution" style="background: rgba(0, 184, 148, 0.1); color: var(--success-green);">
-            <i class="fas fa-check-double mr-1"></i> Validada
+        estadoHTML = `<span class="status-indicator-execution status-completed">
+            <span class="dot-status dot-completed"></span> Validada
         </span>`;
     } else if (sesion.estado_sesion === 'REALIZADA') {
-        estadoHTML = `<span class="status-indicator-execution" style="background: rgba(0, 139, 220, 0.1); color: var(--primary-blue);">
-            <i class="fas fa-check mr-1"></i> Realizada
+        estadoHTML = `<span class="status-indicator-execution status-in-progress">
+            <span class="dot-status dot-in-progress"></span> Realizada
         </span>`;
     } else {
-        estadoHTML = `<span class="status-indicator-execution" style="background: rgba(253, 203, 110, 0.1); color: var(--warning-orange);">
-            <i class="fas fa-clock mr-1"></i> Programada
+        estadoHTML = `<span class="status-indicator-execution status-pending">
+            <span class="dot-status dot-pending"></span> Programada
         </span>`;
     }
     
-    // Crear la nueva fila
+    // Obtener el número de fila (contar las filas actuales + 1)
+    const numeroFila = tbody.querySelectorAll('tr').length + 1;
+    
+    // Crear la nueva fila - INCLUIR TODAS las columnas (visibles y ocultas con class="none")
     const nuevaFila = `
         <tr class="fade-in" data-estado="${sesion.estado_sesion}" data-modalidad="${sesion.modalidad}" data-plan="${sesion.id_plan}">
             <td>
-                <div style="font-weight: 700; color: var(--primary-blue);">
-                    #${sesion.id_sesion}
+                <div style="color: var(--dark-gray); text-align: center;">
+                    ${numeroFila}
                 </div>
-                <small style="color: var(--medium-gray);">
-                    ${horaCreacion}
-                </small>
             </td>
-            <td>
+            <td class="none">
                 <div style="font-weight: 600; color: var(--dark-gray);">
                     Plan #${sesion.id_plan}
                 </div>
@@ -485,35 +644,25 @@ function agregarFilaSesion(sesion) {
                 <div style="font-weight: 600; color: var(--dark-gray);">
                     ${sesion.docente_apellidos || ''}
                 </div>
-                <small style="color: var(--medium-gray);">
-                    ${sesion.docente_nombres || ''}
-                </small>
             </td>
             <td>
-                <div style="font-weight: 600; color: var(--dark-gray);">
+                <div style="color: var(--dark-gray);">
                     ${sesion.asignatura || 'No especificada'}
                 </div>
             </td>
-            <td class="text-center">
-                <span class="badge" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">
-                    ${sesion.semestre ? sesion.semestre.charAt(0) + sesion.semestre.slice(1).toLowerCase() : 'N/A'}
-                </span>
-            </td>
-            <td class="text-center">
-                <div style="font-weight: 500; color: var(--medium-gray);">
-                    <i class="fas fa-door-open mr-1"></i>
-                    ${sesion.aula || 'No asignada'}
+            <td>
+                <div style="color: var(--dark-gray);">
+                    ${fechaFormateada}
                 </div>
             </td>
             <td>
-                ${tipoSesionHTML}
+                <div style="color: var(--dark-gray);">
+                    ${horarioHTML}
+                </div>
             </td>
             <td>
-                ${modalidadHTML}
-            </td>
-            <td>
-                <div style="text-align: center;">
-                    <span style="font-size: 1.3rem; font-weight: 700; color: var(--primary-blue);">
+                <div style="color: var(--dark-gray);">
+                    <span style="color: var(--dark-gray);">
                         ${sesion.horas_recuperadas}
                     </span>
                     <br>
@@ -521,27 +670,39 @@ function agregarFilaSesion(sesion) {
                 </div>
             </td>
             <td>
-                <div style="font-weight: 600; color: var(--dark-gray);">
-                    ${fechaFormateada}
+                ${modalidadHTML}
+            </td>
+            <td class="none text-center">
+                <span class="badge" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">
+                    ${sesion.semestre ? sesion.semestre.charAt(0) + sesion.semestre.slice(1).toLowerCase() : 'N/A'}
+                </span>
+            </td>
+            <td class="none text-center">
+                <div style="font-weight: 500; color: var(--medium-gray);">
+                    <i class="fas fa-door-open mr-1"></i>
+                    ${sesion.aula || 'No asignada'}
                 </div>
+            </td>
+            <td class="none">
+                ${tipoSesionHTML}
             </td>
             <td>
                 ${estadoHTML}
             </td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn-icon btn-view" onclick="verSesion('${sesion.id_sesion}')" title="Ver detalles">
-                        <i class="fas fa-eye"></i>
-                    </button>
+                    <a href="${_urlBase}/admin/evidencia_recuperacion?sesion_id=${sesion.id_sesion}" class="btn-icon btn-view" title="Ver evidencias de esta sesión">
+                        <i class="fas fa-file-contract"></i>
+                    </a>
                     ${sesion.estado_sesion !== 'VALIDADA' ? `
-                    <button class="btn-icon btn-edit" onclick="editarSesion('${sesion.id_sesion}')" title="Editar">
+                    <button class="btn-icon btn-edit" onclick="editarSesion(${sesion.id_sesion})" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn-icon btn-approve" onclick="completarSesion('${sesion.id_sesion}')" title="Marcar como validada">
+                    <button class="btn-icon btn-approve" onclick="completarSesion(${sesion.id_sesion})" title="Marcar como validada">
                         <i class="fas fa-check"></i>
                     </button>
                     ` : ''}
-                    <button class="btn-icon btn-delete" onclick="eliminarSesion('${sesion.id_sesion}')" title="Eliminar">
+                    <button class="btn-icon btn-delete" onclick="eliminarSesion(${sesion.id_sesion})" title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -549,17 +710,105 @@ function agregarFilaSesion(sesion) {
         </tr>
     `;
     
-    // Insertar al inicio de la tabla
-    tbody.insertAdjacentHTML('afterbegin', nuevaFila);
+    // Obtener la instancia de DataTable
+    const table = $('#tablaExample2').DataTable();
     
-    // Animar la nueva fila
-    const primeraFila = tbody.querySelector('tr:first-child');
-    if (primeraFila) {
-        primeraFila.style.opacity = '0';
-        setTimeout(() => {
-            primeraFila.style.transition = 'opacity 0.5s ease-in';
-            primeraFila.style.opacity = '1';
-        }, 100);
+    if (table) {
+        // Usar la API de DataTables para agregar la fila correctamente
+        // Esto asegura que Responsive funcione automáticamente
+        const newRow = table.row.add([
+            // Columna 1: N° #
+            `<div style="color: var(--dark-gray); text-align: center;">${table.rows().count() + 1}</div>`,
+            // Columna 2: Plan (hidden - class="none")
+            `<div style="font-weight: 600; color: var(--dark-gray);">Plan #${sesion.id_plan}</div><small style="color: var(--medium-gray);">${sesion.plan_horas_totales || 0} horas totales</small>`,
+            // Columna 3: Docente
+            `<div style="font-weight: 600; color: var(--dark-gray);">${sesion.docente_apellidos || ''}</div>`,
+            // Columna 4: Curso
+            `<div style="color: var(--dark-gray);">${sesion.asignatura || 'No especificada'}</div>`,
+            // Columna 5: Fecha
+            `<div style="color: var(--dark-gray);">${fechaFormateada}</div>`,
+            // Columna 6: Horario
+            `<div style="color: var(--dark-gray);">${horarioHTML}</div>`,
+            // Columna 7: Horas
+            `<div style="color: var(--dark-gray);"><span style="color: var(--dark-gray);">${sesion.horas_recuperadas}</span><br><small style="color: var(--medium-gray);">horas</small></div>`,
+            // Columna 8: Modalidad
+            modalidadHTML,
+            // Columna 9: Semestre (hidden - class="none")
+            `<span class="badge" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">${sesion.semestre ? sesion.semestre.charAt(0) + sesion.semestre.slice(1).toLowerCase() : 'N/A'}</span>`,
+            // Columna 10: Aula (hidden - class="none")
+            `<div style="font-weight: 500; color: var(--medium-gray);"><i class="fas fa-door-open mr-1"></i>${sesion.aula || 'No asignada'}</div>`,
+            // Columna 11: Tipo (hidden - class="none")
+            tipoSesionHTML,
+            // Columna 12: Estado
+            estadoHTML,
+            // Columna 13: Acciones
+            `<div class="action-buttons">
+                <a href="${_urlBase}/admin/evidencia_recuperacion?sesion_id=${sesion.id_sesion}" class="btn-icon btn-view" title="Ver evidencias de esta sesión">
+                    <i class="fas fa-file-contract"></i>
+                </a>
+                ${sesion.estado_sesion !== 'VALIDADA' ? `
+                <button class="btn-icon btn-edit" onclick="editarSesion(${sesion.id_sesion})" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-approve" onclick="completarSesion(${sesion.id_sesion})" title="Marcar como validada">
+                    <i class="fas fa-check"></i>
+                </button>
+                ` : ''}
+                <button class="btn-icon btn-delete" onclick="eliminarSesion(${sesion.id_sesion})" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>`
+        ]);
+        
+        // Agregar atributos data a la fila
+        $(newRow.node())
+            .addClass('fade-in')
+            .attr('data-estado', sesion.estado_sesion)
+            .attr('data-modalidad', sesion.modalidad)
+            .attr('data-plan', sesion.id_plan);
+        
+        // Redibujar la tabla en la primera página
+        table.order([0, 'desc']).draw(false);
+        
+        // Animar la nueva fila
+        const filaElement = newRow.node();
+        if (filaElement) {
+            filaElement.style.opacity = '0';
+            setTimeout(() => {
+                filaElement.style.transition = 'opacity 0.5s ease-in';
+                filaElement.style.opacity = '1';
+            }, 100);
+        }
+    } else {
+        // Fallback: insertar HTML directamente si DataTable no está disponible
+        const numeroFila = tbody.querySelectorAll('tr').length + 1;
+        const nuevaFila = `
+            <tr class="fade-in" data-estado="${sesion.estado_sesion}" data-modalidad="${sesion.modalidad}" data-plan="${sesion.id_plan}">
+                <td><div style="color: var(--dark-gray); text-align: center;">${numeroFila}</div></td>
+                <td class="none"><div style="font-weight: 600; color: var(--dark-gray);">Plan #${sesion.id_plan}</div><small style="color: var(--medium-gray);">${sesion.plan_horas_totales || 0} horas totales</small></td>
+                <td><div style="font-weight: 600; color: var(--dark-gray);">${sesion.docente_apellidos || ''}</div></td>
+                <td><div style="color: var(--dark-gray);">${sesion.asignatura || 'No especificada'}</div></td>
+                <td><div style="color: var(--dark-gray);">${fechaFormateada}</div></td>
+                <td><div style="color: var(--dark-gray);">${horarioHTML}</div></td>
+                <td><div style="color: var(--dark-gray);"><span style="color: var(--dark-gray);">${sesion.horas_recuperadas}</span><br><small style="color: var(--medium-gray);">horas</small></div></td>
+                <td>${modalidadHTML}</td>
+                <td class="none text-center"><span class="badge" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">${sesion.semestre ? sesion.semestre.charAt(0) + sesion.semestre.slice(1).toLowerCase() : 'N/A'}</span></td>
+                <td class="none text-center"><div style="font-weight: 500; color: var(--medium-gray);"><i class="fas fa-door-open mr-1"></i>${sesion.aula || 'No asignada'}</div></td>
+                <td class="none">${tipoSesionHTML}</td>
+                <td>${estadoHTML}</td>
+                <td><div class="action-buttons"><a href="${_urlBase}/admin/evidencia_recuperacion?sesion_id=${sesion.id_sesion}" class="btn-icon btn-view" title="Ver evidencias de esta sesión"><i class="fas fa-file-contract"></i></a>${sesion.estado_sesion !== 'VALIDADA' ? `<button class="btn-icon btn-edit" onclick="editarSesion(${sesion.id_sesion})" title="Editar"><i class="fas fa-edit"></i></button><button class="btn-icon btn-approve" onclick="completarSesion(${sesion.id_sesion})" title="Marcar como validada"><i class="fas fa-check"></i></button>` : ''}<button class="btn-icon btn-delete" onclick="eliminarSesion(${sesion.id_sesion})" title="Eliminar"><i class="fas fa-trash"></i></button></div></td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('afterbegin', nuevaFila);
+        
+        const primeraFila = tbody.querySelector('tr:first-child');
+        if (primeraFila) {
+            primeraFila.style.opacity = '0';
+            setTimeout(() => {
+                primeraFila.style.transition = 'opacity 0.5s ease-in';
+                primeraFila.style.opacity = '1';
+            }, 100);
+        }
     }
 }
 

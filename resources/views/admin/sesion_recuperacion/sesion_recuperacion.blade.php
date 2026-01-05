@@ -744,6 +744,98 @@
             border-color: var(--purple);
             background: linear-gradient(135deg, rgba(108, 92, 231, 0.05) 0%, transparent 100%);
         }
+
+        /* Estilos modernos para botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-icon:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-icon:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-icon i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        }
+
+        .btn-view:hover {
+            background: linear-gradient(135deg, #007acc 0%, #0092d8 100%);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #ffeaa7 100%);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #f0b95e 0%, #fdd97a 100%);
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, var(--success-green) 0%, #55efc4 100%);
+        }
+
+        .btn-approve:hover {
+            background: linear-gradient(135deg, #00a884 0%, #45dfb4 100%);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, var(--danger-red) 0%, #fab1a0 100%);
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #d16045 0%, #f0a190 100%);
+        }
     </style>
 
     <section class="content">
@@ -989,13 +1081,13 @@
                                 <tr class="fade-in" data-estado="{{ $sesion->estado_sesion }}"
                                     data-modalidad="{{ $sesion->modalidad }}"
                                     data-plan="{{ $sesion->planRecuperacion->id_plan }}">
-                                    
+
                                     <td>
-                                        <div style="font-weight: 600; color: var(--dark-gray); text-align: center;">
-                                           {{ $loop->iteration }}
+                                        <div style="color: var(--dark-gray); text-align: center;">
+                                            {{ $loop->iteration }}
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Plan -->
                                     <td>
                                         <div style="font-weight: 600; color: var(--dark-gray);">
@@ -1005,38 +1097,36 @@
                                             {{ $sesion->planRecuperacion->total_horas_recuperar }} horas totales
                                         </small>
                                     </td>
-                                    
+
                                     <!-- Docente -->
                                     <td>
                                         <div style="font-weight: 600; color: var(--dark-gray);">
                                             {{ $sesion->planRecuperacion->permiso->docente->user->last_name }}
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Curso (Asignatura) -->
                                     <td>
                                         <div style="color: var(--dark-gray);">
                                             {{ $sesion->asignatura ?? 'No especificada' }}
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Fecha -->
                                     <td>
                                         <div style=" color: var(--dark-gray);">
                                             {{ \Carbon\Carbon::parse($sesion->fecha_sesion)->format('d/m/Y') }}
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Horario -->
                                     <td>
                                         <div style="color: var(--dark-gray);">
                                             @if($sesion->hora_inicio && $sesion->hora_fin)
                                                 <span style="color: var(--dark-gray);">
-                                                    <i class="fas fa-clock mr-1"></i>
                                                     {{ \Carbon\Carbon::parse($sesion->hora_inicio)->format('H:i') }}
                                                 </span>
-                                                <br>
-                                                <span style="color: var(--dark-gray);"> 
+                                                <span style="color: var(--dark-gray);">
                                                     - {{ \Carbon\Carbon::parse($sesion->hora_fin)->format('H:i') }}
                                                 </span>
                                             @else
@@ -1044,7 +1134,7 @@
                                             @endif
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Horas -->
                                     <td>
                                         <div style="color: var(--dark-gray);">
@@ -1055,7 +1145,7 @@
                                             <small style="color: var(--medium-gray);">horas</small>
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Modalidad -->
                                     <td>
                                         @if($sesion->modalidad == 'PRESENCIAL')
@@ -1078,14 +1168,15 @@
                                             </span>
                                         @endif
                                     </td>
-                                    
+
                                     <!-- Semestre (hidden) -->
                                     <td class="text-center">
-                                        <span class="badge" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">
+                                        <span class="badge"
+                                            style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem;">
                                             {{ ucfirst(strtolower($sesion->semestre ?? 'N/A')) }}
                                         </span>
                                     </td>
-                                    
+
                                     <!-- Aula (hidden) -->
                                     <td class="text-center">
                                         <div style="font-weight: 500; color: var(--medium-gray);">
@@ -1093,7 +1184,7 @@
                                             {{ $sesion->aula ?? 'No asignada' }}
                                         </div>
                                     </td>
-                                    
+
                                     <!-- Tipo -->
                                     <td>
                                         @if($sesion->tipo_sesion == 'TEORIA')
@@ -1116,7 +1207,7 @@
                                             </span>
                                         @endif
                                     </td>
-                                    
+
                                     <!-- Estado -->
                                     <td>
                                         @if($sesion->estado_sesion == 'VALIDADA')
@@ -1136,13 +1227,12 @@
                                             </span>
                                         @endif
                                     </td>
-                                    
+
                                     <!-- Acciones -->
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{{ url('evidencia_recuperacion?sesion_id=' . $sesion->id_sesion) }}" 
-                                                class="btn-icon btn-view" 
-                                                title="Ver evidencias de esta sesión">
+                                            <a href="{{ url('admin/evidencia_recuperacion?sesion_id=' . $sesion->id_sesion) }}"
+                                                class="btn-icon btn-view" title="Ver evidencias de esta sesión">
                                                 <i class="fas fa-file-contract"></i>
                                             </a>
                                             @if($sesion->estado_sesion != 'VALIDADA')
@@ -1165,488 +1255,523 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- MODAL NUEVA SESIÓN DE EJECUCIÓN -->
-        <div class="modal fade" id="nuevaSesionModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content modal-execution">
-                    <div class="modal-header modal-header-execution">
-                        <h5 class="modal-title-execution">
-                            <i class="fas fa-plus-circle"></i>
-                            Nueva Sesión de Recuperación
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" style="z-index: 3;">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <form id="frmSesionInsert" onsubmit="event.preventDefault(); registrarSesion();">
-                        @csrf
-                        <div class="modal-body p-4">
-                            <!-- Indicador de Pasos -->
-                            <div class="form-step-indicator">
-                                <div class="step active" id="step1">
-                                    <div class="step-circle">1</div>
-                                    <div class="step-label">Plan</div>
-                                </div>
-                                <div class="step" id="step2">
-                                    <div class="step-circle">2</div>
-                                    <div class="step-label">Sesión</div>
-                                </div>
-                                <div class="step" id="step3">
-                                    <div class="step-circle">3</div>
-                                    <div class="step-label">Validación</div>
-                                </div>
-                                <div class="step" id="step4">
-                                    <div class="step-circle">4</div>
-                                    <div class="step-label">Confirmación</div>
+    <!-- MODAL NUEVA SESIÓN DE EJECUCIÓN -->
+    <div class="modal fade" id="nuevaSesionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content modal-execution">
+                <div class="modal-header modal-header-execution">
+                    <h5 class="modal-title-execution">
+                        <i class="fas fa-plus-circle"></i>
+                        Nueva Sesión de Recuperación
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" style="z-index: 3;">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="frmSesionInsert" onsubmit="event.preventDefault(); registrarSesion();">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <!-- Indicador de Pasos -->
+                        <div class="form-step-indicator">
+                            <div class="step active" id="step1">
+                                <div class="step-circle">1</div>
+                                <div class="step-label">Plan</div>
+                            </div>
+                            <div class="step" id="step2">
+                                <div class="step-circle">2</div>
+                                <div class="step-label">Sesión</div>
+                            </div>
+                            <div class="step" id="step3">
+                                <div class="step-circle">3</div>
+                                <div class="step-label">Validación</div>
+                            </div>
+                            <div class="step" id="step4">
+                                <div class="step-circle">4</div>
+                                <div class="step-label">Confirmación</div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 1: Selección de Plan -->
+                        <div id="step1-content" class="step-content active">
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                        <i class="fas fa-file-contract mr-2"></i>
+                                        Paso 1: Seleccionar Plan de Recuperación
+                                    </h4>
+                                    <p style="color: var(--medium-gray);">
+                                        Seleccione el plan de recuperación para el cual registrará la sesión
+                                    </p>
                                 </div>
                             </div>
 
-                            <!-- Paso 1: Selección de Plan -->
-                            <div id="step1-content" class="step-content active">
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
-                                            <i class="fas fa-file-contract mr-2"></i>
-                                            Paso 1: Seleccionar Plan de Recuperación
-                                        </h4>
-                                        <p style="color: var(--medium-gray);">
-                                            Seleccione el plan de recuperación para el cual registrará la sesión
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group-modern">
-                                            <label class="form-label-modern">Plan de Recuperación *</label>
-                                            <select
-                                                name="{{ isset($planSeleccionado) && $planSeleccionado ? 'plan_display' : 'id_plan_recuperacion' }}"
-                                                class="form-control-modern select2" id="selectPlanRecuperacion" {{ isset($planSeleccionado) && $planSeleccionado ? '' : 'required' }}
-                                                onchange="cargarDetallesPlan()" {{ isset($planSeleccionado) && $planSeleccionado ? 'disabled' : '' }}>
-                                                <option value="">Buscar plan...</option>
-                                                @if(isset($planSeleccionado) && $planSeleccionado)
-                                                    {{-- Si hay un plan seleccionado, solo mostrar ese plan --}}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">Plan de Recuperación *</label>
+                                        <select
+                                            name="{{ isset($planSeleccionado) && $planSeleccionado ? 'plan_display' : 'id_plan_recuperacion' }}"
+                                            class="form-control-modern select2" id="selectPlanRecuperacion" {{ isset($planSeleccionado) && $planSeleccionado ? '' : 'required' }}
+                                            onchange="cargarDetallesPlan()" {{ isset($planSeleccionado) && $planSeleccionado ? 'disabled' : '' }}>
+                                            <option value="">Buscar plan...</option>
+                                            @if(isset($planSeleccionado) && $planSeleccionado)
+                                                {{-- Si hay un plan seleccionado, solo mostrar ese plan --}}
+                                                @php
+                                                    $horasRealizadas = $planSeleccionado->sesiones()->where('estado_sesion', 'REALIZADA')->sum('horas_recuperadas') ?? 0;
+                                                    $horasProgramadas = $planSeleccionado->sesiones()->where('estado_sesion', 'PROGRAMADA')->sum('horas_recuperadas') ?? 0;
+                                                    $horasRecuperadas = $horasRealizadas + $horasProgramadas;
+                                                    $horasPendientes = $planSeleccionado->total_horas_recuperar - $horasRecuperadas;
+                                                @endphp
+                                                <option value="{{ $planSeleccionado->id_plan }}"
+                                                    data-horas-totales="{{ $planSeleccionado->total_horas_recuperar }}"
+                                                    data-horas-realizadas="{{ $horasRealizadas }}"
+                                                    data-horas-programadas="{{ $horasProgramadas }}"
+                                                    data-horas-recuperadas="{{ $horasRecuperadas }}"
+                                                    data-horas-pendientes="{{ $horasPendientes }}"
+                                                    data-docente="{{ $planSeleccionado->permiso->docente->appDocente }} {{ $planSeleccionado->permiso->docente->apmDocente }}"
+                                                    data-fecha-fin="{{ $planSeleccionado->permiso->fecha_fin }}" selected>
+                                                    Plan #{{ $planSeleccionado->id_plan }} -
+                                                    {{ $planSeleccionado->permiso->docente->appDocente }} -
+                                                    {{ $planSeleccionado->total_horas_recuperar }} horas
+                                                    ({{ $horasRecuperadas }} recuperadas)
+                                                </option>
+                                            @else
+                                                {{-- Si no hay plan seleccionado, mostrar todos los planes activos --}}
+                                                @foreach($planesActivos as $plan)
                                                     @php
-                                                        $horasRealizadas = $planSeleccionado->sesiones()->where('estado_sesion', 'REALIZADA')->sum('horas_recuperadas') ?? 0;
-                                                        $horasProgramadas = $planSeleccionado->sesiones()->where('estado_sesion', 'PROGRAMADA')->sum('horas_recuperadas') ?? 0;
+                                                        $horasRealizadas = $plan->sesiones()->where('estado_sesion', 'REALIZADA')->sum('horas_recuperadas') ?? 0;
+                                                        $horasProgramadas = $plan->sesiones()->where('estado_sesion', 'PROGRAMADA')->sum('horas_recuperadas') ?? 0;
                                                         $horasRecuperadas = $horasRealizadas + $horasProgramadas;
-                                                        $horasPendientes = $planSeleccionado->total_horas_recuperar - $horasRecuperadas;
+                                                        $horasPendientes = $plan->total_horas_recuperar - $horasRecuperadas;
                                                     @endphp
-                                                    <option value="{{ $planSeleccionado->id_plan }}"
-                                                        data-horas-totales="{{ $planSeleccionado->total_horas_recuperar }}"
+                                                    <option value="{{ $plan->id_plan }}"
+                                                        data-horas-totales="{{ $plan->total_horas_recuperar }}"
                                                         data-horas-realizadas="{{ $horasRealizadas }}"
                                                         data-horas-programadas="{{ $horasProgramadas }}"
                                                         data-horas-recuperadas="{{ $horasRecuperadas }}"
                                                         data-horas-pendientes="{{ $horasPendientes }}"
-                                                        data-docente="{{ $planSeleccionado->permiso->docente->appDocente }} {{ $planSeleccionado->permiso->docente->apmDocente }}"
-                                                        selected>
-                                                        Plan #{{ $planSeleccionado->id_plan }} -
-                                                        {{ $planSeleccionado->permiso->docente->appDocente }} -
-                                                        {{ $planSeleccionado->total_horas_recuperar }} horas
+                                                        data-docente="{{ $plan->permiso->docente->appDocente }} {{ $plan->permiso->docente->apmDocente }}"
+                                                        data-fecha-fin="{{ $plan->permiso->fecha_fin }}">
+                                                        Plan #{{ $plan->id_plan }} -
+                                                        {{ $plan->permiso->docente->appDocente }} -
+                                                        {{ $plan->total_horas_recuperar }} horas
                                                         ({{ $horasRecuperadas }} recuperadas)
                                                     </option>
-                                                @else
-                                                    {{-- Si no hay plan seleccionado, mostrar todos los planes activos --}}
-                                                    @foreach($planesActivos as $plan)
-                                                        @php
-                                                            $horasRealizadas = $plan->sesiones()->where('estado_sesion', 'REALIZADA')->sum('horas_recuperadas') ?? 0;
-                                                            $horasProgramadas = $plan->sesiones()->where('estado_sesion', 'PROGRAMADA')->sum('horas_recuperadas') ?? 0;
-                                                            $horasRecuperadas = $horasRealizadas + $horasProgramadas;
-                                                            $horasPendientes = $plan->total_horas_recuperar - $horasRecuperadas;
-                                                        @endphp
-                                                        <option value="{{ $plan->id_plan }}"
-                                                            data-horas-totales="{{ $plan->total_horas_recuperar }}"
-                                                            data-horas-realizadas="{{ $horasRealizadas }}"
-                                                            data-horas-programadas="{{ $horasProgramadas }}"
-                                                            data-horas-recuperadas="{{ $horasRecuperadas }}"
-                                                            data-horas-pendientes="{{ $horasPendientes }}"
-                                                            data-docente="{{ $plan->permiso->docente->appDocente }} {{ $plan->permiso->docente->apmDocente }}">
-                                                            Plan #{{ $plan->id_plan }} -
-                                                            {{ $plan->permiso->docente->appDocente }} -
-                                                            {{ $plan->total_horas_recuperar }} horas
-                                                            ({{ $horasRecuperadas }} recuperadas)
-                                                        </option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            {{-- Campo oculto para enviar el ID cuando está deshabilitado --}}
-                                            @if(isset($planSeleccionado) && $planSeleccionado)
-                                                <input type="hidden" name="id_plan_recuperacion"
-                                                    value="{{ $planSeleccionado->id_plan }}">
-                                                <input type="hidden" id="hiddenHorasTotales" value="{{ $planSeleccionado->total_horas_recuperar }}">
-                                                <input type="hidden" id="hiddenHorasRealizadas" value="{{ $horasRealizadas }}">
-                                                <input type="hidden" id="hiddenHorasProgramadas" value="{{ $horasProgramadas }}">
-                                                <input type="hidden" id="hiddenHorasRecuperadas" value="{{ $horasRecuperadas }}">
-                                                <input type="hidden" id="hiddenHorasPendientes" value="{{ $horasPendientes }}">
-                                                <input type="hidden" id="hiddenDocente" value="{{ $planSeleccionado->permiso->docente->appDocente }} {{ $planSeleccionado->permiso->docente->apmDocente }}">
+                                                @endforeach
                                             @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Resumen del Plan Seleccionado -->
-                                <div id="planSummary" class="hours-counter" style="display: none;">
-                                    <h4>Resumen del Plan Seleccionado</h4>
-                                    <div class="row mt-4">
-                                        <div class="col-md-4">
-                                            <div style="text-align: center;">
-                                                <div class="hours-display-large" id="horasTotales">0</div>
-                                                <div class="hours-total">Horas Totales</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div style="text-align: center;">
-                                                <div class="hours-display-large" style="color: var(--success-green);"
-                                                    id="horasRecuperadas">0</div>
-                                                <div class="hours-total">Recuperadas</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div style="text-align: center;">
-                                                <div class="hours-display-large" style="color: #e17055;" id="horasPendientes">0
-                                                </div>
-                                                <div class="hours-total">Pendientes</div>
-                                            </div>
-                                        </div>
+                                        </select>
+                                        {{-- Campo oculto para enviar el ID cuando está deshabilitado --}}
+                                        @if(isset($planSeleccionado) && $planSeleccionado)
+                                            <input type="hidden" name="id_plan_recuperacion"
+                                                value="{{ $planSeleccionado->id_plan }}">
+                                            <input type="hidden" id="hiddenHorasTotales"
+                                                value="{{ $planSeleccionado->total_horas_recuperar }}">
+                                            <input type="hidden" id="hiddenHorasRealizadas" value="{{ $horasRealizadas }}">
+                                            <input type="hidden" id="hiddenHorasProgramadas" value="{{ $horasProgramadas }}">
+                                            <input type="hidden" id="hiddenHorasRecuperadas" value="{{ $horasRecuperadas }}">
+                                            <input type="hidden" id="hiddenHorasPendientes" value="{{ $horasPendientes }}">
+                                            <input type="hidden" id="hiddenDocente"
+                                                value="{{ $planSeleccionado->permiso->docente->appDocente }} {{ $planSeleccionado->permiso->docente->apmDocente }}">
+                                        @endif
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Paso 2: Detalles de la Sesión -->
-                            <div id="step2-content" class="step-content" style="display: none;">
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
-                                            <i class="fas fa-calendar-alt mr-2"></i>
-                                            Paso 2: Configurar Sesión de Recuperación
-                                        </h4>
-                                        <p style="color: var(--medium-gray);">
-                                            Defina los detalles específicos de la sesión de recuperación
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Sección: Información Académica -->
-                                <div class="card mb-4" style="border: 2px solid var(--light-blue); border-radius: 12px; overflow: hidden;">
-                                    <div class="card-header" style="background: linear-gradient(135deg, var(--light-blue) 0%, #c3e0ff 100%); border-bottom: 2px solid var(--primary-blue);">
-                                        <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
-                                            <i class="fas fa-book mr-2"></i>
-                                            Información Académica
-                                        </h5>
-                                    </div>
-                                    <div class="card-body p-4">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-graduation-cap mr-1"></i>
-                                                        Asignatura *
-                                                    </label>
-                                                    <input type="text" name="asignatura" class="form-control-modern"
-                                                        placeholder="Ej: Matemática I, Física II, Química Orgánica" 
-                                                        required maxlength="100">
-                                                    <small class="text-muted">Nombre completo de la asignatura</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-layer-group mr-1"></i>
-                                                        Semestre *
-                                                    </label>
-                                                    <select name="semestre" class="form-control-modern" required>
-                                                        <option value="">Seleccionar semestre...</option>
-                                                        <option value="PRIMERO">Primero</option>
-                                                        <option value="SEGUNDO">Segundo</option>
-                                                        <option value="TERCERO">Tercero</option>
-                                                        <option value="CUARTO">Cuarto</option>
-                                                        <option value="QUINTO">Quinto</option>
-                                                        <option value="SEXTO">Sexto</option>
-                                                        <option value="SEPTIMO">Séptimo</option>
-                                                        <option value="OCTAVO">Octavo</option>
-                                                        <option value="NOVENO">Noveno</option>
-                                                        <option value="DECIMO">Décimo</option>
-                                                    </select>
-                                                    <small class="text-muted">Semestre académico</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Sección: Programación de Sesión -->
-                                <div class="card mb-4" style="border: 2px solid #e3f2fd; border-radius: 12px; overflow: hidden;">
-                                    <div class="card-header" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-bottom: 2px solid var(--primary-blue);">
-                                        <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
-                                            <i class="fas fa-calendar-check mr-2"></i>
-                                            Programación de Sesión
-                                        </h5>
-                                    </div>
-                                    <div class="card-body p-4">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-calendar mr-1"></i>
-                                                        Fecha de Sesión *
-                                                    </label>
-                                                    <input type="date" name="fecha_sesion" class="form-control-modern"
-                                                        value="{{ date('Y-m-d') }}" required>
-                                                    <small class="text-muted">Fecha programada</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-door-open mr-1"></i>
-                                                        Aula
-                                                    </label>
-                                                    <input type="text" name="aula" class="form-control-modern"
-                                                        placeholder="Ej: A-101, Lab 3, Auditorio" maxlength="50">
-                                                    <small class="text-muted">Ubicación física o virtual</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-clock mr-1"></i>
-                                                        Horas a Recuperar *
-                                                    </label>
-                                                    <input type="number" name="horas_recuperadas" class="form-control-modern" 
-                                                        step="0.5" min="0.5" max="8" required placeholder="Ej: 2.0"
-                                                        onchange="validarHoras()">
-                                                    <small class="text-muted">Máximo 8 horas</small>
-                                                    <div class="valid-feedback">Horas válidas</div>
-                                                    <div class="invalid-feedback">Entre 0.5 y 8 horas</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Sección: Detalles de la Sesión -->
-                                <div class="card mb-4" style="border: 2px solid #f3e5f5; border-radius: 12px; overflow: hidden;">
-                                    <div class="card-header" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-bottom: 2px solid var(--purple);">
-                                        <h5 style="margin: 0; color: var(--purple); font-weight: 700;">
-                                            <i class="fas fa-cogs mr-2"></i>
-                                            Detalles de la Sesión
-                                        </h5>
-                                    </div>
-                                    <div class="card-body p-4">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-chalkboard-teacher mr-1"></i>
-                                                        Tipo de Sesión *
-                                                    </label>
-                                                    <select name="tipo_sesion" class="form-control-modern" required>
-                                                        <option value="">Seleccionar tipo...</option>
-                                                        <option value="TEORIA">Teoría</option>
-                                                        <option value="PRACTICA">Práctica</option>
-                                                        <option value="EXAMEN">Examen</option>
-                                                    </select>
-                                                    <small class="text-muted">Naturaleza de la sesión</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group-modern">
-                                                    <label class="form-label-modern">
-                                                        <i class="fas fa-laptop mr-1"></i>
-                                                        Modalidad *
-                                                    </label>
-                                                    <select name="modalidad" class="form-control-modern" required>
-                                                        <option value="PRESENCIAL">
-                                                            <i class="fas fa-building"></i> Presencial
-                                                        </option>
-                                                        <option value="VIRTUAL">
-                                                            <i class="fas fa-video"></i> Virtual
-                                                        </option>
-                                                        <option value="EXTRA">
-                                                            <i class="fas fa-star"></i> Extraordinaria
-                                                        </option>
-                                                    </select>
-                                                    <small class="text-muted">Formato de la sesión</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Paso 3: Validación de Horas -->
-                            <div id="step3-content" class="step-content" style="display: none;">
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
-                                            <i class="fas fa-check-circle mr-2"></i>
-                                            Paso 3: Validación de Acumulación
-                                        </h4>
-                                        <p style="color: var(--medium-gray);">
-                                            El sistema validará que las horas no excedan el total del plan
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div id="validationResults" class="hours-counter">
-                                    <h4>Resultado de la Validación</h4>
-                                    <div class="row mt-4">
-                                        <div class="col-md-6">
-                                            <div
-                                                style="text-align: center; padding: 20px; border-right: 2px solid var(--light-gray);">
-                                                <div style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);"
-                                                    id="horasSesion">0</div>
-                                                <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
-                                                    Horas de esta sesión
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div style="text-align: center; padding: 20px;">
-                                                <div style="font-size: 3rem; font-weight: 700; color: var(--success-green);"
-                                                    id="nuevoTotal">0</div>
-                                                <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
-                                                    Nuevo total recuperado
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="validationAlert" class="validation-alert mt-4" style="display: none;">
-                                        <div class="alert-content">
-                                            <div class="alert-title">
-                                                <i class="fas fa-exclamation-triangle"></i>
-                                                Validación Requerida
-                                            </div>
-                                            <p style="color: #856404; margin: 0;" id="alertMessage">
-                                                Las horas ingresadas exceden el total permitido para este plan
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <!-- Resumen del Plan Seleccionado -->
+                            <div id="planSummary" class="hours-counter" style="display: none;">
+                                <h4>Resumen del Plan Seleccionado</h4>
                                 <div class="row mt-4">
-                                    <div class="col-md-12">
-                                        <div class="form-group-modern">
-                                            <label class="form-label-modern">Estado de la Sesión *</label>
-                                            <select name="estado_sesion" class="form-control-modern" required>
-                                                <option value="PROGRAMADA">Programada</option>
-                                                <option value="REALIZADA" selected>Realizada</option>
-                                                <option value="VALIDADA">Validada</option>
-                                            </select>
+                                    <div class="col-md-4">
+                                        <div style="text-align: center;">
+                                            <div class="hours-display-large" id="horasTotales">0</div>
+                                            <div class="hours-total">Horas Totales</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="text-align: center;">
+                                            <div class="hours-display-large" style="color: var(--success-green);"
+                                                id="horasRecuperadas">0</div>
+                                            <div class="hours-total">Recuperadas</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="text-align: center;">
+                                            <div class="hours-display-large" style="color: #e17055;" id="horasPendientes">0
+                                            </div>
+                                            <div class="hours-total">Pendientes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 2: Detalles de la Sesión -->
+                        <div id="step2-content" class="step-content" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                        <i class="fas fa-calendar-alt mr-2"></i>
+                                        Paso 2: Configurar Sesión de Recuperación
+                                    </h4>
+                                    <p style="color: var(--medium-gray);">
+                                        Defina los detalles específicos de la sesión de recuperación
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Sección: Información Académica -->
+                            <div class="card mb-4"
+                                style="border: 2px solid var(--light-blue); border-radius: 12px; overflow: hidden;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, var(--light-blue) 0%, #c3e0ff 100%); border-bottom: 2px solid var(--primary-blue);">
+                                    <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
+                                        <i class="fas fa-book mr-2"></i>
+                                        Información Académica
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-graduation-cap mr-1"></i>
+                                                    Asignatura *
+                                                </label>
+                                                <input type="text" name="asignatura" class="form-control-modern"
+                                                    placeholder="Ej: Matemática I, Física II, Química Orgánica" required
+                                                    maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-layer-group mr-1"></i>
+                                                    Semestre *
+                                                </label>
+                                                <select name="semestre" class="form-control-modern" required>
+                                                    <option value="">Seleccionar semestre...</option>
+                                                    <option value="PRIMERO">Primero</option>
+                                                    <option value="SEGUNDO">Segundo</option>
+                                                    <option value="TERCERO">Tercero</option>
+                                                    <option value="CUARTO">Cuarto</option>
+                                                    <option value="QUINTO">Quinto</option>
+                                                    <option value="SEXTO">Sexto</option>
+                                                    <option value="SEPTIMO">Séptimo</option>
+                                                    <option value="OCTAVO">Octavo</option>
+                                                    <option value="NOVENO">Noveno</option>
+                                                    <option value="DECIMO">Décimo</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Paso 4: Confirmación -->
-                            <div id="step4-content" class="step-content" style="display: none;">
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
-                                            <i class="fas fa-clipboard-check mr-2"></i>
-                                            Paso 4: Confirmar Registro
-                                        </h4>
-                                        <p style="color: var(--medium-gray);">
-                                            Revise los detalles antes de registrar la sesión
-                                        </p>
-                                    </div>
+                            <!-- Sección: Programación de Sesión -->
+                            <div class="card mb-4"
+                                style="border: 2px solid #e3f2fd; border-radius: 12px; overflow: hidden;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-bottom: 2px solid var(--primary-blue);">
+                                    <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
+                                        <i class="fas fa-calendar-check mr-2"></i>
+                                        Programación de Sesión
+                                    </h5>
                                 </div>
-
-                                <div class="session-card completed">
+                                <div class="card-body p-4">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
-                                                <i class="fas fa-user-tie mr-2"></i>
-                                                <span id="confirmDocente">-</span>
-                                            </div>
-                                            <div style="color: var(--medium-gray); font-size: 0.9rem;">
-                                                <i class="fas fa-file-contract mr-2"></i>
-                                                Plan: <span id="confirmPlan">-</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
-                                                <i class="fas fa-book mr-2"></i>
-                                                <span id="confirmCurso">-</span>
-                                            </div>
-                                            <div style="color: var(--medium-gray); font-size: 0.9rem;">
-                                                <i class="fas fa-clock mr-2"></i>
-                                                Horas: <span id="confirmHoras">-</span>
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-calendar mr-1"></i>
+                                                    Fecha de Sesión *
+                                                </label>
+                                                <input type="date" name="fecha_sesion" class="form-control-modern"
+                                                    value="{{ date('Y-m-d') }}" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
-                                                <i class="fas fa-calendar mr-2"></i>
-                                                <span id="confirmFecha">-</span>
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    Hora Inicio *
+                                                </label>
+                                                <input type="time" name="hora_inicio" id="hora_inicio"
+                                                    class="form-control-modern" required
+                                                    onchange="calcularHorasRecuperar()">
                                             </div>
-                                            <div style="color: var(--medium-gray); font-size: 0.9rem;">
-                                                <i class="fas fa-play-circle mr-2"></i>
-                                                Estado: <span id="confirmEstado">-</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    Hora Fin *
+                                                </label>
+                                                <input type="time" name="hora_fin" id="hora_fin" class="form-control-modern"
+                                                    required onchange="calcularHorasRecuperar()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-door-open mr-1"></i>
+                                                    Aula
+                                                </label>
+                                                <input type="text" name="aula" class="form-control-modern"
+                                                    placeholder="Ej: A-101, Lab 3, Auditorio" maxlength="50">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-hourglass-half mr-1"></i>
+                                                    Horas a Recuperar *
+                                                </label>
+                                                <input type="number" name="horas_recuperadas" id="horas_recuperadas"
+                                                    class="form-control-modern" step="0.5" min="0.5" max="8" required
+                                                    placeholder="Auto-calculado" readonly
+                                                    style="background-color: #f8f9fa;">
+                                                <div class="valid-feedback">Horas válidas</div>
+                                                <div class="invalid-feedback">Entre 0.5 y 8 horas</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección: Detalles de la Sesión -->
+                            <div class="card mb-4"
+                                style="border: 2px solid #f3e5f5; border-radius: 12px; overflow: hidden;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-bottom: 2px solid var(--purple);">
+                                    <h5 style="margin: 0; color: var(--purple); font-weight: 700;">
+                                        <i class="fas fa-cogs mr-2"></i>
+                                        Detalles de la Sesión
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-chalkboard-teacher mr-1"></i>
+                                                    Tipo de Sesión *
+                                                </label>
+                                                <select name="tipo_sesion" class="form-control-modern" required>
+                                                    <option value="">Seleccionar tipo...</option>
+                                                    <option value="TEORIA">Teoría</option>
+                                                    <option value="PRACTICA">Práctica</option>
+                                                    <option value="EXAMEN">Examen</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-laptop mr-1"></i>
+                                                    Modalidad *
+                                                </label>
+                                                <select name="modalidad" class="form-control-modern" required>
+                                                    <option value="PRESENCIAL">
+                                                        <i class="fas fa-building"></i> Presencial
+                                                    </option>
+                                                    <option value="VIRTUAL">
+                                                        <i class="fas fa-video"></i> Virtual
+                                                    </option>
+                                                    <option value="EXTRA">
+                                                        <i class="fas fa-star"></i> Extraordinaria
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: Validación de Horas -->
+                        <div id="step3-content" class="step-content" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        Paso 3: Validación de Acumulación
+                                    </h4>
+                                    <p style="color: var(--medium-gray);">
+                                        El sistema validará que las horas no excedan el total del plan
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div id="validationResults" class="hours-counter">
+                                <h4>Resultado de la Validación</h4>
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div
+                                            style="text-align: center; padding: 20px; border-right: 2px solid var(--light-gray);">
+                                            <div style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);"
+                                                id="horasSesion">0</div>
+                                            <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
+                                                Horas de esta sesión
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div style="text-align: center; padding: 20px;">
+                                            <div style="font-size: 3rem; font-weight: 700; color: var(--success-green);"
+                                                id="nuevoTotal">0</div>
+                                            <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
+                                                Nuevo total recuperado
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="alert alert-info mt-4">
-                                    <i class="fas fa-info-circle"></i>
-                                    <strong>Nota:</strong> Una vez registrada, la sesión aparecerá en el sistema de ejecución y
-                                    se actualizará el progreso del plan correspondiente.
+                                <div id="validationAlert" class="validation-alert mt-4" style="display: none;">
+                                    <div class="alert-content">
+                                        <div class="alert-title">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Validación Requerida
+                                        </div>
+                                        <p style="color: #856404; margin: 0;" id="alertMessage">
+                                            Las horas ingresadas exceden el total permitido para este plan
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <div class="form-group-modern">
+                                        <label class="form-label-modern">Estado de la Sesión *</label>
+                                        <select name="estado_sesion" class="form-control-modern" required>
+                                            <option value="PROGRAMADA">Programada</option>
+                                            <option value="REALIZADA" selected>Realizada</option>
+                                            <option value="VALIDADA">Validada</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
-                            <button type="button" class="btn-execution" data-dismiss="modal"
-                                style="background: #6c757d; color: white;">
-                                <i class="fas fa-times mr-2"></i>
-                                Cancelar
-                            </button>
-                            <button type="button" class="btn-execution" id="btnPrevStep" onclick="prevStep()"
-                                style="background: var(--light-gray); color: var(--dark-gray); display: none;">
-                                <i class="fas fa-arrow-left mr-2"></i>
-                                Anterior
-                            </button>
-                            <button type="button" class="btn-execution btn-primary-execution" id="btnNextStep"
-                                onclick="nextStep()">
-                                <i class="fas fa-arrow-right mr-2"></i>
-                                Siguiente
-                            </button>
-                            <button type="submit" class="btn-execution btn-success-execution" id="btnSubmit"
-                                style="display: none;">
-                                <i class="fas fa-save mr-2"></i>
-                                Registrar Sesión
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
-        <!-- MODAL DETALLES DE SESIÓN -->
-        <div class="modal fade" id="detalleSesionModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content modal-execution">
-                    <div class="modal-header modal-header-execution">
-                        <h5 class="modal-title-execution">
-                            <i class="fas fa-info-circle"></i>
-                            Detalles de Sesión
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal">
-                            <span>&times;</span>
+                        <!-- Paso 4: Confirmación -->
+                        <div id="step4-content" class="step-content" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                        <i class="fas fa-clipboard-check mr-2"></i>
+                                        Paso 4: Confirmar Registro
+                                    </h4>
+                                    <p style="color: var(--medium-gray);">
+                                        Revise los detalles antes de registrar la sesión
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="session-card completed">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                            <i class="fas fa-user-tie mr-2"></i>
+                                            <span id="confirmDocente">-</span>
+                                        </div>
+                                        <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                            <i class="fas fa-file-contract mr-2"></i>
+                                            Plan: <span id="confirmPlan">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                            <i class="fas fa-book mr-2"></i>
+                                            <span id="confirmCurso">-</span>
+                                        </div>
+                                        <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                            <i class="fas fa-clock mr-2"></i>
+                                            Horario: <span id="confirmHorario">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                            <i class="fas fa-calendar mr-2"></i>
+                                            <span id="confirmFecha">-</span>
+                                        </div>
+                                        <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                            <i class="fas fa-hourglass-half mr-2"></i>
+                                            Horas: <span id="confirmHoras">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                            <i class="fas fa-play-circle mr-2"></i>
+                                            Estado: <span id="confirmEstado">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Nota:</strong> Una vez registrada, la sesión aparecerá en el sistema de ejecución y
+                                se actualizará el progreso del plan correspondiente.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
+                        <button type="button" class="btn-execution" data-dismiss="modal"
+                            style="background: #6c757d; color: white;">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn-execution" id="btnPrevStep" onclick="prevStep()"
+                            style="background: var(--light-gray); color: var(--dark-gray); display: none;">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Anterior
+                        </button>
+                        <button type="button" class="btn-execution btn-primary-execution" id="btnNextStep"
+                            onclick="nextStep()">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            Siguiente
+                        </button>
+                        <button type="submit" class="btn-execution btn-success-execution" id="btnSubmit"
+                            style="display: none;">
+                            <i class="fas fa-save mr-2"></i>
+                            Registrar Sesión
                         </button>
                     </div>
-                    <div class="modal-body p-4" id="detalleSesionContent">
-                        <!-- Contenido cargado dinámicamente -->
-                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES DE SESIÓN -->
+    <div class="modal fade" id="detalleSesionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content modal-execution">
+                <div class="modal-header modal-header-execution">
+                    <h5 class="modal-title-execution">
+                        <i class="fas fa-info-circle"></i>
+                        Detalles de Sesión
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4" id="detalleSesionContent">
+                    <!-- Contenido cargado dinámicamente -->
                 </div>
             </div>
         </div>
+    </div>
 
 @endsection
 
@@ -1686,7 +1811,7 @@
                         cargarDetallesPlan();
                     }, 300);
                 @endif
-                                        });
+                                                        });
 
             // Limpiar cuando se cierra el modal
             $('#nuevaSesionModal').on('hidden.bs.modal', function () {

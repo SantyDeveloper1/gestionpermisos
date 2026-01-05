@@ -138,10 +138,10 @@ function registrarPlanRecuperacion() {
                 $('#frmPlanInsert').data('formValidation').resetForm();
             }
             
-            // Recargar la página
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            // Agregar la nueva fila a la tabla dinámicamente
+            if (response.plan) {
+                agregarFilaPlan(response.plan);
+            }
         },
         error: function(xhr) {
             let errorMsg = 'No se pudo registrar el plan de recuperación';
@@ -160,4 +160,92 @@ function registrarPlanRecuperacion() {
             });
         }
     });
+}
+
+/**
+ * Agregar una nueva fila a la tabla de planes dinámicamente
+ */
+function agregarFilaPlan(plan) {
+    // Formatear fecha
+    const fecha = new Date(plan.fecha_presentacion);
+    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    
+    // Determinar badge de estado
+    let estadoBadge = '';
+    if (plan.estado_plan === 'PRESENTADO') {
+        estadoBadge = `<span class="badge-modern badge-presentado">
+            <span class="status-dot dot-presentado"></span>
+            ${plan.estado_plan}
+        </span>`;
+    } else if (plan.estado_plan === 'APROBADO') {
+        estadoBadge = `<span class="badge-modern badge-aprobado">
+            <span class="status-dot dot-aprobado"></span>
+            ${plan.estado_plan}
+        </span>`;
+    } else {
+        estadoBadge = `<span class="badge-modern badge-observado">
+            <span class="status-dot dot-observado"></span>
+            ${plan.estado_plan}
+        </span>`;
+    }
+    
+    // Obtener la instancia de DataTable
+    const table = $('#tablaExample2').DataTable();
+    
+    if (table) {
+        // Usar la API de DataTables para agregar la fila correctamente
+        const newRow = table.row.add([
+            // Columna 1: #
+            table.rows().count() + 1,
+            // Columna 2: Permiso
+            `<div style="color: var(--dark-gray);">${plan.tipo_permiso}</div>`,
+            // Columna 3: Docente
+            `<div><strong>${plan.docente_apellido}, ${plan.docente_nombre}</strong></div>`,
+            // Columna 4: Horas a Recuperar
+            `<div class="text-center">
+                <span style="color: var(--dark-gray);">${plan.total_horas_recuperar}</span><br>
+                <small style="color: var(--medium-gray);">horas</small>
+            </div>`,
+            // Columna 5: Fecha Presentación
+            `<div class="text-center">
+                <span style="color: var(--dark-gray);">${fechaFormateada}</span>
+            </div>`,
+            // Columna 6: Estado
+            estadoBadge,
+            // Columna 7: Acciones
+            `<div class="action-buttons">
+                <a href="${_urlBase}/admin/sesion_recuperacion?plan_id=${plan.id_plan}" class="btn-icon btn-view" title="Ver sesiones de recuperación">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <button class="btn-icon btn-edit" onclick="editPlan('${plan.id_plan}')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                ${plan.estado_plan === 'PRESENTADO' ? `
+                <button class="btn-icon btn-approve" onclick="aprobarPlan('${plan.id_plan}')" title="Aprobar Plan">
+                    <i class="fas fa-check"></i>
+                </button>
+                ` : ''}
+                <button class="btn-icon btn-delete" onclick="deletePlan('${plan.id_plan}')" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>`
+        ]);
+        
+        // Redibujar la tabla
+        table.draw(false);
+        
+        // Animar la nueva fila
+        const filaElement = newRow.node();
+        if (filaElement) {
+            filaElement.style.opacity = '0';
+            setTimeout(() => {
+                filaElement.style.transition = 'opacity 0.5s ease-in';
+                filaElement.style.opacity = '1';
+            }, 100);
+        }
+    }
 }

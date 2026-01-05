@@ -23,6 +23,23 @@ function editPermiso(id) {
             if (response.success && response.permiso) {
                 const permiso = response.permiso;
                 
+                // Verificar si el permiso tiene plan de recuperación
+                if (permiso.planRecuperacion) {
+                    // Si tiene plan de recuperación, deshabilitar la opción SOLICITADO
+                    $('#editEstadoPermiso option[value="SOLICITADO"]').prop('disabled', true);
+                    
+                    // Mostrar mensaje informativo
+                    new PNotify({
+                        title: 'Información',
+                        text: 'Este permiso tiene un plan de recuperación. No se puede cambiar el estado a SOLICITADO.',
+                        type: 'info',
+                        delay: 3000
+                    });
+                } else {
+                    // Si no tiene plan, habilitar todas las opciones
+                    $('#editEstadoPermiso option').prop('disabled', false);
+                }
+                
                 // Llenar el formulario con los datos
                 $('#editIdPermiso').val(permiso.id_permiso);
                 $('#editEstadoPermiso').val(permiso.estado_permiso);

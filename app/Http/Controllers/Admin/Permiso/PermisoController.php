@@ -196,14 +196,23 @@ class PermisoController extends Controller
     public function actionUpdate($id)
     {
         try {
-            // Buscar el permiso
-            $permiso = Permiso::where('id_permiso', $id)->first();
+            // Buscar el permiso con su plan de recuperación
+            $permiso = Permiso::with('planRecuperacion')->where('id_permiso', $id)->first();
 
             if (!$permiso) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Permiso no encontrado.'
                 ], 404);
+            }
+
+            // Validación: Si el permiso tiene un plan de recuperación, no se puede cambiar el estado a SOLICITADO
+            $nuevoEstado = request()->input('estado_permiso');
+            if ($permiso->planRecuperacion && $nuevoEstado === 'SOLICITADO') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este permiso tiene un plan de recuperación asociado. No se puede cambiar el estado a SOLICITADO.'
+                ], 422);
             }
 
             // Validar los datos

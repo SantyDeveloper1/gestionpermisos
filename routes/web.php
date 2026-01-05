@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\TipoPermisoController\TipoPermisoController;
 use App\Http\Controllers\Admin\Permiso\PermisoController;
 use App\Http\Controllers\Admin\PlanRecuperacion\PlanRecuperacionController;
 use App\Http\Controllers\Admin\SesionRecuperacion\SesionRecuperacionController;
+use App\Http\Controllers\Admin\EvidenciaRecuperacion\EvidenciaRecuperacionController;
 use Illuminate\Support\Facades\Hash;
 
 Route::match(['get', 'post'], '/login', [LoginController::class, 'actionLogin'])
@@ -103,13 +104,22 @@ Route::middleware('auth')->group(function () {
             Route::patch('plan_recuperacion/aprobar/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionAprobar']);
             Route::delete('plan_recuperacion/delete/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionDelete']);
 
-            
+
             // SESION DE RECUPERACION
             Route::get('sesion_recuperacion', [SesionRecuperacionController::class, 'actionSesionRecuperacion']);
             Route::get('sesion_recuperacion/{id}', [SesionRecuperacionController::class, 'actionShow']);
             Route::match(['get', 'post'], 'sesion_recuperacion/insert', [SesionRecuperacionController::class, 'actionInsert']);
             Route::post('sesion_recuperacion/update/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionUpdate']);
             Route::delete('sesion_recuperacion/delete/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionDelete']);
+
+            // EVIDENCIA DE RECUPERACION
+            Route::get('evidencia_recuperacion', [EvidenciaRecuperacionController::class, 'actionEvidenciaRecuperacion']);
+            Route::get('evidencia_recuperacion/ver/{id}', [EvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('evidencia.ver');
+            Route::get('evidencia_recuperacion/{id}', [EvidenciaRecuperacionController::class, 'actionShow']);
+            Route::post('evidencia_recuperacion/insert', [EvidenciaRecuperacionController::class, 'actionInsert'])->name('evidencia.store');
+            Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [EvidenciaRecuperacionController::class, 'actionUpdate']);
+            Route::delete('evidencia_recuperacion/delete/{idEvidencia_recuperacion}', [EvidenciaRecuperacionController::class, 'actionDelete']);
+
 
         });
 

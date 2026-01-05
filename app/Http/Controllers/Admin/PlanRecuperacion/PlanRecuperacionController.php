@@ -51,6 +51,18 @@ class PlanRecuperacionController extends Controller
                 'observacion' => 'nullable|string|max:500'
             ]);
 
+            // Obtener el permiso para validaciones adicionales
+            $permiso = Permiso::findOrFail($validated['id_permiso']);
+
+            // Validar que la fecha de presentación no sea anterior a la fecha fin del permiso
+            if ($validated['fecha_presentacion'] < $permiso->fecha_fin) {
+                $fechaFinFormateada = date('d/m/Y', strtotime($permiso->fecha_fin));
+                return response()->json([
+                    'success' => false,
+                    'message' => "La fecha de presentación del plan no puede ser anterior a la fecha fin del permiso ({$fechaFinFormateada}). El plan de recuperación debe presentarse después de que finalice el período del permiso."
+                ], 422);
+            }
+
             // Verificar que el permiso no tenga ya un plan de recuperación
             $planExistente = PlanRecuperacion::where('id_permiso', $validated['id_permiso'])->first();
             if ($planExistente) {
@@ -85,10 +97,23 @@ class PlanRecuperacionController extends Controller
                 'observacion' => $validated['observacion']
             ]);
 
+            // Cargar relaciones necesarias
+            $plan->load(['permiso.docente.user', 'permiso.tipoPermiso']);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Plan de recuperación creado exitosamente',
-                'plan' => $plan->load(['permiso.docente', 'permiso.tipoPermiso'])
+                'plan' => [
+                    'id_plan' => $plan->id_plan,
+                    'id_permiso' => $plan->id_permiso,
+                    'fecha_presentacion' => $plan->fecha_presentacion,
+                    'total_horas_recuperar' => $plan->total_horas_recuperar,
+                    'estado_plan' => $plan->estado_plan,
+                    'observacion' => $plan->observacion,
+                    'tipo_permiso' => $plan->permiso->tipoPermiso->nombre,
+                    'docente_nombre' => $plan->permiso->docente->user->name,
+                    'docente_apellido' => $plan->permiso->docente->user->last_name,
+                ]
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

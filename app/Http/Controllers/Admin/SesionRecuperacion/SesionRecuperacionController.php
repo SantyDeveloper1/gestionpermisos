@@ -106,6 +106,18 @@ class SesionRecuperacionController extends Controller
                 'estado_sesion.in' => 'El estado de sesión seleccionado no es válido.'
             ]);
 
+            // Obtener el plan de recuperación y su permiso asociado para validar la fecha
+            $plan = PlanRecuperacion::with('permiso')->findOrFail($validated['id_plan_recuperacion']);
+
+            // Validar que la fecha de sesión no sea anterior a la fecha fin del permiso
+            if ($validated['fecha_sesion'] < $plan->permiso->fecha_fin) {
+                $fechaFinFormateada = date('d/m/Y', strtotime($plan->permiso->fecha_fin));
+                return response()->json([
+                    'success' => false,
+                    'message' => "La fecha de sesión no puede ser anterior a la fecha fin del permiso ({$fechaFinFormateada}). Las sesiones de recuperación deben programarse después de que finalice el período del permiso."
+                ], 422);
+            }
+
             // Generar ID único para la sesión (SES-YYYY-XXXX)
             $year = date('Y');
             $lastSesion = SesionRecuperacion::where('id_sesion', 'like', "SES-{$year}-%")
@@ -138,7 +150,7 @@ class SesionRecuperacionController extends Controller
             ]);
 
             // Cargar relaciones necesarias
-            $sesion->load(['planRecuperacion.permiso.docente']);
+            $sesion->load(['planRecuperacion.permiso.docente.user']);
 
             return response()->json([
                 'success' => true,
@@ -158,8 +170,8 @@ class SesionRecuperacionController extends Controller
                     'estado_sesion' => $sesion->estado_sesion,
                     'created_at' => $sesion->created_at->toISOString(),
                     'plan_horas_totales' => $sesion->planRecuperacion->total_horas_recuperar,
-                    'docente_apellidos' => $sesion->planRecuperacion->permiso->docente->appDocente . ' ' . $sesion->planRecuperacion->permiso->docente->apmDocente,
-                    'docente_nombres' => $sesion->planRecuperacion->permiso->docente->nombres,
+                    'docente_apellidos' => $sesion->planRecuperacion->permiso->docente->user->last_name,
+                    'docente_nombres' => $sesion->planRecuperacion->permiso->docente->user->name,
                 ]
             ]);
 
@@ -221,6 +233,18 @@ class SesionRecuperacionController extends Controller
                 'horas_recuperadas' => 'required|numeric|min:0.5|max:8',
                 'estado_sesion' => 'required|in:PROGRAMADA,REALIZADA,VALIDADA'
             ]);
+
+            // Cargar el plan y permiso asociado para validar la fecha
+            $sesion->load('planRecuperacion.permiso');
+
+            // Validar que la fecha de sesión no sea anterior a la fecha fin del permiso
+            if ($validated['fecha_sesion'] < $sesion->planRecuperacion->permiso->fecha_fin) {
+                $fechaFinFormateada = date('d/m/Y', strtotime($sesion->planRecuperacion->permiso->fecha_fin));
+                return response()->json([
+                    'success' => false,
+                    'message' => "La fecha de sesión no puede ser anterior a la fecha fin del permiso ({$fechaFinFormateada}). Las sesiones de recuperación deben programarse después de que finalice el período del permiso."
+                ], 422);
+            }
 
             $sesion->update($validated);
 

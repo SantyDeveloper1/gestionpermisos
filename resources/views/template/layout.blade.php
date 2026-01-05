@@ -394,16 +394,6 @@
 										<p>Lista de Docentes</p>
 									</a>
 								</li>
-
-								<!-- Registrar Docente -->
-								<li class="nav-item">
-									<a href="{{ url('admin/docente/insert') }}"
-										class="nav-link {{ request()->is('admin/docente/insert') ? 'active' : '' }}">
-										<i class="fas fa-user-plus nav-icon"></i>
-										<p>Registrar Docente</p>
-									</a>
-								</li>
-
 								<!-- Grados Académicos -->
 								<li class="nav-item">
 									<a href="{{ url('admin/docente/grados-academicos/insert') }}"

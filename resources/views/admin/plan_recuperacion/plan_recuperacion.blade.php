@@ -273,44 +273,93 @@
 
         .action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: flex-start;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-icon:hover::before {
+            width: 100px;
+            height: 100px;
         }
 
         .btn-icon:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-icon:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-icon i {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-view {
-            background: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        }
+
+        .btn-view:hover {
+            background: linear-gradient(135deg, #007acc 0%, #0092d8 100%);
         }
 
         .btn-edit {
-            background: var(--warning-orange);
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #ffeaa7 100%);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #f0b95e 0%, #fdd97a 100%);
         }
 
         .btn-approve {
-            background: var(--success-green);
+            background: linear-gradient(135deg, var(--success-green) 0%, #55efc4 100%);
+        }
+
+        .btn-approve:hover {
+            background: linear-gradient(135deg, #00a884 0%, #45dfb4 100%);
         }
 
         .btn-delete {
-            background: var(--danger-red);
+            background: linear-gradient(135deg, var(--danger-red) 0%, #fab1a0 100%);
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #d16045 0%, #f0a190 100%);
         }
 
         .modal-modern {
@@ -669,12 +718,9 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
-                                            <div>
-                                                <strong style="color: var(--primary-blue);">Permiso
-                                                    #{{ $plan->permiso->id_permiso }}</strong><br>
-                                                <small
-                                                    style="color: var(--medium-gray);">{{ $plan->permiso->tipoPermiso->nombre }}</small>
-                                            </div>
+                                        <div style="color: var(--dark-gray);">
+                                           {{ $plan->permiso->tipoPermiso->nombre }}
+                                        </div>
                                         </td>
                                         <td>
                                             <div>
@@ -683,7 +729,7 @@
                                         </td>
                                         <td>
                                             <div class="text-center">
-                                                <span style="font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">
+                                                <span style="color: var(--dark-gray);">
                                                     {{ $plan->total_horas_recuperar }}
                                                 </span><br>
                                                 <small style="color: var(--medium-gray);">horas</small>
@@ -691,7 +737,7 @@
                                         </td>
                                         <td>
                                             <div class="text-center">
-                                                <span style="font-weight: 600; color: var(--dark-gray);">
+                                                <span style="color: var(--dark-gray);">
                                                     {{ date('d/m/Y', strtotime($plan->fecha_presentacion)) }}
                                                 </span>
                                             </div>
