@@ -347,104 +347,9 @@
 								</li>
 							</ul>
 						</li>
-						{{-- ASIGNATURA --}}
-						<li class="nav-item {{ request()->is('admin/usuarios*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/usuarios*') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-book"></i>
-								<p>
-									Asignar Roles
-									<i class="right fas fa-angle-left"></i>
-								</p>
-							</a>
-
-							<ul class="nav nav-treeview">
-								<li class="nav-item">
-									<a href="{{ url('admin/usuarios') }}"
-										class="nav-link {{ request()->is('admin/usuarios') ? 'active' : '' }}">
-										<i class="nav-icon fas fa-list"></i>
-										<p>Lista de usuarios</p>
-									</a>
-								</li>
-								<li class="nav-item">
-									<a href="{{ url('admin/usuarios/asignar_roles') }}"
-										class="nav-link {{ request()->is('admin/usuarios/asignar_roles') ? 'active' : '' }}">
-										<i class="nav-icon fas fa-plus-circle"></i>
-										<p>Asignar Roles</p>
-									</a>
-								</li>
-							</ul>
-						</li>
-						
-						<li class="nav-item {{ request()->is('admin/docente*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/docente*') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-user-tie"></i>
-								<p>
-									Gestión de Docentes
-									<i class="right fas fa-angle-left"></i>
-								</p>
-							</a>
-
-							<ul class="nav nav-treeview">
-
-								<!-- Lista de Docentes -->
-								<li class="nav-item">
-									<a href="{{ url('admin/docente') }}"
-										class="nav-link {{ request()->is('admin/docente') ? 'active' : '' }}">
-										<i class="fas fa-id-badge nav-icon"></i>
-										<p>Lista de Docentes</p>
-									</a>
-								</li>
-								<!-- Grados Académicos -->
-								<li class="nav-item">
-									<a href="{{ url('admin/docente/grados-academicos/insert') }}"
-										class="nav-link {{ request()->is('admin/docente/grados-academicos*') ? 'active' : '' }}">
-										<i class="fas fa-graduation-cap nav-icon"></i>
-										<p>Grados Académicos</p>
-									</a>
-								</li>
-
-								<!-- Categorías Docente -->
-								<li class="nav-item">
-									<a href="{{ url('admin/docente/categoria-docente/insert') }}"
-										class="nav-link {{ request()->is('admin/docente/categoria-docente/insert*') ? 'active' : '' }}">
-										<i class="fas fa-layer-group nav-icon"></i>
-										<p>Categorías Docente</p>
-									</a>
-								</li>
-
-								<!-- Tipos de Contrato Docente -->
-								<li class="nav-item">
-									<a href="{{ url('admin/docente/tipo_contrato/insert') }}"
-										class="nav-link {{ request()->is('admin/docente/tipo_contrato/insert*') ? 'active' : '' }}">
-										<i class="fas fa-file-contract nav-icon"></i>
-										<p>Tipos de Contrato</p>
-									</a>
-								</li>
-							</ul>
-						</li>
-						{{-- TIPO PERMISO --}}
-						<li class="nav-item {{ request()->is('admin/tipo_permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-tags"></i>
-								<p>
-									Tipo Permiso
-									<i class="right fas fa-angle-left"></i>
-								</p>
-							</a>
-
-							<ul class="nav nav-treeview">
-								<li class="nav-item">
-									<a href="{{ url('admin/tipo_permiso') }}"
-										class="nav-link {{ request()->is('admin/tipo_permiso') ? 'active' : '' }}">
-										<i class="nav-icon fas fa-list"></i>
-										<p>Tipo Permiso</p>
-									</a>
-								</li>
-							</ul>
-						</li>
 						{{-- PERMISO --}}
-						<li class="nav-item {{ request()->is('admin/permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/permiso*') ? 'active' : '' }}">
+						<li class="nav-item {{ request()->is('docente/permiso*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('docente/permiso*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-signature"></i>
 								<p>
 									Permiso
@@ -454,8 +359,8 @@
 
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
-									<a href="{{ url('admin/permiso') }}"
-										class="nav-link {{ request()->is('admin/permiso') ? 'active' : '' }}">
+									<a href="{{ url('docente/permiso') }}"
+										class="nav-link {{ request()->is('docente/permiso') ? 'active' : '' }}">
 										<i class="nav-icon fas fa-list"></i>
 										<p>Permiso</p>
 									</a>
@@ -463,8 +368,8 @@
 							</ul>
 						</li>
 						{{-- PLAN DE RECUPERACIÓN --}}
-						<li class="nav-item {{ request()->is('admin/plan_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/plan_recuperacion*') ? 'active' : '' }}">
+						<li class="nav-item {{ request()->is('docente/plan_recuperacion*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('docente/plan_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-clipboard-list"></i>
 								<p>
 									Plan de Recuperación
@@ -474,8 +379,8 @@
 
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
-									<a href="{{ url('admin/plan_recuperacion') }}"
-										class="nav-link {{ request()->is('admin/plan_recuperacion') ? 'active' : '' }}">
+									<a href="{{ url('docente/plan_recuperacion') }}"
+										class="nav-link {{ request()->is('docente/plan_recuperacion*') ? 'active' : '' }}">
 										<i class="nav-icon fas fa-list"></i>
 										<p>Plan de Recuperación</p>
 									</a>
@@ -483,8 +388,8 @@
 							</ul>
 						</li>
 						{{-- SESIÓN DE RECUPERACIÓN --}}
-						<li class="nav-item {{ request()->is('admin/sesion_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/sesion_recuperacion*') ? 'active' : '' }}">
+						<li class="nav-item {{ request()->is('docente/sesion_recuperacion*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('docente/sesion_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-calendar-check"></i>
 								<p>
 									Sesión de Recuperación
@@ -494,10 +399,30 @@
 
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
-									<a href="{{ url('admin/sesion_recuperacion') }}"
-										class="nav-link {{ request()->is('admin/sesion_recuperacion') ? 'active' : '' }}">
+									<a href="{{ url('docente/sesion_recuperacion') }}"
+										class="nav-link {{ request()->is('docente/sesion_recuperacion') ? 'active' : '' }}">
 										<i class="nav-icon fas fa-list"></i>
 										<p>Sesión de Recuperación</p>
+									</a>
+								</li>
+							</ul>
+						</li>
+						{{-- EVIDENCIA DE RECUPERACIÓN --}}
+						<li class="nav-item {{ request()->is('docente/evidencia_recuperacion*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('docente/evidencia_recuperacion*') ? 'active' : '' }}">
+								<i class="nav-icon fas fa-file-upload"></i>
+								<p>
+									Evidencia de Recuperación
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="{{ url('docente/evidencia_recuperacion') }}"
+										class="nav-link {{ request()->is('docente/evidencia_recuperacion') ? 'active' : '' }}">
+										<i class="nav-icon fas fa-list"></i>
+										<p>Evidencia de Recuperación</p>
 									</a>
 								</li>
 							</ul>

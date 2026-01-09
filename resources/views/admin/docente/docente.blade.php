@@ -1,4 +1,4 @@
-@extends('template.layout')
+@extends('admin.template.layout')
 @section('titleGeneral', 'Lista de Docentes')
 @section('sectionGeneral')
 
@@ -59,7 +59,6 @@
                                         <th class="none">Correo</th>
                                         <th class="none">Teléfono</th>
                                         <th>Grado Académico</th>
-                                        <th>Categoría</th>
                                         <th class="none">Condición</th>
                                         <th>Estado</th>
                                         <th class="none">Registrado</th>
@@ -94,9 +93,6 @@
                                         </td>
                                         <td>
                                             <span class="badge badge-primary">{{ $doc->grado->nombre ?? 'N/A' }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-info">{{ $doc->categoria->nombre ?? 'N/A' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge badge-warning">{{ $doc->contrato->nombre ?? 'N/A' }}</span>
@@ -191,7 +187,7 @@
                                 <input type="text" class="form-control" name="codigo_unamba" placeholder="Opcional">
                             </div>
 
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Grado Académico</label>
                                 <select class="form-control" name="grado_id" required>
                                     <option disabled selected>Seleccione...</option>
@@ -203,19 +199,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 form-group">
-                                <label>Categoría Docente</label>
-                                <select class="form-control" name="categoria_id" required>
-                                    <option disabled selected>Seleccione...</option>
-                                    @foreach ($listCategorias as $cat)
-                                        <option value="{{ $cat->idCategori_docente }}">
-                                            {{ $cat->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Tipo de Contrato</label>
                                 <select class="form-control" name="tipo_contrato_id" required>
                                     <option disabled selected>Seleccione...</option>
@@ -302,18 +286,6 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 form-group">
-                                <label>Categoría Docente</label>
-                                <select class="form-control" id="txtCategoria" name="categoria_id">
-                                    <option value="">Seleccione...</option>
-                                    @foreach ($listCategorias as $cat)
-                                        <option value="{{ $cat->idCategori_docente }}">
-                                            {{ $cat->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             <div class="col-md-6 form-group">
                                 <label>Tipo de Contrato</label>
                                 <select class="form-control" id="txtCondicion" name="tipo_contrato_id">

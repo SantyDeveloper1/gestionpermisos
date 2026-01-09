@@ -520,20 +520,62 @@
                                 </div>
                             </div>
                         </div>
+                        @if($semestreActual)
+                        <div class="row">
+                            <!-- Semestre Académico Actual (solo lectura) -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Semestre Académico:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text input-group-text-custom">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control form-control-custom" 
+                                           value="{{ $semestreActual->codigo_Academico }} ({{ $semestreActual->anio_academico }})" 
+                                           readonly>
+                                    <input type="hidden" name="id_semestre_academico" value="{{ $semestreActual->IdSemestreAcademico }}">
+                                </div>
+                            </div>
+
+                            <!-- Documento de sustento -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Documento de Sustento: <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text input-group-text-custom">
+                                            <i class="fas fa-file-upload"></i>
+                                        </span>
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" name="documento_sustento" class="custom-file-input" 
+                                               id="documentoSustento" required>
+                                        <label class="custom-file-label" for="documentoSustento">Seleccionar archivo...</label>
+                                    </div>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Formatos permitidos: PDF, DOC, DOCX (Máx. 5MB)
+                                </small>
+                            </div>
+                        </div>
+                        @else
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> 
+                                    No hay un semestre académico activo. Por favor, active un semestre antes de registrar permisos.
+                                </div>
+                            </div>
+                        </div>
+                        @endif
 
                         <div class="row">
                             <!-- Motivo -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label class="form-label">Motivo: <span class="text-danger">*</span></label>
                                 <textarea name="motivo" class="form-control form-control-custom" rows="3"
                                     placeholder="Describa el motivo del permiso..." required></textarea>
-                            </div>
-
-                            <!-- Observación -->
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Observación:</label>
-                                <textarea name="observacion" class="form-control form-control-custom" rows="3"
-                                    placeholder="Observaciones adicionales..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -591,7 +633,7 @@
                         <div class="col-md-6">
                             <small class="label">Tipo de Permiso</small>
                             <p class="value">
-                                ✈️ <span id="viewTipoPermiso">Comisión de Servicio</span>
+                                <span id="viewTipoPermiso">Comisión de Servicio</span>
                             </p>
 
                             <small class="label">Fecha Inicio</small>
@@ -709,50 +751,61 @@
 
 </style>
 
-    <!-- MODAL EDITAR PERMISO -->
+    <!-- MODAL EDITAR ESTADO PERMISO -->
     <div class="modal fade" id="editPermisoModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-gradient">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content shadow-lg border-0">
+
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
-                        <i class="fas fa-edit mr-2"></i> Editar Permiso
+                        <i class="fas fa-edit mr-2"></i> Editar Estado Permiso
                     </h5>
                     <button type="button" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
+
                 <form id="frmPermisoEdit" onsubmit="event.preventDefault(); updatePermiso();">
                     @csrf
                     <input type="hidden" id="editIdPermiso" name="id_permiso">
 
-                    <div class="modal-body p-4">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Estado: <span class="text-danger">*</span></label>
-                                <select name="estado_permiso" class="form-control form-control-custom"
-                                    id="editEstadoPermiso" required>
-                                    <option value="SOLICITADO">SOLICITADO</option>
-                                    <option value="APROBADO">APROBADO</option>
-                                    <option value="RECHAZADO">RECHAZADO</option>
-                                    <option value="EN_RECUPERACION">EN_RECUPERACION</option>
-                                    <option value="RECUPERADO">RECUPERADO</option>
-                                    <option value="CERRADO">CERRADO</option>
+                    <div class="modal-body">
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+
+                                <label class="font-weight-bold">Estado del Permiso</label>
+
+                                <select name="estado_permiso" id="editEstadoPermiso"
+                                    class="form-control custom-select" required>
+                                    <option value="SOLICITADO">🟡 SOLICITADO</option>
+                                    <option value="APROBADO">🟢 APROBADO</option>
+                                    <option value="RECHAZADO">🔴 RECHAZADO</option>
+                                    <option value="EN_RECUPERACION">🔵 EN RECUPERACIÓN</option>
+                                    <option value="RECUPERADO">🟣 RECUPERADO</option>
+                                    <option value="CERRADO">⚫ CERRADO</option>
                                 </select>
+
                             </div>
                         </div>
+
                     </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             <i class="fas fa-times mr-2"></i> Cancelar
                         </button>
-                        <button type="submit" class="btn btn-primary-custom">
-                            <i class="fas fa-save mr-2"></i> Guardar Cambios
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i> Guardar cambios
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
+
 
 @endsection
 
@@ -761,4 +814,14 @@
     <script src="{{ asset('viewresources/admin/permiso/detalle.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/permiso/update.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/permiso/delete.js?v=' . time()) }}"></script>
+    
+    <script>
+        // Actualizar label del input file cuando se selecciona un archivo
+        $(document).ready(function() {
+            $('.custom-file-input').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).siblings('.custom-file-label').addClass("selected").html(fileName);
+            });
+        });
+    </script>
 @endsection

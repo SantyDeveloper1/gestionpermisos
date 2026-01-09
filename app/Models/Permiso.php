@@ -19,6 +19,7 @@ class Permiso extends Model
         'id_permiso',
         'id_docente',
         'id_tipo_permiso',
+        'id_semestre_academico',
         'fecha_inicio',
         'fecha_fin',
         'dias_permiso',
@@ -26,6 +27,7 @@ class Permiso extends Model
         'estado_permiso',
         'motivo',
         'observacion',
+        'documento_sustento',
         'fecha_solicitud',
         'fecha_resolucion'
     ];
@@ -54,6 +56,14 @@ class Permiso extends Model
     public function tipoPermiso()
     {
         return $this->belongsTo(TipoPermiso::class, 'id_tipo_permiso', 'id_tipo_permiso');
+    }
+
+    /**
+     * Relación: Permiso pertenece a un Semestre Académico
+     */
+    public function semestreAcademico()
+    {
+        return $this->belongsTo(SemestreAcademico::class, 'id_semestre_academico', 'IdSemestreAcademico');
     }
 
     /**

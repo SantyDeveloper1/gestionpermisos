@@ -1,4 +1,4 @@
-@extends('template.layout')
+@extends('docente.template.layout')
 @section('titleGeneral', 'Página principal...')
 @section('sectionGeneral')
     <h1>📚 Panel del Docente</h1>

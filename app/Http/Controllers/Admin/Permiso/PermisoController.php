@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Docente;
 use App\Models\TipoPermiso;
 use App\Models\Permiso;
+use App\Models\SemestreAcademico;
 
 class PermisoController extends Controller
 {
@@ -27,7 +28,10 @@ class PermisoController extends Controller
             ->orderBy('fecha_solicitud', 'desc')
             ->get();
 
-        return view('admin/permiso/permiso', compact('docentes', 'tipoPermisos', 'listPermisos'));
+        // Obtener el semestre académico actual
+        $semestreActual = SemestreAcademico::where('EsActualAcademico', 1)->first();
+
+        return view('admin/permiso/permiso', compact('docentes', 'tipoPermisos', 'listPermisos', 'semestreActual'));
     }
 
     public function actionInsert()
@@ -37,18 +41,21 @@ class PermisoController extends Controller
             $validated = request()->validate([
                 'id_docente' => 'required|exists:docentes,idDocente',
                 'id_tipo_permiso' => 'required|exists:tipo_permiso,id_tipo_permiso',
+                'id_semestre_academico' => 'required|exists:semestre_academico,IdSemestreAcademico',
                 'fecha_inicio' => 'required|date',
                 'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
                 'dias_permiso' => 'required|integer|min:1',
                 'horas_afectadas' => 'required|numeric|min:0',
                 'fecha_solicitud' => 'required|date',
                 'motivo' => 'required|string|min:10',
-                'observacion' => 'nullable|string'
+                'documento_sustento' => 'required|file|mimes:pdf,doc,docx|max:5120' // 5MB máximo
             ], [
                 'id_docente.required' => 'Debe seleccionar un docente.',
                 'id_docente.exists' => 'El docente seleccionado no existe.',
                 'id_tipo_permiso.required' => 'Debe seleccionar un tipo de permiso.',
                 'id_tipo_permiso.exists' => 'El tipo de permiso seleccionado no existe.',
+                'id_semestre_academico.required' => 'El semestre académico es requerido.',
+                'id_semestre_academico.exists' => 'El semestre académico seleccionado no existe.',
                 'fecha_inicio.required' => 'La fecha de inicio es requerida.',
                 'fecha_fin.required' => 'La fecha de fin es requerida.',
                 'fecha_fin.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la fecha de inicio.',
@@ -58,8 +65,31 @@ class PermisoController extends Controller
                 'horas_afectadas.min' => 'Las horas afectadas deben ser 0 o más.',
                 'fecha_solicitud.required' => 'La fecha de solicitud es requerida.',
                 'motivo.required' => 'El motivo es requerido.',
-                'motivo.min' => 'El motivo debe tener al menos 10 caracteres.'
+                'motivo.min' => 'El motivo debe tener al menos 10 caracteres.',
+                'documento_sustento.required' => 'El documento de sustento es requerido.',
+                'documento_sustento.file' => 'Debe subir un archivo válido.',
+                'documento_sustento.mimes' => 'El documento debe ser PDF, DOC o DOCX.',
+                'documento_sustento.max' => 'El documento no debe superar los 5MB.'
             ]);
+
+            // Manejar la subida del archivo
+            $documentoPath = null;
+            if (request()->hasFile('documento_sustento')) {
+                $file = request()->file('documento_sustento');
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Crear directorio si no existe
+                $destinationPath = public_path('storage/permisos/documentos');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                // Mover el archivo
+                $file->move($destinationPath, $fileName);
+
+                // Guardar la ruta relativa para la base de datos
+                $documentoPath = 'storage/permisos/documentos/' . $fileName;
+            }
 
             // Generar ID único para el permiso (formato: PER-YYYY-####)
             $year = date('Y');
@@ -76,6 +106,7 @@ class PermisoController extends Controller
 
             $validated['id_permiso'] = "PER-{$year}-{$newNumber}";
             $validated['estado_permiso'] = 'SOLICITADO'; // Estado inicial
+            $validated['documento_sustento'] = $documentoPath; // Guardar la ruta del archivo
 
             // Crear el permiso
             $permiso = Permiso::create($validated);
@@ -96,7 +127,7 @@ class PermisoController extends Controller
                     'fecha_solicitud' => $permiso->fecha_solicitud,
                     'fecha_resolucion' => $permiso->fecha_resolucion,
                     'motivo' => $permiso->motivo,
-                    'observacion' => $permiso->observacion,
+                    'documento_sustento' => $permiso->documento_sustento,
                     'docente' => [
                         'idDocente' => $permiso->docente->idDocente,
                         'nombres' => $permiso->docente->user->name,
@@ -107,7 +138,8 @@ class PermisoController extends Controller
                         'id_tipo_permiso' => $permiso->tipoPermiso->id_tipo_permiso,
                         'nombre' => $permiso->tipoPermiso->nombre,
                         'requiere_recupero' => $permiso->tipoPermiso->requiere_recupero
-                    ]
+                    ],
+                    'plan_recuperacion' => null // Nuevos permisos no tienen plan aún
                 ]
             ]);
 

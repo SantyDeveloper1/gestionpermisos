@@ -5,12 +5,12 @@ $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
 });
 
-// Función global para ELIMINAR una categoría docente
-window.deleteCategoria = function(idCategoria) {
+// Función global para ELIMINAR un semestre académico
+window.deleteSemestre = function(idSemestre) {
 
     swal({
         title: 'Confirmar eliminación',
-        text: '¿Realmente desea eliminar esta categoría docente?',
+        text: '¿Realmente desea eliminar este semestre académico?',
         icon: 'warning',
         buttons: ['No, cancelar', 'Sí, eliminar'],
         dangerMode: true
@@ -19,11 +19,11 @@ window.deleteCategoria = function(idCategoria) {
         if (!willDelete) return;
 
         // Deshabilitar botón mientras se procesa
-        const $btn = $(`#categoriaRow${idCategoria} .btn-danger`);
+        const $btn = $(`#semRow${idSemestre} .btn-danger`);
         $btn.prop('disabled', true);
 
         $.ajax({
-            url: `${_urlBase}/admin/docente/categoria-docente/delete/${idCategoria}`, // NUEVA RUTA
+            url: `${_urlBase}/admin/academico/semestre_academico/delete/${idSemestre}`,
             type: 'DELETE',
             success: function(response) {
 
@@ -31,7 +31,7 @@ window.deleteCategoria = function(idCategoria) {
 
                     // Eliminar fila del DataTable
                     const tabla = $("#tablaExample2").DataTable();
-                    tabla.row($(`#categoriaRow${idCategoria}`)).remove().draw(false);
+                    tabla.row($(`#semRow${idSemestre}`)).remove().draw(false);
 
                     // Reenumerar filas
                     tabla.rows().every(function(rowIdx) {
@@ -39,10 +39,10 @@ window.deleteCategoria = function(idCategoria) {
                         if (cell) cell.innerText = rowIdx + 1;
                     });
 
-                    swal('Eliminado', 'La categoría docente fue eliminada correctamente.', 'success');
+                    swal('Eliminado', 'El semestre académico fue eliminado correctamente.', 'success');
 
                 } else {
-                    swal('Error', response.message || 'No se pudo eliminar la categoría docente.', 'error');
+                    swal('Error', response.message || 'No se pudo eliminar el semestre académico.', 'error');
                 }
             },
             error: function(xhr) {

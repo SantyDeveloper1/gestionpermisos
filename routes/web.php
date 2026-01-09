@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Ciclo;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -9,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Admin\Usuarios\UsuarioController;
 use App\Http\Controllers\Admin\Docente\TipoContratoController;
-use App\Http\Controllers\Admin\Docente\CategoriaDocenteController;
 use App\Http\Controllers\Admin\Docente\GradosAcademicosController;
 use App\Http\Controllers\Admin\Docente\DocenteController;
 use App\Http\Controllers\Admin\TipoPermisoController\TipoPermisoController;
@@ -17,6 +17,14 @@ use App\Http\Controllers\Admin\Permiso\PermisoController;
 use App\Http\Controllers\Admin\PlanRecuperacion\PlanRecuperacionController;
 use App\Http\Controllers\Admin\SesionRecuperacion\SesionRecuperacionController;
 use App\Http\Controllers\Admin\EvidenciaRecuperacion\EvidenciaRecuperacionController;
+use App\Http\Controllers\Admin\Academico\CicloController;
+use App\Http\Controllers\Admin\Academico\AsignaturaController;
+use App\Http\Controllers\Admin\Academico\SemestreAcademicoController;
+
+use App\Http\Controllers\Docente\Permiso\PermisoController as DocentePermisoController;
+use App\Http\Controllers\Docente\SesionRecuperacion\SesionRecuperacionController as DocenteSesionRecuperacionController;
+use App\Http\Controllers\Docente\PlanRecuperacion\PlanRecuperacionController as DocentePlanRecuperacionController;
+use App\Http\Controllers\Docente\EvidenciaRecuperacion\EvidenciaRecuperacionController as DocenteEvidenciaRecuperacionController;
 use Illuminate\Support\Facades\Hash;
 
 Route::match(['get', 'post'], '/login', [LoginController::class, 'actionLogin'])
@@ -69,10 +77,6 @@ Route::middleware('auth')->group(function () {
             Route::post('docente/update/{idDocente}', [DocenteController::class, 'actionUpdate']);
             Route::put('docente/estado/{idDocente}', [DocenteController::class, 'actionEstado']);
             Route::delete('docente/delete/{idDocente}', [DocenteController::class, 'actionDelete']);
-            // CATEGORÍA DOCENTE
-            Route::match(['get', 'post'], 'docente/categoria-docente/insert', [CategoriaDocenteController::class, 'actionInsert']);
-            Route::post('docente/categoria-docente/update/{idCategori_docente}', [CategoriaDocenteController::class, 'actionUpdate']);
-            Route::delete('docente/categoria-docente/delete/{idCategori_docente}', [CategoriaDocenteController::class, 'actionDelete']);
 
             // TIPO DE CONTRATO
             Route::match(['get', 'post'], 'docente/tipo_contrato/insert', [TipoContratoController::class, 'actionInsert']);
@@ -99,6 +103,7 @@ Route::middleware('auth')->group(function () {
 
             // PLAN DE RECUPERACIÓN
             Route::get('plan_recuperacion', [PlanRecuperacionController::class, 'actionPlanRecuperacion']);
+            Route::get('plan_recuperacion/progreso/{idPermiso}', [PlanRecuperacionController::class, 'actionProgreso']);
             Route::get('plan_recuperacion/{id}', [PlanRecuperacionController::class, 'actionShow']);
             Route::match(['get', 'post'], 'plan_recuperacion/insert', [PlanRecuperacionController::class, 'actionInsert']);
             Route::post('plan_recuperacion/update/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionUpdate']);
@@ -111,6 +116,7 @@ Route::middleware('auth')->group(function () {
             Route::get('sesion_recuperacion/{id}', [SesionRecuperacionController::class, 'actionShow']);
             Route::match(['get', 'post'], 'sesion_recuperacion/insert', [SesionRecuperacionController::class, 'actionInsert']);
             Route::post('sesion_recuperacion/update/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionUpdate']);
+            Route::post('sesion_recuperacion/update-estado/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionUpdateEstado']);
             Route::delete('sesion_recuperacion/delete/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionDelete']);
 
             // EVIDENCIA DE RECUPERACION
@@ -121,18 +127,70 @@ Route::middleware('auth')->group(function () {
             Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [EvidenciaRecuperacionController::class, 'actionUpdate']);
             Route::delete('evidencia_recuperacion/delete/{idEvidencia_recuperacion}', [EvidenciaRecuperacionController::class, 'actionDelete']);
 
+            // CICLO
+            Route::match(['get', 'post'], 'academico/ciclo/getall', [CicloController::class, 'actionGetall']);
+            Route::post('academico/ciclo/update/{idCiclo}', [CicloController::class, 'actionUpdate']);
+            Route::delete('academico/ciclo/delete/{idCiclo}', [CicloController::class, 'actionDelete']);
+
+            // ASIGNATURA
+            Route::match(['get', 'post'], 'academico/asignatura', [AsignaturaController::class, 'actionIndex']);
+            Route::match(['get', 'post'], 'academico/asignatura/insert', [AsignaturaController::class, 'actionInsert']);
+            Route::post('academico/asignatura/update/{idAsignatura}', [AsignaturaController::class, 'actionUpdate']);
+            Route::put('academico/asignatura/estado/{idAsignatura}', [AsignaturaController::class, 'actionEstado']);
+            Route::delete('academico/asignatura/delete/{idAsignatura}', [AsignaturaController::class, 'actionDelete']);
+            Route::get('asignatura/buscar', [AsignaturaController::class, 'actionBuscar']);
+
+            // SEMESTRE ACADEMICO
+            Route::match(['get', 'post'], 'academico/semestre_academico/getall', [SemestreAcademicoController::class, 'actionGetall']);
+            Route::post('academico/semestre_academico/update/{idSemestreAcademico}', [SemestreAcademicoController::class, 'actionUpdate']);
+            Route::delete('academico/semestre_academico/delete/{idSemestreAcademico}', [SemestreAcademicoController::class, 'actionDelete']);
+            Route::post('academico/semestre_academico/cambiar_estado', [SemestreAcademicoController::class, 'cambiarEstado']);
+            Route::post('academico/semestre_academico/marcar_actual', [SemestreAcademicoController::class, 'marcarComoActual']);
 
         });
 
 
     // ================= DOCENTE =================
-    Route::middleware('role:docente')->group(function () {
+    Route::middleware('role:docente')
+        ->prefix('docente')
+        ->group(function () {
 
-        Route::get('/docente', function () {
-            return view('docente.index');
+            Route::get('/', function () {
+                return view('docente.index');
+            });
+
+            // PERMISO
+            Route::get('permiso', [DocentePermisoController::class, 'actionPermiso']);
+            Route::get('permiso/{id}', [DocentePermisoController::class, 'actionShow']);
+            Route::match(['get', 'post'], 'permiso/insert', [DocentePermisoController::class, 'actionInsert']);
+            Route::post('permiso/update/{idPermiso}', [DocentePermisoController::class, 'actionUpdate']);
+            Route::delete('permiso/delete/{idPermiso}', [DocentePermisoController::class, 'actionDelete']);
+
+            // PLAN DE RECUPERACIÓN
+            Route::get('plan_recuperacion', [DocentePlanRecuperacionController::class, 'actionPlanRecuperacion']);
+            Route::get('plan_recuperacion/progreso/{idPermiso}', [DocentePlanRecuperacionController::class, 'actionProgreso']);
+            Route::get('plan_recuperacion/{id}', [DocentePlanRecuperacionController::class, 'actionShow']);
+            Route::match(['get', 'post'], 'plan_recuperacion/insert', [DocentePlanRecuperacionController::class, 'actionInsert']);
+            Route::post('plan_recuperacion/update/{idPlan_recuperacion}', [DocentePlanRecuperacionController::class, 'actionUpdate']);
+            Route::patch('plan_recuperacion/aprobar/{idPlan_recuperacion}', [DocentePlanRecuperacionController::class, 'actionAprobar']);
+            Route::delete('plan_recuperacion/delete/{idPlan_recuperacion}', [DocentePlanRecuperacionController::class, 'actionDelete']);
+
+            // SESION DE RECUPERACION
+            Route::get('sesion_recuperacion', [DocenteSesionRecuperacionController::class, 'actionSesionRecuperacion']);
+            Route::get('sesion_recuperacion/{id}', [DocenteSesionRecuperacionController::class, 'actionShow']);
+            Route::match(['get', 'post'], 'sesion_recuperacion/insert', [DocenteSesionRecuperacionController::class, 'actionInsert']);
+            Route::post('sesion_recuperacion/update/{idSesion_recuperacion}', [DocenteSesionRecuperacionController::class, 'actionUpdate']);
+            Route::post('sesion_recuperacion/update-estado/{idSesion_recuperacion}', [DocenteSesionRecuperacionController::class, 'actionUpdateEstado']);
+            Route::delete('sesion_recuperacion/delete/{idSesion_recuperacion}', [DocenteSesionRecuperacionController::class, 'actionDelete']);
+
+            // EVIDENCIA DE RECUPERACION
+            Route::get('evidencia_recuperacion', [DocenteEvidenciaRecuperacionController::class, 'actionEvidenciaRecuperacion']);
+            Route::get('evidencia_recuperacion/ver/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('evidencia.ver');
+            Route::get('evidencia_recuperacion/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionShow']);
+            Route::post('evidencia_recuperacion/insert', [DocenteEvidenciaRecuperacionController::class, 'actionInsert'])->name('evidencia.store');
+            Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [DocenteEvidenciaRecuperacionController::class, 'actionUpdate']);
+            Route::delete('evidencia_recuperacion/delete/{idEvidencia_recuperacion}', [DocenteEvidenciaRecuperacionController::class, 'actionDelete']);
         });
-
-    });
 });
 
 

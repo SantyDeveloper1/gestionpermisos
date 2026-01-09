@@ -31,14 +31,6 @@ $(() => {
                 }
             },
 
-            categoria_id: {
-                validators: {
-                    notEmpty: {
-                        message: '<b style="color:red;">Seleccione una categoría docente.</b>'
-                    }
-                }
-            },
-
             tipo_contrato_id: {
                 validators: {
                     notEmpty: {
@@ -181,7 +173,6 @@ function agregarFilaDocente(item) {
         item.correo,
         item.telefono,
         `<span class="badge badge-primary">${item.grado}</span>`,
-        `<span class="badge badge-info">${item.categoria}</span>`,
         `<span class="badge badge-warning">${item.condicion}</span>`,
         badgeEstado,
         item.fecha,

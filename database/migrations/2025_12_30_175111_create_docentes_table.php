@@ -15,14 +15,12 @@ return new class extends Migration {
                 ->onDelete('cascade');
             $table->string('codigo_unamba', 15)->unique()->nullable();
             $table->char('grado_id', 13);
-            $table->char('categoria_id', 13);
             $table->char('tipo_contrato_id', 13);
             $table->tinyInteger('estado')->default(1);
             $table->timestamps();
 
             // Foreign keys académicos
             $table->foreign('grado_id')->references('idGrados_academicos')->on('grados_academicos');
-            $table->foreign('categoria_id')->references('idCategori_docente')->on('categorias_docente');
             $table->foreign('tipo_contrato_id')->references('idTipo_contrato')->on('tipos_contrato');
         });
 

@@ -21,14 +21,12 @@ class SesionRecuperacion extends Model
     protected $fillable = [
         'id_sesion',
         'id_plan',
+        'idAsignatura',
         'fecha_sesion',
         'hora_inicio',
         'hora_fin',
-        'modalidad',
-        'tipo_sesion',
         'aula',
-        'asignatura',
-        'semestre',
+        'tema',
         'horas_recuperadas',
         'estado_sesion'
     ];
@@ -50,6 +48,18 @@ class SesionRecuperacion extends Model
             PlanRecuperacion::class,
             'id_plan',
             'id_plan'
+        );
+    }
+
+    /**
+     * Relación: una sesión pertenece a una asignatura
+     */
+    public function asignatura()
+    {
+        return $this->belongsTo(
+            Asignatura::class,
+            'idAsignatura',
+            'idAsignatura'
         );
     }
 }

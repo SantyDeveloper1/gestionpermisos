@@ -72,9 +72,6 @@ window.showEditDocente = function(idDocente) {
                 // Seleccionar grado académico
                 $('#txtGrado').val(docente.grado_id || '');
                 
-                // Seleccionar categoría
-                $('#txtCategoria').val(docente.categoria_id || '');
-                
                 // Seleccionar tipo de contrato
                 $('#txtCondicion').val(docente.tipo_contrato_id || '');
                 
@@ -117,7 +114,6 @@ function updateDocente() {
         correo: $('#txtCorreo').val().trim(),
         telefono: $('#txtTelefono').val().trim(),
         grado_id: $('#txtGrado').val(),
-        categoria_id: $('#txtCategoria').val(),
         tipo_contrato_id: $('#txtCondicion').val()
     };
 
@@ -227,6 +223,5 @@ function actualizarFilaTabla(idDocente, data) {
     row.find('td:eq(2)').text(data.nombre);
     row.find('td:eq(3)').text(data.correo);
     row.find('td:eq(4)').text(data.telefono);
-    row.find('td:eq(6)').html(`<span class="badge badge-info">${data.categoria}</span>`);
-    row.find('td:eq(7)').html(`<span class="badge badge-warning">${data.condicion}</span>`);
+    row.find('td:eq(5)').html(`<span class="badge badge-warning">${data.condicion}</span>`);
 }

@@ -18,7 +18,6 @@ class Docente extends Model
         'user_id',
         'codigo_unamba',
         'grado_id',
-        'categoria_id',
         'tipo_contrato_id',
         'estado',
     ];
@@ -34,10 +33,7 @@ class Docente extends Model
         return $this->belongsTo(GradoAcademico::class, 'grado_id', 'idGrados_academicos');
     }
 
-    public function categoria()
-    {
-        return $this->belongsTo(CategoriaDocente::class, 'categoria_id', 'idCategori_docente');
-    }
+
 
     public function contrato()
     {

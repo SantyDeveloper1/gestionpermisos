@@ -1,4 +1,4 @@
-@extends('template.layout')
+@extends('admin.template.layout')
 
 @section('titleGeneral', 'Gestión de Planes de Recuperación')
 
@@ -600,6 +600,126 @@
             border-left: 3px solid #e17055;
             border-radius: 4px;
         }
+
+        /* Estilos para el indicador de pasos */
+        .form-step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .form-step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--light-gray);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--medium-gray);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            border-color: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 139, 220, 0.3);
+            transform: scale(1.1);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .step.completed .step-circle {
+            background: var(--success-green);
+            border-color: var(--success-green);
+            color: white;
+        }
+
+        .step.completed .step-label {
+            color: var(--success-green);
+        }
+
+        /* Estilos para el contenido de los pasos */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos para el resumen de progreso */
+        .hours-display {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hours-display-large {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .hours-total {
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     </style>
 
     <section class="content">
@@ -772,8 +892,8 @@
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                                 @if($plan->estado_plan == 'PRESENTADO')
-                                                    <button class="btn-icon btn-approve" onclick="aprobarPlan('{{ $plan->id_plan }}')"
-                                                        title="Aprobar Plan">
+                                                    <button class="btn-icon btn-approve"
+                                                        onclick="aprobarPlan('{{ $plan->id_plan }}')" title="Aprobar Plan">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                 @endif
@@ -793,9 +913,47 @@
         </div>
     </section>
 
+<style>
+/* Más aire dentro del modal */
+.modal-modern .modal-body {
+    padding: 30px 35px !important;
+}
+
+/* Espaciado entre el borde curvo y títulos */
+.step-content {
+    padding: 25px 20px;
+}
+
+/* Paso 3 y 4: separación superior e inferior */
+#step3-content h4,
+#step4-content h4 {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+/* Contenedores internos */
+#validationResults,
+.session-card {
+    padding: 25px;
+    border-radius: 14px;
+}
+
+/* Evitar que toquen los lados del modal */
+#step3-content,
+#step4-content {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+/* Mejora de legibilidad general */
+.step-content p {
+    line-height: 1.5;
+}
+
+</style>
     <!-- MODAL NUEVO PLAN - DISEÑO MEJORADO -->
     <div class="modal fade" id="nuevoPlanModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content modal-modern">
                 <div class="modal-header modal-header-modern">
                     <h5 class="modal-title-modern">
@@ -809,139 +967,437 @@
                 <form id="frmPlanInsert" onsubmit="event.preventDefault(); sendFrmPlanInsert();">
                     @csrf
                     <div class="modal-body p-4">
-                        <!-- Paso 1: Selección de Permiso -->
-                        <div class="form-group-modern">
-                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                <i class="fas fa-file-contract mr-2"></i>
-                                Paso 1: Seleccionar Permiso
-                            </h6>
+                        <!-- Indicador de Pasos -->
+                        <div class="form-step-indicator mb-4">
+                            <div class="step active" id="stepIndicator1">
+                                <div class="step-circle">1</div>
+                                <div class="step-label">Plan</div>
+                            </div>
+                            <div class="step" id="stepIndicator2">
+                                <div class="step-circle">2</div>
+                                <div class="step-label">Sesión</div>
+                            </div>
+                            <div class="step" id="stepIndicator3">
+                                <div class="step-circle">3</div>
+                                <div class="step-label">Validación</div>
+                            </div>
+                            <div class="step" id="stepIndicator4">
+                                <div class="step-circle">4</div>
+                                <div class="step-label">Confirmación</div>
+                            </div>
+                        </div>
 
-                            {{-- Debug: Mostrar cantidad de permisos disponibles --}}
-                            @if($permisosRecuperables->count() == 0)
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    <strong>No hay permisos disponibles.</strong>
-                                    Para crear un plan de recuperación, primero debe haber permisos APROBADOS con horas
-                                    afectadas.
+                        <!-- Paso 1: Selección de Permiso y Configuración del Plan -->
+                        <div id="step1-content" class="step-content active">
+                            <div class="form-group-modern">
+                                <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
+                                    <i class="fas fa-file-contract mr-2"></i>
+                                    Paso 1: Seleccionar Permiso y Configurar Plan
+                                </h6>
+
+                                {{-- Debug: Mostrar cantidad de permisos disponibles --}}
+                                @if($permisosRecuperables->count() == 0)
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        <strong>No hay permisos disponibles.</strong>
+                                        Para crear un plan de recuperación, primero debe haber permisos APROBADOS con horas
+                                        afectadas.
+                                    </div>
+                                @else
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Se encontraron <strong>{{ $permisosRecuperables->count() }}</strong> permisos
+                                        disponibles
+                                        para recuperación.
+                                    </div>
+                                @endif
+
+                                <div class="permission-card">
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-search"></i>
+                                        <select name="id_permiso" class="form-control-modern select2" id="selectPermiso"
+                                            onchange="cargarHorasPermiso()">
+                                            <option value="">Buscar permiso por docente o código...</option>
+                                            @foreach($permisosRecuperables as $permiso)
+                                                <option value="{{ $permiso->id_permiso }}"
+                                                    data-horas="{{ $permiso->horas_afectadas }}"
+                                                    data-docente="{{ $permiso->docente->user->last_name }}, {{ $permiso->docente->user->name }}"
+                                                    data-tipo="{{ $permiso->tipoPermiso->nombre }}"
+                                                    data-periodo="{{ date('d/m/Y', strtotime($permiso->fecha_inicio)) }} - {{ date('d/m/Y', strtotime($permiso->fecha_fin)) }}"
+                                                    data-fecha-fin="{{ $permiso->fecha_fin }}">
+                                                    Permiso #{{ $permiso->id_permiso }} -
+                                                    {{ $permiso->docente->user->last_name }},
+                                                    {{ $permiso->docente->user->name }} -
+                                                    {{ $permiso->tipoPermiso->nombre }}
+                                                    ({{ $permiso->horas_afectadas }} horas)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                            @else
-                                <div class="alert alert-info mb-3">
+                            </div>
+
+                            <!-- Información del Permiso Seleccionado -->
+                            <div id="permisoInfo" class="permission-card" style="display: none;">
+                                <h6 style="color: var(--primary-blue); margin-bottom: 15px;">
                                     <i class="fas fa-info-circle mr-2"></i>
-                                    Se encontraron <strong>{{ $permisosRecuperables->count() }}</strong> permisos disponibles
-                                    para recuperación.
-                                </div>
-                            @endif
-
-                            <div class="permission-card">
-                                <div class="input-with-icon">
-                                    <i class="input-icon fas fa-search"></i>
-                                    <select name="id_permiso" class="form-control-modern select2" id="selectPermiso"
-                                        onchange="cargarHorasPermiso()">
-                                        <option value="">Buscar permiso por docente o código...</option>
-                                        @foreach($permisosRecuperables as $permiso)
-                                            <option value="{{ $permiso->id_permiso }}"
-                                                data-horas="{{ $permiso->horas_afectadas }}"
-                                                data-docente="{{ $permiso->docente->user->last_name }}, {{ $permiso->docente->user->name }}"
-                                                data-tipo="{{ $permiso->tipoPermiso->nombre }}"
-                                                data-periodo="{{ date('d/m/Y', strtotime($permiso->fecha_inicio)) }} - {{ date('d/m/Y', strtotime($permiso->fecha_fin)) }}">
-                                                Permiso #{{ $permiso->id_permiso }} -
-                                                {{ $permiso->docente->user->last_name }}, {{ $permiso->docente->user->name }} -
-                                                {{ $permiso->tipoPermiso->nombre }}
-                                                ({{ $permiso->horas_afectadas }} horas)
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    Información del Permiso Seleccionado
+                                </h6>
+                                <div class="permission-info">
+                                    <div class="info-item">
+                                        <span class="info-label">Docente:</span>
+                                        <span class="info-value" id="infoDocente"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tipo de Permiso:</span>
+                                        <span class="info-value" id="infoTipoPermiso"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Período:</span>
+                                        <span class="info-value" id="infoPeriodo"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Horas Afectadas:</span>
+                                        <span class="info-value" id="infoHorasAfectadas"></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Información del Permiso Seleccionado -->
-                        <div id="permisoInfo" class="permission-card" style="display: none;">
-                            <h6 style="color: var(--primary-blue); margin-bottom: 15px;">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Información del Permiso Seleccionado
-                            </h6>
-                            <div class="permission-info">
-                                <div class="info-item">
-                                    <span class="info-label">Docente:</span>
-                                    <span class="info-value" id="infoDocente"></span>
+                            <!-- Horas a Recuperar -->
+                            <!--<div class="form-group-modern mt-4">
+                                                                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
+                                                                                <i class="fas fa-calculator mr-2"></i>
+                                                                                Horas a Recuperar
+                                                                            </h6>
+                                                                            <div class="hours-display">
+                                                                                <div class="hours-number" id="totalHorasDisplay">0</div>
+                                                                                <div class="hours-label">Horas que deben ser recuperadas</div>
+                                                                                <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
+                                                                            </div>
+                                                                        </div>-->
+                            <!-- Resumen del permiso seleccionado -->
+                            <div class="form-group-modern mt-4">
+                                <h4>Resumen del Permiso Seleccionado</h4>
+                                <div class="row mt-4">
+                                    <div class="col-md-4">
+                                        <div class="hours-display">
+                                            <div class="hours-display-large" id="horasTotales">0</div>
+                                            <div class="hours-total">Horas Totales</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="hours-display">
+                                            <div class="hours-display-large" style="color: var(--success-green);"
+                                                id="horasRecuperadas">0</div>
+                                            <div class="hours-total">Recuperadas</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="hours-display">
+                                            <div class="hours-display-large" style="color: #e17055;" id="horasPendientes">0
+                                            </div>
+                                            <div class="hours-total">Pendientes</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="info-item">
-                                    <span class="info-label">Tipo de Permiso:</span>
-                                    <span class="info-value" id="infoTipoPermiso"></span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Período:</span>
-                                    <span class="info-value" id="infoPeriodo"></span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Horas Afectadas:</span>
-                                    <span class="info-value" id="infoHorasAfectadas"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Paso 2: Horas a Recuperar -->
-                        <div class="form-group-modern">
-                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                <i class="fas fa-calculator mr-2"></i>
-                                Paso 2: Horas a Recuperar
-                            </h6>
-                            <div class="hours-display">
-                                <div class="hours-number" id="totalHorasDisplay">0</div>
-                                <div class="hours-label">Horas que deben ser recuperadas</div>
+                                <!-- Hidden input for form validation -->
                                 <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
                             </div>
+
+                            <!-- Configuración del Plan -->
+                            <div class="form-group-modern">
+                                <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
+                                    <i class="fas fa-cogs mr-2"></i>
+                                    Configuración del Plan
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Fecha de Presentación *</label>
+                                        <div class="input-with-icon">
+                                            <i class="input-icon fas fa-calendar-alt"></i>
+                                            <input type="date" name="fecha_presentacion" class="form-control-modern"
+                                                value="{{ date('Y-m-d') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Estado del Plan *</label>
+                                        <select name="estado_plan" class="form-control-modern">
+                                            <option value="PRESENTADO" selected>PRESENTADO</option>
+                                            <option value="APROBADO">APROBADO</option>
+                                            <option value="OBSERVADO">OBSERVADO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Paso 3: Configuración del Plan -->
-                        <div class="form-group-modern">
-                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                <i class="fas fa-cogs mr-2"></i>
-                                Paso 3: Configuración del Plan
-                            </h6>
-                            <div class="row">
+                        <!-- Paso 2: Detalles de la Sesión -->
+                        <div id="step2-content" class="step-content">
+                            <!-- Sección: Información Académica -->
+                            <div class="card mb-4"
+                                style="border: 2px solid var(--light-blue); border-radius: 12px; overflow: hidden;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, var(--light-blue) 0%, #c3e0ff 100%); border-bottom: 2px solid var(--primary-blue);">
+                                    <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
+                                        <i class="fas fa-book mr-2"></i>
+                                        Información Académica
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-barcode mr-1"></i>
+                                                    Código de Asignatura *
+                                                </label>
+                                                <div style="position: relative;">
+                                                    <input type="text" id="codigoAsignatura" class="form-control-modern"
+                                                        placeholder="Ej: G002, AIS11..."
+                                                        style="text-transform: uppercase; padding-right: 45px;">
+                                                    <button class="btn btn-primary" type="button" id="btnBuscarAsignatura"
+                                                        style="position: absolute; right: 0; top: 0; height: 100%; border-radius: 0 4px 4px 0; padding: 0 12px;">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-graduation-cap mr-1"></i>
+                                                    Nombre de Asignatura
+                                                </label>
+                                                <input type="text" id="nombreAsignatura" class="form-control-modern"
+                                                    placeholder="Se completará automáticamente..." readonly
+                                                    style="background-color: #f8f9fa; cursor: not-allowed;">
+                                                <!-- Campo oculto para enviar el ID -->
+                                                <input type="hidden" name="idAsignatura" id="idAsignatura" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección: Programación de Sesión -->
+                            <div class="card mb-4"
+                                style="border: 2px solid #e3f2fd; border-radius: 12px; overflow: hidden;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-bottom: 2px solid var(--primary-blue);">
+                                    <h5 style="margin: 0; color: var(--primary-blue); font-weight: 700;">
+                                        <i class="fas fa-calendar-check mr-2"></i>
+                                        Programación de Sesión
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-calendar mr-1"></i>
+                                                    Fecha de Sesión *
+                                                </label>
+                                                <input type="date" name="fecha_sesion" id="fecha_sesion"
+                                                    class="form-control-modern" value="{{ date('Y-m-d') }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    Hora Inicio *
+                                                </label>
+                                                <input type="time" name="hora_inicio" id="hora_inicio"
+                                                    class="form-control-modern" required
+                                                    onchange="calcularHorasRecuperar()">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    Hora Fin *
+                                                </label>
+                                                <input type="time" name="hora_fin" id="hora_fin" class="form-control-modern"
+                                                    required onchange="calcularHorasRecuperar()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-4">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-door-open mr-1"></i>
+                                                    Aula
+                                                </label>
+                                                <input type="text" name="aula" class="form-control-modern"
+                                                    placeholder="Ej: A-101, Lab 3, Auditorio" maxlength="50">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-hourglass-half mr-1"></i>
+                                                    Horas a Recuperar *
+                                                </label>
+                                                <input type="number" name="horas_recuperadas" id="horas_recuperadas"
+                                                    class="form-control-modern" step="0.5" min="0.5" max="8" required
+                                                    placeholder="Auto-calculado" readonly
+                                                    style="background-color: #f8f9fa;">
+                                                <div class="valid-feedback">Horas válidas</div>
+                                                <div class="invalid-feedback">Entre 0.5 y 8 horas</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group-modern">
+                                                <label class="form-label-modern">
+                                                    <i class="fas fa-book-open mr-1"></i>
+                                                    Tema a Desarrollar *
+                                                </label>
+                                                <textarea name="tema" id="tema" class="form-control-modern" rows="2"
+                                                    required
+                                                    placeholder="Ej: Introducción a Microcontroladores, Programación en C, Estructuras de Datos..."
+                                                    maxlength="500"></textarea>
+                                                <small class="form-text text-muted">Describa brevemente el tema que se
+                                                    tratará en esta sesión</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3: Validación de Horas -->
+                    <div id="step3-content" class="step-content">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Paso 3: Validación de Acumulación
+                                </h4>
+                                <p style="color: var(--medium-gray);">
+                                    El sistema validará que las horas no excedan el total del plan
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="validationResults" class="hours-counter">
+                            <h4>Resultado de la Validación</h4>
+                            <div class="row mt-4">
                                 <div class="col-md-6">
-                                    <label class="form-label-modern">Fecha de Presentación *</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-calendar-alt"></i>
-                                        <input type="date" name="fecha_presentacion" class="form-control-modern"
-                                            value="{{ date('Y-m-d') }}">
+                                    <div
+                                        style="text-align: center; padding: 20px; border-right: 2px solid var(--light-gray);">
+                                        <div style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);"
+                                            id="horasSesion">0</div>
+                                        <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
+                                            Horas de esta sesión
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label-modern">Estado del Plan *</label>
-                                    <select name="estado_plan" class="form-control-modern">
-                                        <option value="PRESENTADO" selected>PRESENTADO</option>
-                                        <option value="APROBADO">APROBADO</option>
-                                        <option value="OBSERVADO">OBSERVADO</option>
-                                    </select>
+                                    <div style="text-align: center; padding: 20px;">
+                                        <div style="font-size: 3rem; font-weight: 700; color: var(--success-green);"
+                                            id="nuevoTotal">0</div>
+                                        <div style="color: var(--medium-gray); font-size: 1.1rem; margin-top: 10px;">
+                                            Nuevo total recuperado
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="validationAlert" class="validation-alert mt-4" style="display: none;">
+                                <div class="alert-content">
+                                    <div class="alert-title">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Validación Requerida
+                                    </div>
+                                    <p style="color: #856404; margin: 0;" id="alertMessage">
+                                        Las horas ingresadas exceden el total permitido para este plan
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Paso 4: Observaciones -->
-                        <div class="form-group-modern">
-                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                <i class="fas fa-clipboard-list mr-2"></i>
-                                Paso 4: Observaciones
-                            </h6>
-                            <textarea name="observacion" class="form-control-modern" rows="4"
-                                placeholder="Describa los detalles del plan de recuperación, fechas propuestas, modalidad (presencial/virtual), y cualquier otra información relevante..."></textarea>
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="form-group-modern">
+                                    <label class="form-label-modern">Estado de la Sesión *</label>
+                                    <select name="estado_sesion" class="form-control-modern" required>
+                                        <option value="PROGRAMADA">Programada</option>
+                                        <option value="REALIZADA" selected>Realizada</option>
+                                        <option value="CANCELADA">Cancelada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 4: Confirmación -->
+                    <div id="step4-content" class="step-content">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h4 style="color: var(--primary-blue); font-weight: 700; margin-bottom: 20px;">
+                                    <i class="fas fa-clipboard-check mr-2"></i>
+                                    Paso 4: Confirmar Registro
+                                </h4>
+                                <p style="color: var(--medium-gray);">
+                                    Revise los detalles antes de registrar la sesión
+                                </p>
+                            </div>
                         </div>
 
-                        <!-- Regla de Validación -->
-                        <div class="rule-alert">
-                            <h6>
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Regla de Validación del Sistema
-                            </h6>
-                            <p style="color: #856404; margin: 0; font-size: 0.95rem;">
-                                <strong>Importante:</strong> No se permite cerrar el permiso sin que el plan de recuperación
-                                haya sido aprobado por el departamento académico.
-                                El sistema validará automáticamente que las horas a recuperar coincidan con las horas
-                                afectadas por el permiso.
-                            </p>
+                        <div class="session-card completed">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                        <i class="fas fa-user-tie mr-2"></i>
+                                        <span id="confirmDocente">-</span>
+                                    </div>
+                                    <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                        <i class="fas fa-file-contract mr-2"></i>
+                                        Plan: <span id="confirmPlan">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                        <i class="fas fa-book mr-2"></i>
+                                        <span id="confirmCurso">-</span>
+                                    </div>
+                                    <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        Horario: <span id="confirmHorario">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div style="font-weight: 600; color: var(--dark-gray); margin-bottom: 10px;">
+                                        <i class="fas fa-calendar mr-2"></i>
+                                        <span id="confirmFecha">-</span>
+                                    </div>
+                                    <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                        <i class="fas fa-hourglass-half mr-2"></i>
+                                        Horas: <span id="confirmHoras">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <div style="color: var(--medium-gray); font-size: 0.9rem;">
+                                        <i class="fas fa-play-circle mr-2"></i>
+                                        Estado: <span id="confirmEstado">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Nota:</strong> Una vez registrada, la sesión aparecerá en el sistema de ejecución y
+                            se actualizará el progreso del plan correspondiente.
                         </div>
                     </div>
                     <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
@@ -950,14 +1406,24 @@
                             <i class="fas fa-times mr-2"></i>
                             Cancelar
                         </button>
-                        <button type="submit" class="btn-modern btn-primary-modern">
+                        <button type="button" class="btn-modern" id="btnPrevStep" onclick="prevStep()"
+                            style="background: var(--light-gray); color: var(--dark-gray); display: none;">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Anterior
+                        </button>
+                        <button type="button" class="btn-modern btn-primary-modern" id="btnNextStep" onclick="nextStep()">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            Siguiente
+                        </button>
+                        <button type="submit" class="btn-modern btn-primary-modern" id="btnSubmit" style="display: none;">
                             <i class="fas fa-save mr-2"></i>
-                            Guardar Plan de Recuperación
+                            Registrar Plan y Sesión
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- MODAL DETALLES PLAN - DISEÑO MEJORADO -->
@@ -1034,53 +1500,8 @@
     <script src="{{ asset('viewresources/admin/plan_recuperacion/delete.js?v=' . time()) }}"></script>
 
     <script>
-        // Función para cargar información del permiso seleccionado
-        function cargarHorasPermiso() {
-            // Usar jQuery para obtener el valor seleccionado con Select2
-            const permisoId = $('#selectPermiso').val();
-
-            if (permisoId) {
-                // Obtener la opción seleccionada usando jQuery
-                const selectedOption = $('#selectPermiso option:selected');
-
-                // Obtener los datos usando jQuery's data() o attr()
-                const horas = selectedOption.data('horas') || selectedOption.attr('data-horas');
-                const docente = selectedOption.data('docente') || selectedOption.attr('data-docente');
-                const tipo = selectedOption.data('tipo') || selectedOption.attr('data-tipo');
-                const periodo = selectedOption.data('periodo') || selectedOption.attr('data-periodo');
-
-                // Actualizar horas
-                $('#totalHorasDisplay').text(horas);
-                $('#totalHorasRecuperar').val(horas);
-
-                // Mostrar información del permiso
-                $('#infoDocente').text(docente);
-                $('#infoTipoPermiso').text(tipo);
-                $('#infoPeriodo').text(periodo);
-                $('#infoHorasAfectadas').text(horas + ' horas');
-
-                // Mostrar card de información
-                $('#permisoInfo').slideDown();
-            } else {
-                // Ocultar información si no hay selección
-                $('#permisoInfo').slideUp();
-                $('#totalHorasDisplay').text('0');
-                $('#totalHorasRecuperar').val('');
-            }
-        }
-
         // Inicialización cuando el documento está listo
         $(document).ready(function () {
-            // Configurar evento change para el select de permisos
-            $('#selectPermiso').on('change', function () {
-                cargarHorasPermiso();
-            });
-
-            // Aplicar filtros
-            $('#btnAplicarFiltros').on('click', function () {
-                aplicarFiltros();
-            });
-
             // IMPORTANTE: Reinicializar Select2 cuando se abre el modal
             $('#nuevoPlanModal').on('shown.bs.modal', function () {
                 // Destruir Select2 si ya existe
@@ -1106,18 +1527,24 @@
 
             // Limpiar cuando se cierra el modal
             $('#nuevoPlanModal').on('hidden.bs.modal', function () {
+                // Resetear formulario
                 $('#frmPlanInsert')[0].reset();
                 $('#permisoInfo').hide();
                 $('#totalHorasDisplay').text('0');
                 $('#totalHorasRecuperar').val('');
+                $('#nombreAsignatura').val('');
+                $('#idAsignatura').val('');
+                $('#codigoAsignatura').val('');
+
+                // Resetear wizard al paso 1
+                goToStep(1);
+
+                // Resetear validación de FormValidation si existe
+                if ($('#frmPlanInsert').data('formValidation')) {
+                    $('#frmPlanInsert').data('formValidation').resetForm();
+                }
             });
         });
-
-        function convertirFecha(fechaStr) {
-            // Convertir fecha de formato dd/mm/yyyy a yyyy-mm-dd
-            const partes = fechaStr.split('/');
-            return partes[2] + '-' + partes[1] + '-' + partes[0];
-        }
     </script>
 
     <!-- Scripts de funcionalidad -->

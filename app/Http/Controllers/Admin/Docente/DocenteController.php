@@ -15,14 +15,12 @@ class DocenteController extends Controller
         $listDocentes = Docente::with([
             'user:id,document_number,name,last_name,email,phone,status',
             'grado',
-            'categoria',
             'contrato'
         ])
             ->orderBy('created_at', 'DESC')
             ->get();
 
         $listGrados = \App\Models\GradoAcademico::all();
-        $listCategorias = \App\Models\CategoriaDocente::all();
         $listContratos = \App\Models\TipoContrato::all();
 
         // 🔹 IDs de usuarios que ya son docentes
@@ -42,7 +40,6 @@ class DocenteController extends Controller
             compact(
                 'listDocentes',
                 'listGrados',
-                'listCategorias',
                 'listContratos',
                 'listUsuarios'
             )
@@ -60,7 +57,6 @@ class DocenteController extends Controller
                     'user_id' => 'required|exists:users,id|unique:docentes,user_id',
                     'codigo_unamba' => 'nullable|string|max:15|unique:docentes,codigo_unamba',
                     'grado_id' => 'required|exists:grados_academicos,idGrados_academicos',
-                    'categoria_id' => 'required|exists:categorias_docente,idCategori_docente',
                     'tipo_contrato_id' => 'required|exists:tipos_contrato,idTipo_contrato',
                 ]
             );
@@ -77,7 +73,6 @@ class DocenteController extends Controller
                 'user_id' => $request->user_id,
                 'codigo_unamba' => $request->codigo_unamba,
                 'grado_id' => $request->grado_id,
-                'categoria_id' => $request->categoria_id,
                 'tipo_contrato_id' => $request->tipo_contrato_id,
                 'estado' => 1,
             ]);
@@ -86,7 +81,6 @@ class DocenteController extends Controller
             $nuevoDocente->load([
                 'user:id,document_number,name,last_name,email,phone,status',
                 'grado',
-                'categoria',
                 'contrato'
             ]);
 
@@ -98,7 +92,6 @@ class DocenteController extends Controller
                 'correo' => $nuevoDocente->user->email ?? 'Sin usuario',
                 'telefono' => $nuevoDocente->user->phone ?? 'Sin usuario',
                 'grado' => $nuevoDocente->grado->nombre ?? 'N/A',
-                'categoria' => $nuevoDocente->categoria->nombre ?? 'N/A',
                 'condicion' => $nuevoDocente->contrato->nombre ?? 'N/A',
                 'status' => $nuevoDocente->user->status ?? 'inactive',
                 'fecha' => $nuevoDocente->created_at ? $nuevoDocente->created_at->format('d/m/Y') : '—'
@@ -121,7 +114,6 @@ class DocenteController extends Controller
             $docente = Docente::with([
                 'user:id,document_number,name,last_name,email,phone,status',
                 'grado',
-                'categoria',
                 'contrato'
             ])->where('idDocente', $idDocente)->first();
 
@@ -160,7 +152,6 @@ class DocenteController extends Controller
                 'correo' => 'required|email|max:255',
                 'telefono' => 'nullable|string|max:20',
                 'grado_id' => 'required|exists:grados_academicos,idGrados_academicos',
-                'categoria_id' => 'required|exists:categorias_docente,idCategori_docente',
                 'tipo_contrato_id' => 'required|exists:tipos_contrato,idTipo_contrato'
             ],
             [
@@ -170,7 +161,6 @@ class DocenteController extends Controller
                 'correo.required' => 'El correo electrónico es obligatorio.',
                 'correo.email' => 'El formato del correo electrónico no es válido.',
                 'grado_id.required' => 'El grado académico es obligatorio.',
-                'categoria_id.required' => 'La categoría docente es obligatoria.',
                 'tipo_contrato_id.required' => 'El tipo de contrato es obligatorio.'
             ]
         );
@@ -236,7 +226,6 @@ class DocenteController extends Controller
 
             // Actualizar datos del docente
             $docente->grado_id = $request->grado_id;
-            $docente->categoria_id = $request->categoria_id;
             $docente->tipo_contrato_id = $request->tipo_contrato_id;
             $docente->save();
 
