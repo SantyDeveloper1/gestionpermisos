@@ -22,11 +22,13 @@ class PlanRecuperacionController extends Controller
             ->get();
 
         // Obtener permisos que requieren recuperación
-        // Temporalmente mostramos todos los permisos aprobados con horas afectadas
-        // para facilitar el debugging
+        // Solo mostrar permisos cuyo tipo requiere recupero
         $permisosRecuperables = Permiso::with(['docente.user', 'tipoPermiso'])
             ->where('estado_permiso', 'APROBADO')
             ->where('horas_afectadas', '>', 0)
+            ->whereHas('tipoPermiso', function ($query) {
+                $query->where('requiere_recupero', 1);
+            })
             // Comentado temporalmente para ver todos los permisos disponibles
             // ->whereDoesntHave('planRecuperacion')
             ->orderBy('fecha_inicio', 'desc')
@@ -62,7 +64,15 @@ class PlanRecuperacionController extends Controller
             ]);
 
             // Obtener el permiso para validaciones adicionales
-            $permiso = Permiso::findOrFail($validated['id_permiso']);
+            $permiso = Permiso::with('tipoPermiso')->findOrFail($validated['id_permiso']);
+
+            // Validar que el tipo de permiso requiere recuperación
+            if (!$permiso->tipoPermiso->requiere_recupero) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este tipo de permiso no requiere plan de recuperación. Solo los permisos que afectan horas académicas necesitan un plan de recuperación.'
+                ], 422);
+            }
 
             // Validar que la fecha de presentación no sea anterior a la fecha actual
             $fechaActual = date('Y-m-d');
@@ -361,7 +371,23 @@ class PlanRecuperacionController extends Controller
     {
         try {
             $plan = PlanRecuperacion::findOrFail($idPlan_recuperacion);
+
+            // Verificar si el plan tiene sesiones asociadas
+            $sesionesCount = SesionRecuperacion::where('id_plan', $idPlan_recuperacion)->count();
+
+            if ($sesionesCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No se puede eliminar el plan porque tiene {$sesionesCount} " .
+                        ($sesionesCount == 1 ? 'sesión asociada' : 'sesiones asociadas') .
+                        '. Por favor, elimine primero las sesiones de recuperación relacionadas.'
+                ], 422);
+            }
+
+            // Si no tiene sesiones, proceder con la eliminación
             $plan->delete();
+
+            \Log::info("Plan de recuperación {$idPlan_recuperacion} eliminado exitosamente");
 
             return response()->json([
                 'success' => true,

@@ -199,6 +199,8 @@ class PermisoController extends Controller
                     'fecha_resolucion' => $permiso->fecha_resolucion,
                     'motivo' => $permiso->motivo,
                     'observacion' => $permiso->observacion,
+                    'created_at' => $permiso->created_at ? $permiso->created_at->format('Y-m-d H:i:s') : null,
+                    'updated_at' => $permiso->updated_at ? $permiso->updated_at->format('Y-m-d H:i:s') : null,
                     'docente' => [
                         'idDocente' => $permiso->docente->idDocente,
                         'nombres' => $permiso->docente->user->name,
@@ -272,7 +274,9 @@ class PermisoController extends Controller
                     'estado_permiso' => $permiso->estado_permiso,
                     'fecha_solicitud' => $permiso->fecha_solicitud,
                     'fecha_resolucion' => $permiso->fecha_resolucion,
-                    'observacion' => $permiso->observacion
+                    'observacion' => $permiso->observacion,
+                    'created_at' => $permiso->created_at ? $permiso->created_at->format('Y-m-d H:i:s') : null,
+                    'updated_at' => $permiso->updated_at ? $permiso->updated_at->format('Y-m-d H:i:s') : null
                 ]
             ]);
 

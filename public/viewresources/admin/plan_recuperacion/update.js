@@ -97,12 +97,27 @@ function aprobarPlan(id) {
                     _method: 'PATCH'
                 },
                 success: function(response) {
+                    // Actualizar el badge de estado en la tabla
+                    const $row = $(`tr:has(button[onclick*="${id}"])`);
+                    const $estadoCell = $row.find('td:eq(5)'); // Columna de estado
+                    
+                    $estadoCell.html(`
+                        <span class="badge-modern badge-aprobado">
+                            <span class="status-dot dot-aprobado"></span>
+                            APROBADO
+                        </span>
+                    `);
+                    
+                    // Ocultar el botón de aprobar
+                    $row.find('.btn-approve').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                    
                     new PNotify({
                         title: '¡Aprobado!',
                         text: 'El plan ha sido aprobado correctamente',
                         type: 'success'
                     });
-                    setTimeout(() => location.reload(), 1000);
                 },
                 error: function(xhr) {
                     new PNotify({
@@ -140,13 +155,53 @@ function updatePlan() {
         processData: false,
         contentType: false,
         success: function(response) {
+            // Actualizar la fila en la tabla
+            const $row = $(`tr:has(button[onclick*="${idPlan}"])`);
+            const estadoPlan = $('#editEstadoPlan').val();
+            const fechaPresentacion = $('#editFechaPresentacion').val();
+            
+            // Actualizar fecha de presentación (columna 4)
+            $row.find('td:eq(4)').html(`
+                <div class="text-center">
+                    <span style="color: var(--dark-gray);">
+                        ${formatDate(fechaPresentacion)}
+                    </span>
+                </div>
+            `);
+            
+            // Actualizar estado (columna 5)
+            let estadoBadge = '';
+            if (estadoPlan === 'PRESENTADO') {
+                estadoBadge = `
+                    <span class="badge-modern badge-presentado">
+                        <span class="status-dot dot-presentado"></span>
+                        PRESENTADO
+                    </span>
+                `;
+            } else if (estadoPlan === 'APROBADO') {
+                estadoBadge = `
+                    <span class="badge-modern badge-aprobado">
+                        <span class="status-dot dot-aprobado"></span>
+                        APROBADO
+                    </span>
+                `;
+            } else {
+                estadoBadge = `
+                    <span class="badge-modern badge-observado">
+                        <span class="status-dot dot-observado"></span>
+                        ${estadoPlan}
+                    </span>
+                `;
+            }
+            $row.find('td:eq(5)').html(estadoBadge);
+            
             new PNotify({
                 title: '¡Éxito!',
                 text: 'Plan de recuperación actualizado correctamente',
                 type: 'success'
             });
+            
             $('#editPlanModal').modal('hide');
-            setTimeout(() => location.reload(), 1000);
         },
         error: function(xhr) {
             let errorMsg = 'No se pudo actualizar el plan de recuperación';

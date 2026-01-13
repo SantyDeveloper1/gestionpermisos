@@ -25,6 +25,7 @@ use App\Http\Controllers\Docente\Permiso\PermisoController as DocentePermisoCont
 use App\Http\Controllers\Docente\SesionRecuperacion\SesionRecuperacionController as DocenteSesionRecuperacionController;
 use App\Http\Controllers\Docente\PlanRecuperacion\PlanRecuperacionController as DocentePlanRecuperacionController;
 use App\Http\Controllers\Docente\EvidenciaRecuperacion\EvidenciaRecuperacionController as DocenteEvidenciaRecuperacionController;
+use App\Http\Controllers\Docente\SeguimientoPermiso\SeguimientoPermisoController;
 use Illuminate\Support\Facades\Hash;
 
 Route::match(['get', 'post'], '/login', [LoginController::class, 'actionLogin'])
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/', [UsuarioController::class, 'actionAdminIndex']);
             Route::get('/usuarios', [UsuarioController::class, 'actionIndex']);
+            Route::get('/usuarios/roles', [UsuarioController::class, 'actionUsuariosRoles']);
             Route::post('/usuarios/store', [UsuarioController::class, 'store'])->name('usuarios.store');
             Route::get('/usuarios/asignar_roles', [UsuarioController::class, 'actionAsignarRoles'])->name('usuarios.asignar_roles');
             // GUARDAR (AJAX)
@@ -71,7 +73,8 @@ Route::middleware('auth')->group(function () {
             Route::get('usuarios/listar', [UsuarioController::class, 'listarUsuarios']);
 
             // DOCENTE
-            Route::get('/docente', [DocenteController::class, 'actionDocente']);
+            Route::get('/docente', [DocenteController::class, 'actionDocente'])->name('admin.docentes.index');
+
             Route::get('docente/show/{idDocente}', [DocenteController::class, 'actionShow']);
             Route::match(['get', 'post'], 'docente/insert', [DocenteController::class, 'actionInsert']);
             Route::post('docente/update/{idDocente}', [DocenteController::class, 'actionUpdate']);
@@ -95,11 +98,25 @@ Route::middleware('auth')->group(function () {
             Route::delete('tipo_permiso/delete/{id_tipo_permiso}', [TipoPermisoController::class, 'actionDelete']);
 
             // PERMISO
-            Route::get('permiso', [PermisoController::class, 'actionPermiso']);
-            Route::get('permiso/{id}', [PermisoController::class, 'actionShow']);
-            Route::match(['get', 'post'], 'permiso/insert', [PermisoController::class, 'actionInsert']);
-            Route::post('permiso/update/{idPermiso}', [PermisoController::class, 'actionUpdate']);
+            Route::get('permiso', [PermisoController::class, 'actionPermiso'])->name('admin.permisos.index');
+            Route::get('permiso/aprobados', function () {
+                return redirect('/admin/permiso')->with('filter', 'APROBADO');
+            })->name('admin.permisos.aprobados');
+            Route::get('permiso/pendientes', function () {
+                return redirect('/admin/permiso')->with('filter', 'SOLICITADO');
+            })->name('admin.permisos.pendientes');
+            Route::get('permiso/rechazados', function () {
+                return redirect('/admin/permiso')->with('filter', 'RECHAZADO');
+            })->name('admin.permisos.rechazados');
+            Route::get('permiso/{id}', [PermisoController::class, 'actionShow'])->name('admin.permisos.show');
+            Route::match(['get', 'post'], 'permiso/insert', [PermisoController::class, 'actionInsert'])->name('admin.permisos.create');
+            Route::post('permiso/update/{idPermiso}', [PermisoController::class, 'actionUpdate'])->name('admin.permisos.edit');
             Route::delete('permiso/delete/{idPermiso}', [PermisoController::class, 'actionDelete']);
+
+            // CONFIGURACIÓN
+            Route::get('configuracion', function () {
+                return view('admin.configuracion.index');
+            })->name('admin.configuracion.index');
 
             // PLAN DE RECUPERACIÓN
             Route::get('plan_recuperacion', [PlanRecuperacionController::class, 'actionPlanRecuperacion']);
@@ -147,6 +164,11 @@ Route::middleware('auth')->group(function () {
             Route::post('academico/semestre_academico/cambiar_estado', [SemestreAcademicoController::class, 'cambiarEstado']);
             Route::post('academico/semestre_academico/marcar_actual', [SemestreAcademicoController::class, 'marcarComoActual']);
 
+            // REPORTES
+            Route::get('reportes', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'index'])->name('admin.reportes.index');
+
+            Route::get('reportes/estadisticas', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'estadisticas'])->name('admin.permisos.estadisticas');
+
         });
 
 
@@ -158,6 +180,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/', function () {
                 return view('docente.index');
             });
+
+            // SEGUIMIENTO DE PERMISO
+            Route::get('seguimiento_permiso', [SeguimientoPermisoController::class, 'actionSeguimientoPermiso']);
+            Route::get('seguimiento_permiso/get/{idPermiso}', [SeguimientoPermisoController::class, 'actionGetPermiso']);
+            Route::post('seguimiento_permiso/update/{idPermiso}', [SeguimientoPermisoController::class, 'actionUpdate']);
+
 
             // PERMISO
             Route::get('permiso', [DocentePermisoController::class, 'actionPermiso']);

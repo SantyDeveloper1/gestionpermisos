@@ -51,9 +51,58 @@ class SesionRecuperacionController extends Controller
 
         // Obtener plan seleccionado si existe el filtro
         $planSeleccionado = null;
+        $estadisticasPlan = null;
+
         if ($planIdFilter) {
             $planSeleccionado = PlanRecuperacion::with(['permiso.docente.user', 'permiso.tipoPermiso'])
                 ->find($planIdFilter);
+
+            if ($planSeleccionado) {
+                // Calcular estadísticas dinámicas del plan
+                $totalHoras = $planSeleccionado->total_horas_recuperar ?? 0;
+
+                // Horas completadas (sesiones VALIDADAS)
+                $horasCompletadas = SesionRecuperacion::where('id_plan', $planIdFilter)
+                    ->where('estado_sesion', 'VALIDADA')
+                    ->sum('horas_recuperadas') ?? 0;
+
+                // Horas realizadas pero no validadas
+                $horasRealizadas = SesionRecuperacion::where('id_plan', $planIdFilter)
+                    ->where('estado_sesion', 'REALIZADA')
+                    ->sum('horas_recuperadas') ?? 0;
+
+                // Total de horas ejecutadas (completadas + realizadas)
+                $horasEjecutadas = $horasCompletadas + $horasRealizadas;
+
+                // Horas pendientes
+                $horasPendientes = max(0, $totalHoras - $horasEjecutadas);
+
+                // Porcentajes
+                $porcentajeCompletado = $totalHoras > 0 ? round(($horasCompletadas / $totalHoras) * 100, 1) : 0;
+                $porcentajePendiente = $totalHoras > 0 ? round(($horasPendientes / $totalHoras) * 100, 1) : 0;
+
+                // Contar sesiones activas del plan
+                $sesionesActivasPlan = SesionRecuperacion::where('id_plan', $planIdFilter)
+                    ->whereIn('estado_sesion', ['PROGRAMADA', 'REALIZADA'])
+                    ->count();
+
+                // Porcentaje de sesiones (basado en estimación de 2 horas por sesión)
+                $sesionesEstimadas = $totalHoras > 0 ? ceil($totalHoras / 2) : 1;
+                $porcentajeSesiones = $sesionesEstimadas > 0 ? round(($sesionesActivasPlan / $sesionesEstimadas) * 100, 1) : 0;
+
+                $estadisticasPlan = [
+                    'total_horas' => $totalHoras,
+                    'horas_completadas' => $horasCompletadas,
+                    'horas_realizadas' => $horasRealizadas,
+                    'horas_ejecutadas' => $horasEjecutadas,
+                    'horas_pendientes' => $horasPendientes,
+                    'porcentaje_completado' => $porcentajeCompletado,
+                    'porcentaje_pendiente' => $porcentajePendiente,
+                    'sesiones_activas' => $sesionesActivasPlan,
+                    'sesiones_estimadas' => $sesionesEstimadas,
+                    'porcentaje_sesiones' => $porcentajeSesiones,
+                ];
+            }
         }
 
         return view('admin/sesion_recuperacion/sesion_recuperacion', compact(
@@ -64,7 +113,8 @@ class SesionRecuperacionController extends Controller
             'planesActivos',
             'cursos',
             'planSeleccionado',
-            'asignaturas'
+            'asignaturas',
+            'estadisticasPlan'
         ));
     }
 
@@ -313,9 +363,29 @@ class SesionRecuperacionController extends Controller
                 'comentario' => 'nullable|string|max:500'
             ]);
 
+            // Validación: No permitir cambio a REALIZADA sin evidencia
+            if ($validated['estado_sesion'] === 'REALIZADA') {
+                // Verificar si la sesión tiene al menos una evidencia
+                $evidenceCount = \DB::table('evidencia_recuperacion')
+                    ->where('id_sesion', $id_sesion)
+                    ->count();
+
+                if ($evidenceCount === 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No se puede cambiar el estado a REALIZADA sin evidencia. Por favor, suba al menos una evidencia antes de marcar la sesión como realizada.'
+                    ], 422);
+                }
+            }
+
+            // CANCELADA puede establecerse sin evidencia (sin validación adicional)
+            // VALIDADA y PROGRAMADA también pueden establecerse libremente
+
             // Actualizar el estado
             $sesion->estado_sesion = $validated['estado_sesion'];
             $sesion->save();
+
+            \Log::info("Estado de sesión {$id_sesion} actualizado manualmente a {$validated['estado_sesion']}");
 
             return response()->json([
                 'success' => true,

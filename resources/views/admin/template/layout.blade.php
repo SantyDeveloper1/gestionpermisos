@@ -350,9 +350,9 @@
 						{{-- ASIGNATURA --}}
 						<li class="nav-item {{ request()->is('admin/usuarios*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('admin/usuarios*') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-book"></i>
+								<i class="nav-icon fas fa-users"></i>
 								<p>
-									Asignar Roles
+									Usuarios
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
@@ -413,29 +413,9 @@
 								</li>
 							</ul>
 						</li>
-						{{-- TIPO PERMISO --}}
-						<li class="nav-item {{ request()->is('admin/tipo_permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-tags"></i>
-								<p>
-									Tipo Permiso
-									<i class="right fas fa-angle-left"></i>
-								</p>
-							</a>
-
-							<ul class="nav nav-treeview">
-								<li class="nav-item">
-									<a href="{{ url('admin/tipo_permiso') }}"
-										class="nav-link {{ request()->is('admin/tipo_permiso') ? 'active' : '' }}">
-										<i class="nav-icon fas fa-list"></i>
-										<p>Tipo Permiso</p>
-									</a>
-								</li>
-							</ul>
-						</li>
-						{{-- PERMISO --}}
-						<li class="nav-item {{ request()->is('admin/permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/permiso*') ? 'active' : '' }}">
+						{{-- PERMISO (MENÚ PRINCIPAL) --}}
+						<li class="nav-item {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-signature"></i>
 								<p>
 									Permiso
@@ -444,15 +424,28 @@
 							</a>
 
 							<ul class="nav nav-treeview">
+
+								{{-- Permiso --}}
 								<li class="nav-item">
 									<a href="{{ url('admin/permiso') }}"
-										class="nav-link {{ request()->is('admin/permiso') ? 'active' : '' }}">
-										<i class="nav-icon fas fa-list"></i>
-										<p>Permiso</p>
+									class="nav-link {{ request()->is('admin/permiso*') ? 'active' : '' }}">
+										<i class="fas fa-list nav-icon"></i>
+										<p>Lista Permiso</p>
 									</a>
 								</li>
+
+								{{-- Tipo Permiso (SUBMENÚ) --}}
+								<li class="nav-item">
+									<a href="{{ url('admin/tipo_permiso') }}"
+									class="nav-link {{ request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
+										<i class="fas fa-tags nav-icon"></i>
+										<p>Tipo Permiso</p>
+									</a>
+								</li>
+
 							</ul>
 						</li>
+
 						{{-- PLAN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('admin/plan_recuperacion*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('admin/plan_recuperacion*') ? 'active' : '' }}">
@@ -498,7 +491,7 @@
 							<a href="#" class="nav-link {{ request()->is('admin/evidencia_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-upload"></i>
 								<p>
-									Evidencia de Recuperación
+									Evidencia de Sesión
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
@@ -508,18 +501,61 @@
 									<a href="{{ url('admin/evidencia_recuperacion') }}"
 										class="nav-link {{ request()->is('admin/evidencia_recuperacion') ? 'active' : '' }}">
 										<i class="nav-icon fas fa-list"></i>
-										<p>Evidencia de Recuperación</p>
+										<p>Evidencia de sesión</p>
 									</a>
 								</li>
 							</ul>
 						</li>
 
+						{{-- - reportes --}}
+						<li class="nav-item {{ request()->is('admin/reportes*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('admin/reportes*') ? 'active' : '' }}">
+								<i class="nav-icon fas fa-file"></i>
+								<p>
+									Reportes
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="{{ url('admin/reportes') }}"
+										class="nav-link {{ request()->is('admin/reportes') ? 'active' : '' }}">
+										<i class="nav-icon fas fa-list"></i>
+										<p>Reportes</p>
+									</a>
+								</li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 				<!-- /.sidebar-menu -->
 			</div>
 			<!-- /.sidebar -->
 		</aside>
+		@php
+			if (request()->is('/')) {
+				$title = 'Dashboard';
+			} elseif (request()->is('admin/usuarios*')) {
+				$title = 'Gestión de Usuarios';
+			} elseif (request()->is('admin/docente*')) {
+				$title = 'Gestión de Docentes';
+			} elseif (request()->is('admin/tipo_permiso*')) {
+				$title = 'Tipos de Permiso';
+			} elseif (request()->is('admin/permiso*')) {
+				$title = 'Gestión de Permisos';
+			} elseif (request()->is('admin/plan_recuperacion*')) {
+				$title = 'Planes de Recuperación';
+			} elseif (request()->is('admin/sesion_recuperacion*')) {
+				$title = 'Sesiones de Recuperación';
+			} elseif (request()->is('admin/evidencia_recuperacion*')) {
+				$title = 'Evidencias de Recuperación';
+			} elseif (request()->is('admin/reportes*')) {
+				$title = 'Reportes';
+			} else {
+				$title = 'Sistema de Gestión';
+			}
+		@endphp
 
 		<!-- Content Wrapper. Contains page content -->
 		<div class="content-wrapper">
@@ -527,17 +563,27 @@
 			<div class="content-header">
 				<div class="container-fluid">
 					<div class="row mb-2">
+
 						<div class="col-sm-6">
-							<h1 class="m-0">@yield('titleGeneral')</h1>
-						</div><!-- /.col -->
+							<h1 class="m-0">{{ $title }}</h1>
+						</div>
+
 						<div class="col-sm-6">
 							<ol class="breadcrumb float-sm-right">
-								<li class="breadcrumb-item"><a href="#">Home</a></li>
-								<li class="breadcrumb-item active">Dashboard v1</li>
+
+								<li class="breadcrumb-item">
+									<a href="{{ url('/') }}">Home</a>
+								</li>
+
+								<li class="breadcrumb-item active">
+									{{ $title }}
+								</li>
+
 							</ol>
-						</div><!-- /.col -->
-					</div><!-- /.row -->
-				</div><!-- /.container-fluid -->
+						</div>
+
+					</div>
+				</div>
 			</div>
 			<!-- /.content-header -->
 

@@ -13,9 +13,69 @@ class UsuarioController extends Controller
 {
     public function actionAdminIndex()
     {
-        $usuarios = User::with('roles')->get();
+        // Total de permisos
+        $totalPermisos = \App\Models\Permiso::count();
 
-        return view('admin.index', compact('usuarios'));
+        // Permisos por estado
+        $permisosAprobados = \App\Models\Permiso::where('estado_permiso', 'APROBADO')->count();
+        $permisosPendientes = \App\Models\Permiso::where('estado_permiso', 'SOLICITADO')->count();
+        $permisosRechazados = \App\Models\Permiso::where('estado_permiso', 'RECHAZADO')->count();
+
+        // Permisos recientes (últimos 10)
+        $permisosRecientes = \App\Models\Permiso::with(['docente.user', 'tipoPermiso'])
+            ->orderBy('fecha_solicitud', 'desc')
+            ->take(10)
+            ->get();
+
+        // Permisos de hoy
+        $permisosHoy = \App\Models\Permiso::whereDate('fecha_inicio', \Carbon\Carbon::today())->count();
+
+        // Permisos de esta semana
+        $permisosSemana = \App\Models\Permiso::whereBetween('fecha_inicio', [
+            \Carbon\Carbon::now()->startOfWeek(),
+            \Carbon\Carbon::now()->endOfWeek()
+        ])->count();
+
+        // Permisos de este mes
+        $permisosMes = \App\Models\Permiso::whereMonth('fecha_inicio', \Carbon\Carbon::now()->month)
+            ->whereYear('fecha_inicio', \Carbon\Carbon::now()->year)
+            ->count();
+
+        // Eventos para el calendario
+        $eventosCalendario = \App\Models\Permiso::with(['docente.user', 'tipoPermiso'])
+            ->get()
+            ->map(function ($permiso) {
+                $color = match ($permiso->estado_permiso) {
+                    'APROBADO' => '#28a745',
+                    'SOLICITADO' => '#ffc107',
+                    'RECHAZADO' => '#dc3545',
+                    'EN_RECUPERACION' => '#17a2b8',
+                    'RECUPERADO' => '#6c757d',
+                    'CERRADO' => '#343a40',
+                    default => '#007bff'
+                };
+
+                return [
+                    'id' => $permiso->id_permiso,
+                    'title' => ($permiso->docente->nombre ?? 'N/A') . ' - ' . ($permiso->tipoPermiso->nombre ?? 'N/A'),
+                    'start' => \Carbon\Carbon::parse($permiso->fecha_inicio)->format('Y-m-d'),
+                    'end' => $permiso->fecha_fin ? \Carbon\Carbon::parse($permiso->fecha_fin)->format('Y-m-d') : \Carbon\Carbon::parse($permiso->fecha_inicio)->format('Y-m-d'),
+                    'backgroundColor' => $color,
+                    'borderColor' => $color
+                ];
+            });
+
+        return view('admin.index', compact(
+            'totalPermisos',
+            'permisosAprobados',
+            'permisosPendientes',
+            'permisosRechazados',
+            'permisosRecientes',
+            'permisosHoy',
+            'permisosSemana',
+            'permisosMes',
+            'eventosCalendario'
+        ));
     }
 
     public function actionIndex()
@@ -29,6 +89,19 @@ class UsuarioController extends Controller
             ->get();
 
         return view('admin.usuarios.index', compact('usuarios'));
+    }
+
+    public function actionUsuariosRoles()
+    {
+        $usuarios = User::whereHas('roles', function ($q) {
+            $q->where('name', 'admin');
+        })
+            ->where('id', '!=', auth()->id()) // Excluir usuario autenticado
+            ->where('status', 'active') // Solo usuarios activos
+            ->with('roles')
+            ->get();
+
+        return view('admin.usuarios.usuarios_roles', compact('usuarios'));
     }
 
 

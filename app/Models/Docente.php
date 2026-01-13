@@ -39,5 +39,11 @@ class Docente extends Model
     {
         return $this->belongsTo(TipoContrato::class, 'tipo_contrato_id', 'idTipo_contrato');
     }
+
+    // Accessor para obtener el nombre completo del docente desde User
+    public function getNombreAttribute()
+    {
+        return $this->user ? $this->user->name . ' ' . $this->user->last_name : 'N/A';
+    }
 }
 

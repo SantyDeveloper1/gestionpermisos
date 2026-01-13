@@ -46,10 +46,14 @@ class PlanRecuperacionController extends Controller
         }
 
         // Obtener permisos que requieren recuperación SOLO del docente autenticado
+        // Solo mostrar permisos cuyo tipo requiere recupero
         $permisosRecuperables = Permiso::with(['docente.user', 'tipoPermiso'])
             ->where('id_docente', $docente->idDocente)
             ->where('estado_permiso', 'APROBADO')
             ->where('horas_afectadas', '>', 0)
+            ->whereHas('tipoPermiso', function ($query) {
+                $query->where('requiere_recupero', 1);
+            })
             ->orderBy('fecha_inicio', 'desc')
             ->get();
 
@@ -83,7 +87,15 @@ class PlanRecuperacionController extends Controller
             ]);
 
             // Obtener el permiso para validaciones adicionales
-            $permiso = Permiso::findOrFail($validated['id_permiso']);
+            $permiso = Permiso::with('tipoPermiso')->findOrFail($validated['id_permiso']);
+
+            // Validar que el tipo de permiso requiere recuperación
+            if (!$permiso->tipoPermiso->requiere_recupero) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este tipo de permiso no requiere plan de recuperación. Solo los permisos que afectan horas académicas necesitan un plan de recuperación.'
+                ], 422);
+            }
 
             // Validar que la fecha de presentación no sea anterior a la fecha actual
             $fechaActual = date('Y-m-d');

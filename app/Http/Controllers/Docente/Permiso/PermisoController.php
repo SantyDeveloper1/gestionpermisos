@@ -5,12 +5,22 @@ use App\Models\Docente;
 use App\Models\TipoPermiso;
 use App\Models\Permiso;
 use App\Models\SemestreAcademico;
+use Illuminate\Support\Facades\Auth;
 
 class PermisoController extends Controller
 {
     public function actionPermiso()
     {
-        // Obtener todos los docentes activos con su relación user
+        // Obtener el docente del usuario autenticado
+        $user = Auth::user();
+        $docente = $user->docente;
+
+        // Si el usuario no tiene un registro de docente, redirigir o mostrar error
+        if (!$docente) {
+            abort(403, 'No tiene permisos para acceder a esta sección.');
+        }
+
+        // Obtener todos los docentes activos con su relación user (para el formulario)
         $docentes = Docente::where('estado', 1)
             ->with('user')
             ->get()
@@ -23,8 +33,9 @@ class PermisoController extends Controller
             ->orderBy('nombre', 'asc')
             ->get();
 
-        // Obtener todos los permisos con sus relaciones
+        // Obtener SOLO los permisos del docente autenticado
         $listPermisos = Permiso::with(['docente.user', 'tipoPermiso', 'planRecuperacion'])
+            ->where('id_docente', $docente->idDocente)
             ->orderBy('fecha_solicitud', 'desc')
             ->get();
 

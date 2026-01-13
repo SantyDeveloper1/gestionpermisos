@@ -1,15 +1,15 @@
-@extends('template.layout')
-@section('titleGeneral', 'Gestión de Usuarios')
+@extends('admin.template.layout')
+@section('titleGeneral', 'Asignar Roles')
 @section('sectionGeneral')
 
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h3 class="card-title">
-                <i class="fas fa-users"></i> Lista de Tipo de Usuarios
+                <i class="fas fa-users"></i> Lista de usuarios con roles
             </h3>
             <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal"
                 data-target="#modalCrearUsuario">
-                <i class="fas fa-user-plus"></i> Nuevo Tipo de Usuario
+                <i class="fas fa-user-plus"></i> Asignar Rol
             </button>
         </div>
 

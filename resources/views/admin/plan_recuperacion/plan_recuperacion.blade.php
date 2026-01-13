@@ -738,23 +738,6 @@
                                 Sistema de gestión y control para la recuperación de horas académicas afectadas por permisos
                             </p>
                         </div>
-                        <div class="text-right">
-                            <div class="mb-3">
-                                <span class="badge-modern badge-presentado">
-                                    <span class="status-dot dot-presentado"></span>
-                                    Presentado
-                                </span>
-                                <span class="badge-modern badge-aprobado ml-2">
-                                    <span class="status-dot dot-aprobado"></span>
-                                    Aprobado
-                                </span>
-                                <span class="badge-modern badge-observado ml-2">
-                                    <span class="status-dot dot-observado"></span>
-                                    Observado
-                                </span>
-                            </div>
-                            <small class="text-white opacity-75">Gestión académica - Universidad XYZ</small>
-                        </div>
                     </div>
                 </div>
 
@@ -829,7 +812,7 @@
                                     <th>Docente</th>
                                     <th>Horas a Recuperar</th>
                                     <th>Fecha Presentación</th>
-                                    <th>Estado</th>
+                                    <th class="all">Estado</th>
                                     <th class="all">Acciones</th>
                                 </tr>
                             </thead>
@@ -887,7 +870,7 @@
                                                     class="btn-icon btn-view" title="Ver sesiones de recuperación">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <button class="btn-icon btn-edit" onclick="editPlan({{ $plan->id_plan }})"
+                                                <button class="btn-icon btn-edit" onclick="editPlan('{{ $plan->id_plan }}')"
                                                     title="Editar">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
@@ -897,7 +880,7 @@
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                 @endif
-                                                <button class="btn-icon btn-delete" onclick="deletePlan({{ $plan->id_plan }})"
+                                                <button class="btn-icon btn-delete" onclick="deletePlan('{{ $plan->id_plan }}')"
                                                     title="Eliminar">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -1426,42 +1409,14 @@
     </div>
     </div>
 
-    <!-- MODAL DETALLES PLAN - DISEÑO MEJORADO -->
-    <div class="modal fade" id="viewPlanModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content modal-modern">
-                <div class="modal-header modal-header-modern">
-                    <h5 class="modal-title-modern">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        Detalles del Plan de Recuperación
-                    </h5>
-                    <button type="button" class="close modal-close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body p-4">
-                    <div id="planDetailsContent">
-                        <!-- Contenido cargado dinámicamente -->
-                    </div>
-                </div>
-                <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
-                    <button type="button" class="btn-modern btn-primary-modern" data-dismiss="modal">
-                        <i class="fas fa-times mr-2"></i>
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL EDITAR PLAN - DISEÑO MEJORADO -->
+   <!-- MODAL EDITAR PLAN - DISEÑO MEJORADO -->
     <div class="modal fade" id="editPlanModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content modal-modern">
                 <div class="modal-header modal-header-modern">
                     <h5 class="modal-title-modern">
                         <i class="fas fa-edit mr-2"></i>
-                        Editar Plan de Recuperación
+                        Cambiar Estado del Plan de Recuperación
                     </h5>
                     <button type="button" class="close modal-close" data-dismiss="modal">
                         <span>&times;</span>
@@ -1470,21 +1425,57 @@
                 <form id="frmPlanEdit" onsubmit="event.preventDefault(); updatePlan();">
                     @csrf
                     <input type="hidden" id="editIdPlan" name="id_plan">
-
+                    
                     <div class="modal-body p-4">
-                        <div id="editPlanContent">
-                            <!-- Contenido cargado dinámicamente -->
+                        <div id="editPlanContent">     
+                            <!-- Estado actual -->
+                            <div class="form-group mb-4">
+                                <label class="form-label-modern">
+                                    <i class="fas fa-info-circle mr-1"></i> Estado Actual
+                                </label>
+                                <div id="editEstadoActual" class="badge-modern estado-badge" style="font-size: 1rem; padding: 8px 16px;">
+                                    <!-- Estado se cargará aquí -->
+                                </div>
+                            </div>
+                            
+                            <!-- Cambiar Estado -->
+                            <div class="form-group mb-4">
+                                <label class="form-label-modern">
+                                    <i class="fas fa-exchange-alt mr-1"></i> Cambiar Estado
+                                </label>
+                                <select id="editEstado" name="estado" class="form-control-modern" onchange="toggleObservacion()">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="PRESENTADO">PRESENTADO</option>
+                                    <option value="APROBADO">APROBADO</option>
+                                    <option value="OBSERVADO">OBSERVADO</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Observación (solo visible cuando estado es OBSERVADO) -->
+                            <div id="observacionContainer" class="form-group mb-4" style="display: none;">
+                                <label class="form-label-modern">
+                                    <i class="fas fa-comment-alt mr-1"></i> Observación / Comentarios
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="editObservacion" name="observacion" 
+                                        class="form-control-modern" 
+                                        rows="4" 
+                                        placeholder="Ingrese las observaciones sobre el plan..."></textarea>
+                                <small class="form-text text-muted">
+                                    Campo obligatorio cuando el plan es observado.
+                                </small>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
                         <button type="button" class="btn-modern" data-dismiss="modal"
-                            style="background: #6c757d; color: white;">
+                                style="background: #6c757d; color: white;">
                             <i class="fas fa-times mr-2"></i>
                             Cancelar
                         </button>
                         <button type="submit" class="btn-modern btn-primary-modern">
                             <i class="fas fa-save mr-2"></i>
-                            Guardar Cambios
+                            Actualizar Estado
                         </button>
                     </div>
                 </form>
@@ -1492,13 +1483,21 @@
         </div>
     </div>
 
+    <style>
+    /* Estilos para los badges de estado */
+    .badge-cancelado {
+        background-color: #dc3545;
+        color: white;
+    }
+    </style>
+
 @endsection
 
 @section('js')
     <script src="{{ asset('viewresources/admin/plan_recuperacion/insert.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/plan_recuperacion/update.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/plan_recuperacion/delete.js?v=' . time()) }}"></script>
-
+    <script src="{{ asset('viewresources/admin/plan_recuperacion/state.js?v=' . time()) }}"></script>
     <script>
         // Inicialización cuando el documento está listo
         $(document).ready(function () {

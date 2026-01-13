@@ -46,6 +46,14 @@ function editPermiso(id) {
                 $('#editFechaResolucion').val(permiso.fecha_resolucion || '');
                 $('#editObservacion').val(permiso.observacion || '');
                 
+                // Mostrar fechas de creación y actualización
+                if (permiso.created_at) {
+                    $('#editCreatedAt').html(formatearFechaHora(permiso.created_at));
+                }
+                if (permiso.updated_at) {
+                    $('#editUpdatedAt').html(formatearFechaHora(permiso.updated_at));
+                }
+                
                 // Habilitar campos
                 $('#editEstadoPermiso').prop('disabled', false);
                 $('#editFechaResolucion').prop('disabled', false);
@@ -188,6 +196,16 @@ function actualizarFilaTabla(permiso) {
         }
         row.find('td:eq(7)').html(fechasHtml);
         
+        // Actualizar created_at (columna 8)
+        if (permiso.created_at) {
+            row.find('td:eq(8)').html(formatearFechaHora(permiso.created_at));
+        }
+        
+        // Actualizar updated_at (columna 9)
+        if (permiso.updated_at) {
+            row.find('td:eq(9)').html(formatearFechaHora(permiso.updated_at));
+        }
+        
         // Actualizar botones de acción si cambió el estado
         if (permiso.estado_permiso !== 'SOLICITADO') {
             // Remover botón de aprobar si existe
@@ -206,4 +224,26 @@ function formatearFecha(fecha) {
     const anio = date.getFullYear();
     
     return `${dia}/${mes}/${anio}`;
+}
+
+// Función para formatear fecha y hora
+function formatearFechaHora(fechaHora) {
+    if (!fechaHora) return '<strong>--/--/----</strong><br><small class="text-muted">--:-- --</small>';
+    
+    const date = new Date(fechaHora);
+    
+    // Formatear fecha
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const anio = date.getFullYear();
+    
+    // Formatear hora en formato 12 horas
+    let horas = date.getHours();
+    const minutos = String(date.getMinutes()).padStart(2, '0');
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12;
+    horas = horas ? horas : 12; // La hora '0' debe ser '12'
+    const horasStr = String(horas).padStart(2, '0');
+    
+    return `<strong>${dia}/${mes}/${anio}</strong><br><small class="text-muted">${horasStr}:${minutos} ${ampm}</small>`;
 }

@@ -1,4 +1,4 @@
-@extends('template.layout')
+@extends('admin.template.layout')
 
 @section('titleGeneral', 'Gestión de Permisos')
 
@@ -305,6 +305,8 @@
                                 <th>Plan de Recuperación</th>
                                 <th>Estado</th>
                                 <th class="none">Solicitud</th>
+                                <th class="none">Creado</th>
+                                <th class="none">Actualizado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -365,6 +367,14 @@
                                             <br><strong>Resuelto:</strong><br>
                                             {{ date('d/m/Y', strtotime($permiso->fecha_resolucion)) }}
                                         @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ $permiso->created_at->format('d/m/Y') }}</strong><br>
+                                        <small class="text-muted">{{ $permiso->created_at->format('h:i A') }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ $permiso->updated_at->format('d/m/Y') }}</strong><br>
+                                        <small class="text-muted">{{ $permiso->updated_at->format('h:i A') }}</small>
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-primary btn-action"
@@ -770,7 +780,6 @@
                     <input type="hidden" id="editIdPermiso" name="id_permiso">
 
                     <div class="modal-body">
-
                         <div class="card border-0 shadow-sm">
                             <div class="card-body">
 

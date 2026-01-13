@@ -8,7 +8,7 @@
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Expires" content="0">
-	<title>Admin escolar| Dashboard</title>
+	<title>GESTION PERMISO | Dashboard</title>
 	<!-- Google Font: Source Sans Pro -->
 	<link rel="stylesheet"
 		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -343,6 +343,25 @@
 									<a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
 										<i class="far fa-circle nav-icon"></i>
 										<p>Página principal</p>
+									</a>
+								</li>
+							</ul>
+						</li>
+						{{-- SEGUIMIENTO DE PERMISO --}}
+						<li class="nav-item {{ request()->is('docente/seguimiento_permiso*') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('docente/seguimiento_permiso*') ? 'active' : '' }}">
+								<i class="nav-icon fas fa-file-signature"></i>
+								<p>
+									Seguimiento de Permiso
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="{{ url('docente/seguimiento_permiso') }}"
+										class="nav-link {{ request()->is('docente/seguimiento_permiso') ? 'active' : '' }}">
+										<i class="nav-icon fas fa-clipboard-list"></i>
+										<p>Seguimiento de Permiso</p>
 									</a>
 								</li>
 							</ul>

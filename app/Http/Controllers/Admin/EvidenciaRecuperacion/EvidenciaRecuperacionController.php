@@ -117,6 +117,15 @@ class EvidenciaRecuperacionController extends Controller
                 'fecha_subida' => \Carbon\Carbon::now('America/Lima')
             ]);
 
+            // Actualizar automáticamente el estado de la sesión a REALIZADA si está PROGRAMADA
+            $sesion = SesionRecuperacion::find($validated['id_sesion']);
+            if ($sesion && $sesion->estado_sesion === 'PROGRAMADA') {
+                $sesion->estado_sesion = 'REALIZADA';
+                $sesion->save();
+
+                \Log::info("Sesión {$sesion->id_sesion} actualizada automáticamente a REALIZADA al subir evidencia {$id_evidencia}");
+            }
+
             // Obtener la evidencia recién creada
             $evidencia = \DB::table('evidencia_recuperacion')
                 ->where('id_evidencia', $id_evidencia)
@@ -125,8 +134,9 @@ class EvidenciaRecuperacionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Evidencia registrada exitosamente',
-                'evidencia' => $evidencia
+                'message' => 'Evidencia registrada exitosamente' . ($sesion && $sesion->estado_sesion === 'REALIZADA' ? '. La sesión ha sido marcada como REALIZADA automáticamente.' : ''),
+                'evidencia' => $evidencia,
+                'sesion_actualizada' => $sesion ? true : false
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -855,91 +855,181 @@
                 <br>
 
                 <!-- Estadísticas de Progreso -->
-                <div style="padding: 0 35px;">
-                    <div class="progress-stats">
-                        <div class="stat-card-progress fade-in">
-                            <div class="stat-icon-wrapper icon-completed">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>42 <span>horas</span></h3>
-                                <p>Recuperación Completada</p>
-                                <div class="progress-bar-container">
-                                    <div class="progress-label">
-                                        <span>Progreso</span>
-                                        <span>70%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 70%"></div>
-                                    </div>
+                @if($planSeleccionado && $estadisticasPlan)
+                    {{-- Estadísticas dinámicas del plan seleccionado --}}
+                    <div style="padding: 0 35px;">
+                        <div class="progress-stats">
+                            <div class="stat-card-progress fade-in">
+                                <div class="stat-icon-wrapper icon-completed">
+                                    <i class="fas fa-check-circle"></i>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="stat-card-progress fade-in" style="animation-delay: 0.1s;">
-                            <div class="stat-icon-wrapper icon-pending">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>18 <span>horas</span></h3>
-                                <p>Pendiente de Recuperación</p>
-                                <div class="progress-bar-container">
-                                    <div class="progress-label">
-                                        <span>Restante</span>
-                                        <span>30%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill"
-                                            style="width: 30%; background: linear-gradient(90deg, #e17055 0%, #fab1a0 100%);">
+                                <div class="stat-content">
+                                    <h3>{{ $estadisticasPlan['horas_completadas'] }} <span>horas</span></h3>
+                                    <p>Recuperación Completada</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Progreso</span>
+                                            <span>{{ $estadisticasPlan['porcentaje_completado'] }}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: {{ $estadisticasPlan['porcentaje_completado'] }}%"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="stat-card-progress fade-in" style="animation-delay: 0.2s;">
-                            <div class="stat-icon-wrapper icon-total">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>60 <span>horas</span></h3>
-                                <p>Total a Recuperar</p>
-                                <div class="progress-bar-container">
-                                    <div class="progress-label">
-                                        <span>Meta total</span>
-                                        <span>100%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill"
-                                            style="width: 100%; background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);">
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.1s;">
+                                <div class="stat-icon-wrapper icon-pending">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ $estadisticasPlan['horas_pendientes'] }} <span>horas</span></h3>
+                                    <p>Pendiente de Recuperación</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Restante</span>
+                                            <span>{{ $estadisticasPlan['porcentaje_pendiente'] }}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: {{ $estadisticasPlan['porcentaje_pendiente'] }}%; background: linear-gradient(90deg, #e17055 0%, #fab1a0 100%);">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="stat-card-progress fade-in" style="animation-delay: 0.3s;">
-                            <div class="stat-icon-wrapper icon-progress">
-                                <i class="fas fa-sync-alt"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>12 <span>sesiones</span></h3>
-                                <p>Sesiones Activas</p>
-                                <div class="progress-bar-container">
-                                    <div class="progress-label">
-                                        <span>En progreso</span>
-                                        <span>85%</span>
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.2s;">
+                                <div class="stat-icon-wrapper icon-total">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ $estadisticasPlan['total_horas'] }} <span>horas</span></h3>
+                                    <p>Total a Recuperar</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Meta total</span>
+                                            <span>100%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: 100%; background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill"
-                                            style="width: 85%; background: linear-gradient(90deg, var(--purple) 0%, #a29bfe 100%);">
+                                </div>
+                            </div>
+
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.3s;">
+                                <div class="stat-icon-wrapper icon-progress">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ $estadisticasPlan['sesiones_activas'] }} <span>sesiones</span></h3>
+                                    <p>Sesiones Activas</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>En progreso</span>
+                                            <span>{{ $estadisticasPlan['porcentaje_sesiones'] }}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: {{ min(100, $estadisticasPlan['porcentaje_sesiones']) }}%; background: linear-gradient(90deg, var(--purple) 0%, #a29bfe 100%);">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    {{-- Estadísticas generales cuando no hay plan seleccionado --}}
+                    <div style="padding: 0 35px;">
+                        <div class="progress-stats">
+                            <div class="stat-card-progress fade-in">
+                                <div class="stat-icon-wrapper icon-completed">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ count($sesionesActivas) }} <span>sesiones</span></h3>
+                                    <p>Sesiones Activas</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Estado</span>
+                                            <span>Activo</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.1s;">
+                                <div class="stat-icon-wrapper icon-pending">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ $horasRecuperadasHoy }} <span>horas</span></h3>
+                                    <p>Recuperadas Hoy</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Hoy</span>
+                                            <span>{{ date('d/m/Y') }}</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: {{ $horasRecuperadasHoy > 0 ? 100 : 0 }}%; background: linear-gradient(90deg, #e17055 0%, #fab1a0 100%);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.2s;">
+                                <div class="stat-icon-wrapper icon-total">
+                                    <i class="fas fa-list-alt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ count($planes) }} <span>planes</span></h3>
+                                    <p>Planes Registrados</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Total</span>
+                                            <span>Todos</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: 100%; background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card-progress fade-in" style="animation-delay: 0.3s;">
+                                <div class="stat-icon-wrapper icon-progress">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ count($sesionesEjecucion) }} <span>sesiones</span></h3>
+                                    <p>Total de Sesiones</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-label">
+                                            <span>Registradas</span>
+                                            <span>100%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"
+                                                style="width: 100%; background: linear-gradient(90deg, var(--purple) 0%, #a29bfe 100%);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Banner de Plan Seleccionado -->
                 @if(isset($planSeleccionado) && $planSeleccionado)
@@ -951,20 +1041,14 @@
                                     Filtrando por Plan de Recuperación
                                 </h5>
                                 <div class="row">
-                                    <div class="col-md-3">
-                                        <div style="margin-bottom: 10px;">
-                                            <small style="color: var(--medium-gray); display: block; font-size: 0.85rem;">Plan
-                                                ID</small>
-                                            <strong
-                                                style="color: var(--dark-gray); font-size: 1.1rem;">#{{ $planSeleccionado->id_plan }}</strong>
-                                        </div>
-                                    </div>
+
                                     <div class="col-md-4">
                                         <div style="margin-bottom: 10px;">
                                             <small
                                                 style="color: var(--medium-gray); display: block; font-size: 0.85rem;">Docente</small>
                                             <strong style="color: var(--dark-gray);">
-                                                {{ $planSeleccionado->permiso->docente->user->last_name }}, {{ $planSeleccionado->permiso->docente->user->name }}
+                                                {{ $planSeleccionado->permiso->docente->user->last_name }},
+                                                {{ $planSeleccionado->permiso->docente->user->name }}
                                             </strong>
                                         </div>
                                     </div>
@@ -1012,16 +1096,6 @@
                             recuperadas hoy
                         </p>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button class="btn-execution btn-success-execution" onclick="generarReporte()">
-                            <i class="fas fa-file-export"></i>
-                            Reporte PDF
-                        </button>
-                        <button class="btn-execution btn-warning-execution" onclick="sincronizarSesiones()">
-                            <i class="fas fa-sync-alt"></i>
-                            Sincronizar
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Tabla de Sesiones de Ejecución -->
@@ -1043,8 +1117,8 @@
                         </thead>
                         <tbody>
                             @foreach($sesionesEjecucion as $sesion)
-                                <tr id="sesionRow{{ $sesion->id_sesion }}" class="fade-in" data-estado="{{ $sesion->estado_sesion }}"
-                                    data-modalidad="{{ $sesion->modalidad }}"
+                                <tr id="sesionRow{{ $sesion->id_sesion }}" class="fade-in"
+                                    data-estado="{{ $sesion->estado_sesion }}" data-modalidad="{{ $sesion->modalidad }}"
                                     data-plan="{{ $sesion->planRecuperacion->id_plan }}">
 
                                     <td>
@@ -1067,7 +1141,7 @@
                                     <td>
                                         <div style="font-weight: 600; color: var(--dark-gray);">
                                             {{ $sesion->planRecuperacion->permiso->docente->user->last_name }}
-                                             {{ $sesion->planRecuperacion->permiso->docente->user->name }}
+                                            {{ $sesion->planRecuperacion->permiso->docente->user->name }}
                                         </div>
                                     </td>
 
@@ -1152,20 +1226,14 @@
                                                 <i class="fas fa-file-contract"></i>
                                             </a>
                                             @if($sesion->estado_sesion != 'VALIDADA')
-                                                <button class="btn-icon btn-edit btn-cambiar-estado" 
+                                                <button class="btn-icon btn-edit btn-cambiar-estado"
                                                     data-sesion-id="{{ $sesion->id_sesion }}"
-                                                    data-estado-actual="{{ $sesion->estado_sesion }}"
-                                                    title="Cambiar estado">
+                                                    data-estado-actual="{{ $sesion->estado_sesion }}" title="Cambiar estado">
                                                     <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn-icon btn-approve"
-                                                    onclick="completarSesion({{ $sesion->id_sesion }})"
-                                                    title="Marcar como validada">
-                                                    <i class="fas fa-check"></i>
                                                 </button>
                                             @endif
                                             <button class="btn-icon btn-delete"
-                                                onclick="eliminarSesion({{ $sesion->id_sesion }})" title="Eliminar">
+                                                onclick="eliminarSesion('{{ $sesion->id_sesion }}')" title="Eliminar">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -1274,7 +1342,7 @@
                         cargarDetallesPlan();
                     }, 300);
                 @endif
-                                                        });
+                                                            });
 
             // Limpiar cuando se cierra el modal
             $('#nuevaSesionModal').on('hidden.bs.modal', function () {
