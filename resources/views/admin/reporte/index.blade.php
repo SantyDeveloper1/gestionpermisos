@@ -92,14 +92,15 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                                 <div class="btn-group btn-block">
-                                    <button type="button" class="btn btn-info" onclick="alert('Función en desarrollo')">
-                                        <i class="fas fa-eye"></i> Vista Previa
-                                    </button>
-                                    <button type="button" class="btn btn-danger" onclick="alert('Función en desarrollo')">
-                                        <i class="fas fa-file-pdf"></i> PDF
-                                    </button>
+                                    <div class="d-flex" style="gap: 10px;">
+                                        <button type="button" class="btn btn-info" onclick="vistaPreviewPdfSemestre()">
+                                            <i class="fas fa-eye"></i> Vista Previa
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="descargarPdfSemestre()">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -141,12 +142,14 @@
                                 </div>
 
                                 <div class="btn-group btn-block">
-                                    <button type="button" class="btn btn-info" onclick="alert('Función en desarrollo')">
-                                        <i class="fas fa-eye"></i> Vista Previa
-                                    </button>
-                                    <button type="button" class="btn btn-danger" onclick="alert('Función en desarrollo')">
-                                        <i class="fas fa-file-pdf"></i> PDF
-                                    </button>
+                                    <div class="d-flex" style="gap: 10px;">
+                                        <button type="button" class="btn btn-info" onclick="vistaPreviewPdfDocente()">
+                                            <i class="fas fa-eye"></i> Vista Previa
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="descargarPdfDocente()">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -158,6 +161,8 @@
 @endsection
 
 @section('js')
+    <script src="{{ asset('viewresources/admin/reporte/permisos.js') }}"></script>
+    <script src="{{ asset('viewresources/admin/reporte/permisoDocente.js') }}"></script>
     <script>
         // Mostrar estadísticas rápidas
         function showQuickStats() {

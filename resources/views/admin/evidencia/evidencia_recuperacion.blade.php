@@ -688,24 +688,6 @@
                             </p>
                         </div>
                         <div class="text-right">
-                            <div class="mb-3">
-                                <span class="evidence-type-badge badge-acta">
-                                    <i class="fas fa-file-signature"></i>
-                                    Acta
-                                </span>
-                                <span class="evidence-type-badge badge-asistencia ml-2">
-                                    <i class="fas fa-clipboard-list"></i>
-                                    Asistencia
-                                </span>
-                                <span class="evidence-type-badge badge-captura ml-2">
-                                    <i class="fas fa-camera"></i>
-                                    Captura
-                                </span>
-                                <span class="evidence-type-badge badge-otro ml-2">
-                                    <i class="fas fa-file-alt"></i>
-                                    Otro
-                                </span>
-                            </div>
                             <small class="text-white opacity-75">Sustento obligatorio para todas las sesiones</small>
                         </div>
                     </div>

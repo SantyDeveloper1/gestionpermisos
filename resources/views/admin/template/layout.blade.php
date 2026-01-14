@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,7 +7,9 @@
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Expires" content="0">
-	<title>Admin escolar| Dashboard</title>
+	<title>Admin Permisos| Dashboard</title>
+	<!-- Favicon -->
+	<link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 	<!-- Google Font: Source Sans Pro -->
 	<link rel="stylesheet"
 		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -76,7 +77,6 @@
 				<div class="spinner"></div>
 			</div>
 		</div>
-
 		<style>
 			/* Fondo suave con degradado */
 			.loader {
@@ -175,38 +175,10 @@
 				<li class="nav-item">
 					<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
 				</li>
-				<li class="nav-item d-none d-sm-inline-block">
-					<a href="index3.html" class="nav-link">Home</a>
-				</li>
-				<li class="nav-item d-none d-sm-inline-block">
-					<a href="#" class="nav-link">Contact</a>
-				</li>
 			</ul>
 
 			<!-- Right navbar links -->
 			<ul class="navbar-nav ml-auto">
-				<!-- Navbar Search -->
-				<li class="nav-item">
-					<a class="nav-link" data-widget="navbar-search" href="#" role="button">
-						<i class="fas fa-search"></i>
-					</a>
-					<div class="navbar-search-block">
-						<form class="form-inline">
-							<div class="input-group input-group-sm">
-								<input class="form-control form-control-navbar" type="search" placeholder="Search"
-									aria-label="Search">
-								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
-										<i class="fas fa-search"></i>
-									</button>
-									<button class="btn btn-navbar" type="button" data-widget="navbar-search">
-										<i class="fas fa-times"></i>
-									</button>
-								</div>
-							</div>
-						</form>
-					</div>
-				</li>
 
 				<!-- Messages Dropdown Menu -->
 				<li class="nav-item dropdown">
@@ -219,20 +191,26 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link d-flex align-items-center" data-toggle="dropdown" href="#">
 						<div class="image mr-2">
-							<img src="{{asset('plugins/adminlte/dist/img/user2-160x160.jpg')}}"
-								class="img-circle elevation-2" alt="User Image" style="width:30px; height:30px;">
+							@php
+								$userImage = Auth::user()->image ?? null;
+								$imagePath = $userImage ? 'storage/' . $userImage : 'storage/usuarios/users.webp';
+							@endphp
+
+							<img src="{{ asset($imagePath) }}"
+								class="img-circle elevation-2"
+								alt="User Image"
+								style="width:30px; height:30px;">
 						</div>
 					</a>
-
 					<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 						<span class="dropdown-item dropdown-header">Cuenta de Usuario</span>
 						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">
+						<a href="{{ route('admin.profile.index') }}" class="dropdown-item">
 							<i class="fas fa-user mr-2"></i> Perfil
 						</a>
 						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">
-							<i class="fas fa-cog mr-2"></i> Configuración
+						<a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal-password">
+							<i class="fas fa-cog mr-2"></i> Cambiar Contraseña
 						</a>
 						<div class="dropdown-divider"></div>
 						<a href="#" class="dropdown-item" id="logout-btn">
@@ -374,7 +352,7 @@
 								</li>
 							</ul>
 						</li>
-						
+
 						<li class="nav-item {{ request()->is('admin/docente*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('admin/docente*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-user-tie"></i>
@@ -414,41 +392,40 @@
 							</ul>
 						</li>
 						{{-- PERMISO (MENÚ PRINCIPAL) --}}
-						<li class="nav-item {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
+						<li
+							class="nav-item {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'menu-open' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('admin/permiso*') || request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-signature"></i>
 								<p>
 									Permiso
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
-
 							<ul class="nav nav-treeview">
-
 								{{-- Permiso --}}
 								<li class="nav-item">
 									<a href="{{ url('admin/permiso') }}"
-									class="nav-link {{ request()->is('admin/permiso*') ? 'active' : '' }}">
+										class="nav-link {{ request()->is('admin/permiso*') ? 'active' : '' }}">
 										<i class="fas fa-list nav-icon"></i>
 										<p>Lista Permiso</p>
 									</a>
 								</li>
-
 								{{-- Tipo Permiso (SUBMENÚ) --}}
 								<li class="nav-item">
 									<a href="{{ url('admin/tipo_permiso') }}"
-									class="nav-link {{ request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
+										class="nav-link {{ request()->is('admin/tipo_permiso*') ? 'active' : '' }}">
 										<i class="fas fa-tags nav-icon"></i>
 										<p>Tipo Permiso</p>
 									</a>
 								</li>
-
 							</ul>
 						</li>
 
 						{{-- PLAN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('admin/plan_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/plan_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('admin/plan_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-clipboard-list"></i>
 								<p>
 									Plan de Recuperación
@@ -468,7 +445,8 @@
 						</li>
 						{{-- SESIÓN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('admin/sesion_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/sesion_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('admin/sesion_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-calendar-check"></i>
 								<p>
 									Sesión de Recuperación
@@ -488,7 +466,8 @@
 						</li>
 						{{-- EVIDENCIA DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('admin/evidencia_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('admin/evidencia_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('admin/evidencia_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-upload"></i>
 								<p>
 									Evidencia de Sesión
@@ -539,17 +518,17 @@
 			} elseif (request()->is('admin/usuarios*')) {
 				$title = 'Gestión de Usuarios';
 			} elseif (request()->is('admin/docente*')) {
-				$title = 'Gestión de Docentes';
+				$title = 'Docentes';
 			} elseif (request()->is('admin/tipo_permiso*')) {
-				$title = 'Tipos de Permiso';
+				$title = 'Permiso';
 			} elseif (request()->is('admin/permiso*')) {
-				$title = 'Gestión de Permisos';
+				$title = 'Permisos';
 			} elseif (request()->is('admin/plan_recuperacion*')) {
-				$title = 'Planes de Recuperación';
+				$title = 'Plan de Recuperación';
 			} elseif (request()->is('admin/sesion_recuperacion*')) {
-				$title = 'Sesiones de Recuperación';
+				$title = 'Sesión de Recuperación';
 			} elseif (request()->is('admin/evidencia_recuperacion*')) {
-				$title = 'Evidencias de Recuperación';
+				$title = 'Evidencia de Sesión';
 			} elseif (request()->is('admin/reportes*')) {
 				$title = 'Reportes';
 			} else {
@@ -565,7 +544,7 @@
 					<div class="row mb-2">
 
 						<div class="col-sm-6">
-							<h1 class="m-0">{{ $title }}</h1>
+							<h1 class="m-0">@yield('titleGeneral')</h1>
 						</div>
 
 						<div class="col-sm-6">
@@ -615,6 +594,67 @@
 		<!-- /.control-sidebar -->
 	</div>
 	<!-- ./wrapper -->
+
+	<!-- MODAL PARA CAMBIAR CONTRASEÑA -->
+	<div id="modal-password" class="modal fade" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header bg-info">
+					<h4 class="modal-title text-white">
+						<i class="fas fa-key"></i> Cambiar Contraseña
+					</h4>
+					<button type="button" class="close text-white" data-dismiss="modal">
+						&times;
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<form id="form_password" class="form-horizontal">
+
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Contraseña Actual</label>
+							<div class="col-md-8">
+								<input type="password" name="pass" class="form-control"
+									placeholder="Ingrese contraseña actual">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Nueva Contraseña</label>
+							<div class="col-md-8">
+								<input type="password" name="pass1" class="form-control"
+									placeholder="Ingrese nueva contraseña">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Repetir Contraseña</label>
+							<div class="col-md-8">
+								<input type="password" name="pass2" class="form-control"
+									placeholder="Repita nueva contraseña">
+							</div>
+						</div>
+
+						<div class="form-group text-center mt-3">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">
+								<i class="fas fa-times"></i> Cancelar
+							</button>
+
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-save"></i> Guardar
+							</button>
+						</div>
+
+					</form>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
 
 	<!-- jQuery -->
 	<script src="{{ asset('plugins/adminlte/plugins/jquery/jquery.min.js') }}"></script>
@@ -1065,6 +1105,10 @@
 
 		})
 	</script>
+
+	<!-- Script para cambio de contraseña -->
+	<script src="{{ asset('viewresources/admin/usuario/password_update.js') }}"></script>
+
 </body>
 
 </html>

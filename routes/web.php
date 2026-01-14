@@ -72,6 +72,15 @@ Route::middleware('auth')->group(function () {
             Route::post('usuarios/eliminar_rol/{idUsuario}', [UsuarioController::class, 'actionEliminarRol']);
             Route::get('usuarios/listar', [UsuarioController::class, 'listarUsuarios']);
 
+            // Cambiar contraseña (disponible para todos los usuarios autenticados)
+            Route::post('usuarios/password/update', [UsuarioController::class, 'actionUpdatePassword'])->name('usuarios.password.update');
+
+            // Perfil de usuario
+            Route::get('profile', [\App\Http\Controllers\Admin\Usuarios\ProfileController::class, 'index'])->name('admin.profile.index');
+            Route::post('profile/update', [\App\Http\Controllers\Admin\Usuarios\ProfileController::class, 'update'])->name('admin.profile.update');
+
+
+
             // DOCENTE
             Route::get('/docente', [DocenteController::class, 'actionDocente'])->name('admin.docentes.index');
 
@@ -168,6 +177,14 @@ Route::middleware('auth')->group(function () {
             Route::get('reportes', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'index'])->name('admin.reportes.index');
 
             Route::get('reportes/estadisticas', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'estadisticas'])->name('admin.permisos.estadisticas');
+
+            Route::get('reportes/pdf/semestre/{semestre_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'pdfSemestre'])->name('admin.reportes.pdf.semestre');
+
+            Route::get('reportes/pdf/descargar/semestre/{semestre_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'descargarPdfSemestre'])->name('admin.reportes.pdf.descargar.semestre');
+
+            Route::get('reportes/pdf/docente/{docente_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'pdfDocente'])->name('admin.reportes.pdf.docente');
+
+            Route::get('reportes/pdf/descargar/docente/{docente_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'descargarPdfDocente'])->name('admin.reportes.pdf.descargar.docente');
 
         });
 
