@@ -135,18 +135,20 @@ function actualizarPermiso(id, formData) {
                     type: 'success'
                 });
 
-                // Cerrar modal
-                $('#editPermisoModal').modal('hide');
-
                 // Actualizar la fila en la tabla
                 if (response.permiso) {
                     actualizarFilaTabla(response.permiso);
-                } else {
-                    // Si no viene el objeto, recargar la página
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
                 }
+
+                // Guardar el ID del permiso para enviar email
+                window.permisoActualizadoId = id;
+
+                // Cerrar modal de edición
+                $('#editPermisoModal').modal('hide');
+                
+                // Mostrar modal de confirmación de email
+                $('#emailConfirmModal').modal('show');
+                
             } else {
                 new PNotify({
                     title: 'Error',
@@ -246,4 +248,75 @@ function formatearFechaHora(fechaHora) {
     const horasStr = String(horas).padStart(2, '0');
     
     return `<strong>${dia}/${mes}/${anio}</strong><br><small class="text-muted">${horasStr}:${minutos} ${ampm}</small>`;
+}
+
+// Función para enviar correo de notificación
+function enviarCorreoPermiso() {
+    const permisoId = window.permisoActualizadoId;
+    
+    if (!permisoId) {
+        new PNotify({
+            title: 'Error',
+            text: 'No se pudo identificar el permiso.',
+            type: 'error'
+        });
+        $('#emailConfirmModal').modal('hide');
+        return;
+    }
+
+    // Deshabilitar botón mientras se envía
+    const btnEnviar = $('#emailConfirmModal .btn-success');
+    const originalText = btnEnviar.html();
+    btnEnviar.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...');
+
+    $.ajax({
+        url: `${_urlBase}/admin/permiso/enviar-email/${permisoId}`,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.success) {
+                new PNotify({
+                    title: '¡Correo Enviado!',
+                    text: response.message || 'El correo ha sido enviado al docente.',
+                    type: 'success'
+                });
+            } else {
+                new PNotify({
+                    title: 'Advertencia',
+                    text: response.message || 'El permiso se actualizó pero no se pudo enviar el correo.',
+                    type: 'warning'
+                });
+            }
+            
+            // Cerrar modal
+            $('#emailConfirmModal').modal('hide');
+        },
+        error: function(xhr) {
+            console.error('Error al enviar correo:', xhr);
+            
+            let errorMsg = 'No se pudo enviar el correo.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+
+            new PNotify({
+                title: 'Error',
+                text: errorMsg,
+                type: 'error'
+            });
+            
+            // Cerrar modal de todas formas
+            $('#emailConfirmModal').modal('hide');
+        },
+        complete: function() {
+            // Restaurar botón
+            btnEnviar.prop('disabled', false).html(originalText);
+            
+            // Limpiar variable global
+            window.permisoActualizadoId = null;
+        }
+    });
 }

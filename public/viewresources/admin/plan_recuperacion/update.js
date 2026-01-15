@@ -200,7 +200,11 @@ function updatePlan() {
                 text: 'Plan de recuperación actualizado correctamente',
                 type: 'success'
             });
-            
+
+            // Guardar el ID del plan para enviar email
+            window.planActualizadoId = idPlan;
+
+            // Cerrar modal de edición (el evento hidden.bs.modal abrirá el modal de email)
             $('#editPlanModal').modal('hide');
         },
         error: function(xhr) {
@@ -218,6 +222,77 @@ function updatePlan() {
                 text: errorMsg,
                 type: 'error'
             });
+        }
+    });
+}
+
+// Función para enviar correo de notificación del plan
+function enviarCorreoPlan() {
+    const planId = window.planActualizadoId;
+    
+    if (!planId) {
+        new PNotify({
+            title: 'Error',
+            text: 'No se pudo identificar el plan.',
+            type: 'error'
+        });
+        $('#emailConfirmModalPlan').modal('hide');
+        return;
+    }
+
+    // Deshabilitar botón mientras se envía
+    const btnEnviar = $('#emailConfirmModalPlan .btn-success');
+    const originalText = btnEnviar.html();
+    btnEnviar.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...');
+
+    $.ajax({
+        url: `${_urlBase}/admin/plan_recuperacion/enviar-email/${planId}`,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.success) {
+                new PNotify({
+                    title: '¡Correo Enviado!',
+                    text: response.message || 'El correo ha sido enviado al docente.',
+                    type: 'success'
+                });
+            } else {
+                new PNotify({
+                    title: 'Advertencia',
+                    text: response.message || 'El plan se actualizó pero no se pudo enviar el correo.',
+                    type: 'warning'
+                });
+            }
+            
+            // Cerrar modal
+            $('#emailConfirmModalPlan').modal('hide');
+        },
+        error: function(xhr) {
+            console.error('Error al enviar correo:', xhr);
+            
+            let errorMsg = 'No se pudo enviar el correo.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+
+            new PNotify({
+                title: 'Error',
+                text: errorMsg,
+                type: 'error'
+            });
+            
+            // Cerrar modal de todas formas
+            $('#emailConfirmModalPlan').modal('hide');
+        },
+        complete: function() {
+            // Restaurar botón
+            btnEnviar.prop('disabled', false).html(originalText);
+            
+            // Limpiar variable global
+            window.planActualizadoId = null;
         }
     });
 }

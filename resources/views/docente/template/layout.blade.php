@@ -330,23 +330,6 @@
 						data-accordion="false">
 						<!-- Add icons to the links using the .nav-icon class
 							 with font-awesome or any other icon font library -->
-						<li class="nav-item {{ request()->is('/') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
-								<i class="nav-icon fas fa-tachometer-alt"></i>
-								<p>
-									Dashboard
-									<i class="right fas fa-angle-left"></i>
-								</p>
-							</a>
-							<ul class="nav nav-treeview">
-								<li class="nav-item">
-									<a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Página principal</p>
-									</a>
-								</li>
-							</ul>
-						</li>
 						{{-- SEGUIMIENTO DE PERMISO --}}
 						<li class="nav-item {{ request()->is('docente/seguimiento_permiso*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('docente/seguimiento_permiso*') ? 'active' : '' }}">
@@ -431,7 +414,7 @@
 							<a href="#" class="nav-link {{ request()->is('docente/evidencia_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-upload"></i>
 								<p>
-									Evidencia de Recuperación
+									Evidencia de Sesión
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
@@ -441,7 +424,7 @@
 									<a href="{{ url('docente/evidencia_recuperacion') }}"
 										class="nav-link {{ request()->is('docente/evidencia_recuperacion') ? 'active' : '' }}">
 										<i class="nav-icon fas fa-list"></i>
-										<p>Evidencia de Recuperación</p>
+										<p>Evidencia de Sesión</p>
 									</a>
 								</li>
 							</ul>
@@ -454,23 +437,53 @@
 			<!-- /.sidebar -->
 		</aside>
 
+				<!-- Content Header (Page header) -->
+			@php
+			if (request()->is('docente/seguimiento_permiso*')) {
+				$title = 'Seguimiento';
+			} elseif (request()->is('docente/tipo_permiso*')) {
+				$title = 'Tipo de Permiso';
+			} elseif (request()->is('docente/permiso*')) {
+				$title = 'Permiso';
+			} elseif (request()->is('docente/plan_recuperacion*')) {
+				$title = 'Plan de Recuperación';
+			} elseif (request()->is('docente/sesion_recuperacion*')) {
+				$title = 'Sesión de Recuperación';
+			} elseif (request()->is('docente/evidencia_recuperacion*')) {
+				$title = 'Evidencia de Sesión';
+			} elseif (request()->is('docente/reportes*')) {
+				$title = 'Reportes';
+			} else {
+				$title = 'Sistema de Gestión';
+			}
+		@endphp
 		<!-- Content Wrapper. Contains page content -->
 		<div class="content-wrapper">
 			<!-- Content Header (Page header) -->
 			<div class="content-header">
 				<div class="container-fluid">
 					<div class="row mb-2">
+
 						<div class="col-sm-6">
 							<h1 class="m-0">@yield('titleGeneral')</h1>
-						</div><!-- /.col -->
+						</div>
+
 						<div class="col-sm-6">
 							<ol class="breadcrumb float-sm-right">
-								<li class="breadcrumb-item"><a href="#">Home</a></li>
-								<li class="breadcrumb-item active">Dashboard v1</li>
+
+								<li class="breadcrumb-item">
+									<a href="{{ url('/') }}">Home</a>
+								</li>
+
+								<li class="breadcrumb-item active">
+									{{ $title }}
+								</li>
+
 							</ol>
-						</div><!-- /.col -->
-					</div><!-- /.row -->
-				</div><!-- /.container-fluid -->
+						</div>
+
+					</div>
+				</div>
 			</div>
 			<!-- /.content-header -->
 

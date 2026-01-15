@@ -29,7 +29,8 @@ class Permiso extends Model
         'observacion',
         'documento_sustento',
         'fecha_solicitud',
-        'fecha_resolucion'
+        'fecha_resolucion',
+        'estado_notificado'
     ];
 
     // Casts de tipos

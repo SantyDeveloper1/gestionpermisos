@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin\PlanRecuperacion;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Models\PlanRecuperacion;
 use App\Models\SesionRecuperacion;
 use App\Models\Permiso;
+use App\Mail\CambioEstadoPlanRecuperacionMail;
 
 class PlanRecuperacionController extends Controller
 {
@@ -458,6 +460,78 @@ class PlanRecuperacionController extends Controller
                 'success' => false,
                 'message' => 'Error al obtener el progreso de recuperación',
                 'horas_recuperadas' => 0
+            ], 500);
+        }
+    }
+
+    /**
+     * Enviar correo electrónico de notificación de cambio de estado del plan
+     */
+    public function actionEnviarEmail($id)
+    {
+        try {
+            // Buscar el plan con todas sus relaciones necesarias
+            $plan = PlanRecuperacion::with(['permiso.docente.user', 'permiso.tipoPermiso'])
+                ->where('id_plan', $id)
+                ->first();
+
+            if (!$plan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Plan de recuperación no encontrado.'
+                ], 404);
+            }
+
+            // Verificar que el docente tenga un email
+            $emailDocente = $plan->permiso->docente->user->email ?? null;
+
+            if (!$emailDocente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El docente no tiene un correo electrónico registrado.'
+                ], 422);
+            }
+
+            // Validar si el estado actual ya fue notificado
+            if ($plan->estado_notificado === $plan->estado_plan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El estado "' . $plan->estado_plan . '" ya fue notificado anteriormente al docente.'
+                ], 422);
+            }
+
+            // Preparar los datos para el correo
+            $nombreCompleto = $plan->permiso->docente->user->last_name . ', ' . $plan->permiso->docente->user->name;
+
+            $emailData = [
+                'docente' => $nombreCompleto,
+                'estado' => $plan->estado_plan,
+                'tipoPermiso' => $plan->permiso->tipoPermiso->nombre ?? 'No especificado',
+                'fechaPresentacion' => $plan->fecha_presentacion ? $plan->fecha_presentacion->format('d/m/Y') : 'No especificada',
+                'totalHoras' => $plan->total_horas_recuperar ?? 'No especificado',
+                // Solo incluir observación si el estado es OBSERVADO
+                'observacion' => ($plan->estado_plan === 'OBSERVADO' && $plan->observacion) ? $plan->observacion : null,
+                'urlSistema' => url('/docente/plan_recuperacion')
+            ];
+
+            // Enviar el correo
+            Mail::to($emailDocente)->send(new CambioEstadoPlanRecuperacionMail($emailData));
+
+            // Actualizar el campo estado_notificado con el estado actual
+            $plan->update([
+                'estado_notificado' => $plan->estado_plan
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Correo enviado exitosamente a ' . $emailDocente,
+                'estado_notificado' => $plan->estado_plan
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el correo: ' . $e->getMessage()
             ], 500);
         }
     }

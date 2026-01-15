@@ -148,7 +148,7 @@ function updateDocente() {
                 cerrarModalSeguro(response.message || 'Los datos del docente han sido actualizados exitosamente.');
                 
                 // Actualizar fila sin recargar página
-                actualizarFilaTabla(idDocente, formData);
+                actualizarFilaTabla(idDocente, response.docente);
             } else {
                 showError(response.message || 'No se pudo actualizar la información del docente.');
                 $btn.prop('disabled', false).html('Guardar cambios');
@@ -219,9 +219,18 @@ function actualizarFilaTabla(idDocente, data) {
     }
 
     // Actualizar datos en la tabla
+    // td:eq(0) = N°
+    // td:eq(1) = DNI
+    // td:eq(2) = Nombres (nombre + apellido)
+    // td:eq(3) = Correo
+    // td:eq(4) = Teléfono
+    // td:eq(5) = Grado Académico
+    // td:eq(6) = Condición (Tipo de Contrato)
+    
     row.find('td:eq(1)').text(data.dni);
-    row.find('td:eq(2)').text(data.nombre);
+    row.find('td:eq(2)').text(data.nombre + ' ' + data.apellido);
     row.find('td:eq(3)').text(data.correo);
     row.find('td:eq(4)').text(data.telefono);
-    row.find('td:eq(5)').html(`<span class="badge badge-warning">${data.condicion}</span>`);
+    row.find('td:eq(5)').html(`<span class="badge badge-primary">${data.grado}</span>`);
+    row.find('td:eq(6)').html(`<span class="badge badge-warning">${data.condicion}</span>`);
 }

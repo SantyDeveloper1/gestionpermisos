@@ -1,6 +1,6 @@
 @extends('docente.template.layout')
 
-@section('titleGeneral', 'Gestión de Planes de Recuperación')
+@section('titleGeneral', 'Mis Planes de Recuperación de Clases')
 
 @section('sectionGeneral')
 
@@ -732,82 +732,25 @@
                         <div>
                             <h1 class="module-title">
                                 <i class="fas fa-calendar-check"></i>
-                                Plan de Recuperación de Clases
+                                Planes de Recuperación de Clases
                             </h1>
                             <p class="module-subtitle">
-                                Sistema de gestión y control para la recuperación de horas académicas afectadas por permisos
+                                Registro y seguimiento de mis planes de recuperación de horas académicas afectadas por permisos
                             </p>
-                        </div>
-                        <div class="text-right">
-                            <div class="mb-3">
-                                <span class="badge-modern badge-presentado">
-                                    <span class="status-dot dot-presentado"></span>
-                                    Presentado
-                                </span>
-                                <span class="badge-modern badge-aprobado ml-2">
-                                    <span class="status-dot dot-aprobado"></span>
-                                    Aprobado
-                                </span>
-                                <span class="badge-modern badge-observado ml-2">
-                                    <span class="status-dot dot-observado"></span>
-                                    Observado
-                                </span>
-                            </div>
-                            <small class="text-white opacity-75">Gestión académica - Universidad XYZ</small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Estadísticas Rápidas -->
+                <!-- Barra de Acciones -->
                 <div class="container py-4">
-                    <div class="quick-stats">
-                        <div class="stat-card">
-                            <div class="stat-icon icon-presentado">
-                                <i class="fas fa-paper-plane"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>{{ $listPlanes->where('estado_plan', 'PRESENTADO')->count() }}</h3>
-                                <p>Planes Presentados</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon icon-aprobado">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>{{ $listPlanes->where('estado_plan', 'APROBADO')->count() }}</h3>
-                                <p>Planes Aprobados</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon icon-observado">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>{{ $listPlanes->where('estado_plan', 'OBSERVADO')->count() }}</h3>
-                                <p>Planes Observados</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon icon-pendiente">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>{{ $listPlanes->where('estado_plan', 'PRESENTADO')->count() }}</h3>
-                                <p>Pendientes de Aprobación</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Barra de Acciones -->
                     <div class="action-bar">
                         <div>
                             <h5 class="mb-0" style="color: var(--primary-blue); font-weight: 600;">
                                 <i class="fas fa-list-check mr-2"></i>
-                                Gestión de Planes de Recuperación
+                               Mis Planes Registrados
                             </h5>
                             <p class="mb-0 mt-2" style="color: var(--medium-gray); font-size: 0.9rem;">
-                                Total: {{ $listPlanes->count() }} planes registrados
+                                Total: {{ $listPlanes->count() }} planes registrado por usted
                             </p>
                         </div>
                         <div>
@@ -887,20 +830,6 @@
                                                     class="btn-icon btn-view" title="Ver sesiones de recuperación">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <button class="btn-icon btn-edit" onclick="editPlan({{ $plan->id_plan }})"
-                                                    title="Editar">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                @if($plan->estado_plan == 'PRESENTADO')
-                                                    <button class="btn-icon btn-approve"
-                                                        onclick="aprobarPlan('{{ $plan->id_plan }}')" title="Aprobar Plan">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                @endif
-                                                <button class="btn-icon btn-delete" onclick="deletePlan({{ $plan->id_plan }})"
-                                                    title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>

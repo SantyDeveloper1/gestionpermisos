@@ -166,14 +166,14 @@ function updateEstadoDocente() {
                 
                 // ⭐ Actualizar badge dinámicamente
                 if (nuevoEstado == "1") {
-                    row.find('td:eq(8)')
+                    row.find('td:eq(7)')
                         .html('<span class="badge badge-success">Activo</span>');
                     btnEditar.prop('disabled', false);
                     btnEliminar.prop('disabled', false);
                     btnEstadoIcon.removeClass('fa-toggle-off')
                                  .addClass('fa-toggle-on');
                 } else {
-                    row.find('td:eq(8)')
+                    row.find('td:eq(7)')
                         .html('<span class="badge badge-danger">Inactivo</span>');
                     btnEditar.prop('disabled', true);
                     btnEliminar.prop('disabled', true);

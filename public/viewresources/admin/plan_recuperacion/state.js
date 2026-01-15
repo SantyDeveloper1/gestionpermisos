@@ -86,8 +86,8 @@ window.editPlan = function(id) {
             const estadoActual = $('#editEstadoActual');
             estadoActual.html(getEstadoBadgeHTML(response.estado_plan));
             
-            // Limpiar y preparar el select de nuevo estado
-            $('#editEstado').val('');
+            // Pre-seleccionar el estado actual en el select
+            $('#editEstado').val(response.estado_plan);
             $('#editObservacion').val('');
             $('#observacionContainer').hide();
             
@@ -193,7 +193,11 @@ window.updatePlan = function() {
                     text: response.message || 'Estado del plan actualizado correctamente',
                     type: 'success'
                 });
+
+                // Guardar el ID del plan para enviar email
+                window.planActualizadoId = idPlan;
                 
+                // Cerrar modal de edición (el evento hidden.bs.modal abrirá el modal de email)
                 $('#editPlanModal').modal('hide');
             },
             error: function(xhr) {
@@ -218,6 +222,14 @@ window.updatePlan = function() {
 
 // Limpiar el modal cuando se cierra
 $('#editPlanModal').on('hidden.bs.modal', function() {
+    // Si hay un plan actualizado pendiente, mostrar el modal de email
+    if (window.planActualizadoId) {
+        setTimeout(function() {
+            $('#emailConfirmModalPlan').modal('show');
+        }, 300); // Pequeño delay para asegurar que el modal anterior se cerró completamente
+    }
+    
+    // Limpiar campos del modal
     $('#editIdPlan').val('');
     $('#editEstado').val('');
     $('#editObservacion').val('');

@@ -371,23 +371,6 @@
                                             onclick="viewPermiso('{{ $permiso->id_permiso }}')" title="Ver detalles">
                                             <i class="fas fa-eye"></i>
                                         </button>
-
-                                        <button class="btn btn-sm btn-warning btn-action"
-                                            onclick="editPermiso('{{ $permiso->id_permiso }}')" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        @if($permiso->estado_permiso == 'SOLICITADO')
-                                            <button class="btn btn-sm btn-success btn-action"
-                                                onclick="aprobarPermiso('{{ $permiso->id_permiso }}')" title="Aprobar">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        @endif
-
-                                        <button class="btn btn-sm btn-danger btn-action"
-                                            onclick="deletePermiso('{{ $permiso->id_permiso }}')" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
                                     </td>
                                 </tr>
                             @endforeach

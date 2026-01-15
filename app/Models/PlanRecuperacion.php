@@ -21,7 +21,8 @@ class PlanRecuperacion extends Model
         'fecha_presentacion',
         'total_horas_recuperar',
         'estado_plan',
-        'observacion'
+        'observacion',
+        'estado_notificado'
     ];
 
     // Casts de tipos

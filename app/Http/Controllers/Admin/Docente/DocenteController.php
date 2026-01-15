@@ -229,9 +229,21 @@ class DocenteController extends Controller
             $docente->tipo_contrato_id = $request->tipo_contrato_id;
             $docente->save();
 
+            // Recargar las relaciones para obtener los nombres actualizados
+            $docente->load(['grado', 'contrato']);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Los datos del docente han sido actualizados exitosamente.'
+                'message' => 'Los datos del docente han sido actualizados exitosamente.',
+                'docente' => [
+                    'dni' => $user->document_number,
+                    'nombre' => $user->name,
+                    'apellido' => $user->last_name,
+                    'correo' => $user->email,
+                    'telefono' => $user->phone,
+                    'grado' => $docente->grado->nombre ?? 'N/A',
+                    'condicion' => $docente->contrato->nombre ?? 'N/A'
+                ]
             ]);
 
         } catch (\Exception $e) {

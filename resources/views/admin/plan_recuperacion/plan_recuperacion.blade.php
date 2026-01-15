@@ -896,44 +896,43 @@
         </div>
     </section>
 
-<style>
-/* Más aire dentro del modal */
-.modal-modern .modal-body {
-    padding: 30px 35px !important;
-}
+    <style>
+        /* Más aire dentro del modal */
+        .modal-modern .modal-body {
+            padding: 30px 35px !important;
+        }
 
-/* Espaciado entre el borde curvo y títulos */
-.step-content {
-    padding: 25px 20px;
-}
+        /* Espaciado entre el borde curvo y títulos */
+        .step-content {
+            padding: 25px 20px;
+        }
 
-/* Paso 3 y 4: separación superior e inferior */
-#step3-content h4,
-#step4-content h4 {
-    margin-top: 15px;
-    margin-bottom: 20px;
-}
+        /* Paso 3 y 4: separación superior e inferior */
+        #step3-content h4,
+        #step4-content h4 {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
 
-/* Contenedores internos */
-#validationResults,
-.session-card {
-    padding: 25px;
-    border-radius: 14px;
-}
+        /* Contenedores internos */
+        #validationResults,
+        .session-card {
+            padding: 25px;
+            border-radius: 14px;
+        }
 
-/* Evitar que toquen los lados del modal */
-#step3-content,
-#step4-content {
-    margin-top: 15px;
-    margin-bottom: 20px;
-}
+        /* Evitar que toquen los lados del modal */
+        #step3-content,
+        #step4-content {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
 
-/* Mejora de legibilidad general */
-.step-content p {
-    line-height: 1.5;
-}
-
-</style>
+        /* Mejora de legibilidad general */
+        .step-content p {
+            line-height: 1.5;
+        }
+    </style>
     <!-- MODAL NUEVO PLAN - DISEÑO MEJORADO -->
     <div class="modal fade" id="nuevoPlanModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
@@ -1048,16 +1047,16 @@
 
                             <!-- Horas a Recuperar -->
                             <!--<div class="form-group-modern mt-4">
-                                                                            <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                                                                <i class="fas fa-calculator mr-2"></i>
-                                                                                Horas a Recuperar
-                                                                            </h6>
-                                                                            <div class="hours-display">
-                                                                                <div class="hours-number" id="totalHorasDisplay">0</div>
-                                                                                <div class="hours-label">Horas que deben ser recuperadas</div>
-                                                                                <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
-                                                                            </div>
-                                                                        </div>-->
+                                                                                    <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
+                                                                                        <i class="fas fa-calculator mr-2"></i>
+                                                                                        Horas a Recuperar
+                                                                                    </h6>
+                                                                                    <div class="hours-display">
+                                                                                        <div class="hours-number" id="totalHorasDisplay">0</div>
+                                                                                        <div class="hours-label">Horas que deben ser recuperadas</div>
+                                                                                        <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
+                                                                                    </div>
+                                                                                </div>-->
                             <!-- Resumen del permiso seleccionado -->
                             <div class="form-group-modern mt-4">
                                 <h4>Resumen del Permiso Seleccionado</h4>
@@ -1409,7 +1408,7 @@
     </div>
     </div>
 
-   <!-- MODAL EDITAR PLAN - DISEÑO MEJORADO -->
+    <!-- MODAL EDITAR PLAN - DISEÑO MEJORADO -->
     <div class="modal fade" id="editPlanModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content modal-modern">
@@ -1425,42 +1424,42 @@
                 <form id="frmPlanEdit" onsubmit="event.preventDefault(); updatePlan();">
                     @csrf
                     <input type="hidden" id="editIdPlan" name="id_plan">
-                    
+
                     <div class="modal-body p-4">
-                        <div id="editPlanContent">     
+                        <div id="editPlanContent">
                             <!-- Estado actual -->
                             <div class="form-group mb-4">
                                 <label class="form-label-modern">
                                     <i class="fas fa-info-circle mr-1"></i> Estado Actual
                                 </label>
-                                <div id="editEstadoActual" class="badge-modern estado-badge" style="font-size: 1rem; padding: 8px 16px;">
+                                <div id="editEstadoActual" class="badge-modern estado-badge"
+                                    style="font-size: 1rem; padding: 8px 16px;">
                                     <!-- Estado se cargará aquí -->
                                 </div>
                             </div>
-                            
+
                             <!-- Cambiar Estado -->
                             <div class="form-group mb-4">
                                 <label class="form-label-modern">
                                     <i class="fas fa-exchange-alt mr-1"></i> Cambiar Estado
                                 </label>
-                                <select id="editEstado" name="estado" class="form-control-modern" onchange="toggleObservacion()">
+                                <select id="editEstado" name="estado" class="form-control-modern"
+                                    onchange="toggleObservacion()">
                                     <option value="">Seleccione un estado</option>
                                     <option value="PRESENTADO">PRESENTADO</option>
                                     <option value="APROBADO">APROBADO</option>
                                     <option value="OBSERVADO">OBSERVADO</option>
                                 </select>
                             </div>
-                            
+
                             <!-- Observación (solo visible cuando estado es OBSERVADO) -->
                             <div id="observacionContainer" class="form-group mb-4" style="display: none;">
                                 <label class="form-label-modern">
                                     <i class="fas fa-comment-alt mr-1"></i> Observación / Comentarios
                                     <span class="text-danger">*</span>
                                 </label>
-                                <textarea id="editObservacion" name="observacion" 
-                                        class="form-control-modern" 
-                                        rows="4" 
-                                        placeholder="Ingrese las observaciones sobre el plan..."></textarea>
+                                <textarea id="editObservacion" name="observacion" class="form-control-modern" rows="4"
+                                    placeholder="Ingrese las observaciones sobre el plan..."></textarea>
                                 <small class="form-text text-muted">
                                     Campo obligatorio cuando el plan es observado.
                                 </small>
@@ -1469,7 +1468,7 @@
                     </div>
                     <div class="modal-footer p-4" style="background: #f8f9fa; border-top: 1px solid #dee2e6;">
                         <button type="button" class="btn-modern" data-dismiss="modal"
-                                style="background: #6c757d; color: white;">
+                            style="background: #6c757d; color: white;">
                             <i class="fas fa-times mr-2"></i>
                             Cancelar
                         </button>
@@ -1483,12 +1482,72 @@
         </div>
     </div>
 
+    <!-- MODAL CONFIRMAR ENVÍO DE EMAIL PARA PLAN -->
+    <div class="modal fade" id="emailConfirmModalPlan" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope mr-2"></i> Notificar cambio de estado del Plan
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Deseas enviar un correo al docente informando el cambio de estado del Plan de Recuperación?
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">No enviar</button>
+
+                    <button class="btn btn-success" onclick="enviarCorreoPlan()">
+                        Enviar correo
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR ENVÍO DE EMAIL -->
+    <div class="modal fade" id="emailConfirmModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope mr-2"></i> Notificar por correo
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Deseas enviar un correo al docente informando el cambio de estado?
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">No enviar</button>
+
+                    <button class="btn btn-success" onclick="enviarCorreoPermiso()">
+                        Enviar correo
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <style>
-    /* Estilos para los badges de estado */
-    .badge-cancelado {
-        background-color: #dc3545;
-        color: white;
-    }
+        /* Estilos para los badges de estado */
+        .badge-cancelado {
+            background-color: #dc3545;
+            color: white;
+        }
     </style>
 
 @endsection
@@ -1542,6 +1601,29 @@
                 if ($('#frmPlanInsert').data('formValidation')) {
                     $('#frmPlanInsert').data('formValidation').resetForm();
                 }
+            });
+        });
+
+        // Actualizar label del input file cuando se selecciona un archivo
+        $(document).ready(function () {
+            $('.custom-file-input').on('change', function () {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).siblings('.custom-file-label').addClass("selected").html(fileName);
+            });
+
+            // Manejar la transición entre el modal de edición y el modal de email
+            $('#editPlanModal').on('hidden.bs.modal', function () {
+                // Si hay un plan actualizado pendiente, mostrar el modal de email
+                if (window.planActualizadoId) {
+                    setTimeout(function () {
+                        $('#emailConfirmModalPlan').modal('show');
+                    }, 300); // Pequeño delay para asegurar que el modal anterior se cerró completamente
+                }
+            });
+
+            // Limpiar la variable cuando se cierra el modal de email
+            $('#emailConfirmModalPlan').on('hidden.bs.modal', function () {
+                window.planActualizadoId = null;
             });
         });
     </script>

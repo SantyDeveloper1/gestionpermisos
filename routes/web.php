@@ -120,6 +120,7 @@ Route::middleware('auth')->group(function () {
             Route::get('permiso/{id}', [PermisoController::class, 'actionShow'])->name('admin.permisos.show');
             Route::match(['get', 'post'], 'permiso/insert', [PermisoController::class, 'actionInsert'])->name('admin.permisos.create');
             Route::post('permiso/update/{idPermiso}', [PermisoController::class, 'actionUpdate'])->name('admin.permisos.edit');
+            Route::post('permiso/enviar-email/{id}', [PermisoController::class, 'actionEnviarEmail'])->name('admin.permisos.enviar_email');
             Route::delete('permiso/delete/{idPermiso}', [PermisoController::class, 'actionDelete']);
 
             // CONFIGURACIÓN
@@ -134,6 +135,7 @@ Route::middleware('auth')->group(function () {
             Route::match(['get', 'post'], 'plan_recuperacion/insert', [PlanRecuperacionController::class, 'actionInsert']);
             Route::post('plan_recuperacion/update/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionUpdate']);
             Route::patch('plan_recuperacion/aprobar/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionAprobar']);
+            Route::post('plan_recuperacion/enviar-email/{id}', [PlanRecuperacionController::class, 'actionEnviarEmail'])->name('admin.plan_recuperacion.enviar_email');
             Route::delete('plan_recuperacion/delete/{idPlan_recuperacion}', [PlanRecuperacionController::class, 'actionDelete']);
 
 

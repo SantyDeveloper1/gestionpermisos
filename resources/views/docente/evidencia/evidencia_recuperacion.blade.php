@@ -1,6 +1,6 @@
 @extends('docente.template.layout')
 
-@section('titleGeneral', 'Gestión de Evidencias de Recuperación')
+@section('titleGeneral', 'Mi Evidencia de Sesion de recuperacion')
 
 @section('sectionGeneral')
 
@@ -681,75 +681,22 @@
                         <div>
                             <h1 class="module-title-evidence">
                                 <i class="fas fa-file-contract"></i>
-                                Gestión de Evidencias de Recuperación
+                                Evidencia de sesion de recuperación
                             </h1>
                             <p class="module-subtitle-evidence">
-                                Sistema de carga y gestión de evidencias sustentatorias de sesiones de recuperación
+                                En este módulo podrá cargar y consultar las evidencias sustentatorias 
+    de las sesiones de recuperación realizadas.
                             </p>
                         </div>
                         <div class="text-right">
-                            <div class="mb-3">
-                                <span class="evidence-type-badge badge-acta">
-                                    <i class="fas fa-file-signature"></i>
-                                    Acta
-                                </span>
-                                <span class="evidence-type-badge badge-asistencia ml-2">
-                                    <i class="fas fa-clipboard-list"></i>
-                                    Asistencia
-                                </span>
-                                <span class="evidence-type-badge badge-captura ml-2">
-                                    <i class="fas fa-camera"></i>
-                                    Captura
-                                </span>
-                                <span class="evidence-type-badge badge-otro ml-2">
-                                    <i class="fas fa-file-alt"></i>
-                                    Otro
-                                </span>
-                            </div>
+                            <br>
+                            <br>
                             <small class="text-white opacity-75">Sustento obligatorio para todas las sesiones</small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Estadísticas de Evidencias -->
-                <div class="evidence-stats">
-                    <div class="stat-card-evidence">
-                        <div class="stat-icon-evidence icon-acta">
-                            <i class="fas fa-file-signature"></i>
-                        </div>
-                        <div class="stat-content-evidence">
-                            <h3>{{ $totalActas }}</h3>
-                            <p>Actas Registradas</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-evidence">
-                        <div class="stat-icon-evidence icon-asistencia">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <div class="stat-content-evidence">
-                            <h3>{{ $totalAsistencias }}</h3>
-                            <p>Listas de Asistencia</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-evidence">
-                        <div class="stat-icon-evidence icon-captura">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <div class="stat-content-evidence">
-                            <h3>{{ $totalCapturas }}</h3>
-                            <p>Capturas de Pantalla</p>
-                        </div>
-                    </div>
-                    <div class="stat-card-evidence">
-                        <div class="stat-icon-evidence icon-otro">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="stat-content-evidence">
-                            <h3>{{ $totalOtros }}</h3>
-                            <p>Otros Documentos</p>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- Banner de Sesión Seleccionada -->
                 @if(isset($sesionSeleccionada) && $sesionSeleccionada)

@@ -950,73 +950,45 @@
 	<!-- Page specific script -->
 	<script>
 		$(function () {
-			// Solo inicializar si no se ha establecido la bandera skipDefaultDataTable
-			if (typeof skipDefaultDataTable === 'undefined' || !skipDefaultDataTable) {
-				$("#example1").DataTable({
-					"responsive": true,
-					"lengthChange": false,
-					"autoWidth": false,
-					"buttons": [{
-						extend: 'copy',
-						text: 'Copiar',
-						className: 'btn btn-sm btn-primary'
-					},
-					{
-						extend: 'csv',
-						text: 'CSV',
-						className: 'btn btn-sm btn-success'
-					},
-					{
-						extend: 'excel',
-						text: 'Excel',
-						className: 'btn btn-sm btn-info'
-					},
-					{
-						extend: 'pdf',
-						text: 'PDF',
-						className: 'btn btn-sm btn-danger'
-					},
-					{
-						extend: 'print',
-						text: 'Imprimir',
-						className: 'btn btn-sm btn-warning'
-					}
-					],
-					"language": {
-						"decimal": "",
-						"emptyTable": "No hay datos disponibles en la tabla",
-						"info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-						"infoEmpty": "Mostrando 0 a 0 de 0 entradas",
-						"infoFiltered": "(filtrado de _MAX_ entradas totales)",
-						"infoPostFix": "",
-						"thousands": ",",
-						"lengthMenu": "Mostrar _MENU_ entradas",
-						"loadingRecords": "Cargando...",
-						"processing": "Procesando...",
-						"search": "Buscar:",
-						"zeroRecords": "No se encontraron registros coincidentes",
-						"paginate": {
-							"first": "Primero",
-							"last": "Último",
-							"next": "Siguiente",
-							"previous": "Anterior"
-						},
-						"aria": {
-							"sortAscending": ": activar para ordenar la columna de manera ascendente",
-							"sortDescending": ": activar para ordenar la columna de manera descendente"
-						},
-						"buttons": {
-							"copy": "Copiar",
-							"copyTitle": "Copiado al portapapeles",
-							"copySuccess": {
-								"_": "Se copiaron %d filas al portapapeles",
-								"1": "Se copió una fila al portapapeles"
-							}
-						}
-					}
-				}).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-			}
-		});
+    if (typeof skipDefaultDataTable === 'undefined' || !skipDefaultDataTable) {
+        $("#example1").DataTable({
+            responsive: true,
+            autoWidth: false,
+
+            // MOSTRAR "Mostrar 10 entradas"
+            lengthChange: true,
+            lengthMenu: [10, 25, 50, 100],
+
+            // QUITAMOS LOS BOTONES
+            // buttons: [],  ❌ no se usa
+
+            language: {
+                decimal: "",
+                emptyTable: "No hay datos disponibles en la tabla",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                infoEmpty: "Mostrando 0 a 0 de 0 entradas",
+                infoFiltered: "(filtrado de _MAX_ entradas totales)",
+                thousands: ",",
+                lengthMenu: "Mostrar _MENU_ entradas",
+                loadingRecords: "Cargando...",
+                processing: "Procesando...",
+                search: "Buscar:",
+                zeroRecords: "No se encontraron registros coincidentes",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                },
+                aria: {
+                    sortAscending: ": activar para ordenar la columna de manera ascendente",
+                    sortDescending: ": activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+    }
+});
+
 	</script>
 
 	<script>

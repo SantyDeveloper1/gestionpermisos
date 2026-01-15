@@ -5,6 +5,8 @@ use App\Models\Docente;
 use App\Models\TipoPermiso;
 use App\Models\Permiso;
 use App\Models\SemestreAcademico;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CambioEstadoPermisoMail;
 
 class PermisoController extends Controller
 {
@@ -291,6 +293,88 @@ class PermisoController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al actualizar el permiso: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Enviar correo electrónico de notificación de cambio de estado
+     */
+    public function actionEnviarEmail($id)
+    {
+        try {
+            // Buscar el permiso con todas sus relaciones necesarias
+            $permiso = Permiso::with(['docente.user', 'tipoPermiso', 'semestreAcademico'])
+                ->where('id_permiso', $id)
+                ->first();
+
+            if (!$permiso) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permiso no encontrado.'
+                ], 404);
+            }
+
+            // Verificar que el docente tenga un email
+            $emailDocente = $permiso->docente->user->email ?? null;
+
+            if (!$emailDocente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El docente no tiene un correo electrónico registrado.'
+                ], 422);
+            }
+
+            // Validar si el estado actual ya fue notificado
+            if ($permiso->estado_notificado === $permiso->estado_permiso) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El estado "' . $permiso->estado_permiso . '" ya fue notificado anteriormente al docente.'
+                ], 422);
+            }
+
+            // Preparar los datos para el correo
+            $nombreCompleto = $permiso->docente->user->last_name . ', ' . $permiso->docente->user->name;
+
+            $fechaInicio = $permiso->fecha_inicio ? $permiso->fecha_inicio->format('d/m/Y') : '';
+            $fechaFin = $permiso->fecha_fin ? $permiso->fecha_fin->format('d/m/Y') : '';
+            $fechaPermiso = $fechaInicio . ' al ' . $fechaFin;
+
+            $periodo = $permiso->semestreAcademico
+                ? $permiso->semestreAcademico->codigo_Academico . ' - ' . $permiso->semestreAcademico->anio_academico
+                : 'No especificado';
+
+            $emailData = [
+                'docente' => $nombreCompleto,
+                'estado' => $permiso->estado_permiso,
+                'tipoPermiso' => $permiso->tipoPermiso->nombre ?? 'No especificado',
+                'fechaSolicitud' => $permiso->fecha_solicitud ? $permiso->fecha_solicitud->format('d/m/Y') : now()->format('d/m/Y'),
+                'fechaPermiso' => $fechaPermiso,
+                'periodo' => $periodo,
+                'motivo' => $permiso->motivo ?? 'No especificado',
+                'comentario' => $permiso->observacion ?? null,
+                'validador' => 'Departamento Académico',
+                'urlSistema' => url('/docente/permiso')
+            ];
+
+            // Enviar el correo
+            Mail::to($emailDocente)->send(new CambioEstadoPermisoMail($emailData));
+
+            // Actualizar el campo estado_notificado con el estado actual
+            $permiso->update([
+                'estado_notificado' => $permiso->estado_permiso
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Correo enviado exitosamente a ' . $emailDocente,
+                'estado_notificado' => $permiso->estado_permiso
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el correo: ' . $e->getMessage()
             ], 500);
         }
     }
