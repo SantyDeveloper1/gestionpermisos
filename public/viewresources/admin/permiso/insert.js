@@ -38,7 +38,6 @@ $(() => {
         framework: 'bootstrap',
         excluded: [':disabled', ':hidden', ':not(:visible)', '[class*="notValidate"]'],
         live: 'enabled',
-        message: '<b style="color: #9d9d9d;">Asegúrese que realmente no necesita este valor.</b>',
         trigger: null,
         fields: {
 
@@ -121,6 +120,7 @@ $(() => {
                     }
                 }
             }
+
         }
     });
 });
@@ -157,10 +157,6 @@ function sendFrmPermisoInsert() {
 function registrarPermiso() {
     // Crear FormData para soportar archivos
     const formData = new FormData($('#frmPermisoInsert')[0]);
-    const btnGuardar = $('#btnGuardarPermiso');
-    
-    // Deshabilitar botón mientras se procesa
-    btnGuardar.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Registrando...');
 
     $.ajax({
         url: $('#frmPermisoInsert').attr('action'),
@@ -222,10 +218,6 @@ function registrarPermiso() {
                 text: errorMsg,
                 type: 'error'
             });
-        },
-        complete: function() {
-            // Rehabilitar botón
-            btnGuardar.prop('disabled', false).html('<i class="fas fa-save mr-2"></i> Registrar Permiso');
         }
     });
 }
@@ -270,11 +262,6 @@ function agregarFilaTabla(permiso) {
                 <span class="badge-estado ${estadoClass}">
                     ${permiso.estado_permiso}
                 </span>
-            </td>
-            <td class="text-center">
-                <strong>Solicitado:</strong><br>
-                ${fechaSolicitud}
-                ${fechaResolucion ? `<br><strong>Resuelto:</strong><br>${fechaResolucion}` : ''}
             </td>
             <td class="text-center">
                 <button class="btn btn-sm btn-primary btn-action" onclick="viewPermiso('${permiso.id_permiso}')" title="Ver detalles">

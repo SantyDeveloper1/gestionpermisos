@@ -874,12 +874,6 @@
                                                     title="Editar">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                @if($plan->estado_plan == 'PRESENTADO')
-                                                    <button class="btn-icon btn-approve"
-                                                        onclick="aprobarPlan('{{ $plan->id_plan }}')" title="Aprobar Plan">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                @endif
                                                 <button class="btn-icon btn-delete" onclick="deletePlan('{{ $plan->id_plan }}')"
                                                     title="Eliminar">
                                                     <i class="fas fa-trash"></i>
@@ -1047,16 +1041,16 @@
 
                             <!-- Horas a Recuperar -->
                             <!--<div class="form-group-modern mt-4">
-                                                                                    <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                                                                        <i class="fas fa-calculator mr-2"></i>
-                                                                                        Horas a Recuperar
-                                                                                    </h6>
-                                                                                    <div class="hours-display">
-                                                                                        <div class="hours-number" id="totalHorasDisplay">0</div>
-                                                                                        <div class="hours-label">Horas que deben ser recuperadas</div>
-                                                                                        <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
-                                                                                    </div>
-                                                                                </div>-->
+                                                                                        <h6 style="color: var(--primary-blue); margin-bottom: 20px;">
+                                                                                            <i class="fas fa-calculator mr-2"></i>
+                                                                                            Horas a Recuperar
+                                                                                        </h6>
+                                                                                        <div class="hours-display">
+                                                                                            <div class="hours-number" id="totalHorasDisplay">0</div>
+                                                                                            <div class="hours-label">Horas que deben ser recuperadas</div>
+                                                                                            <input type="hidden" name="total_horas_recuperar" id="totalHorasRecuperar">
+                                                                                        </div>
+                                                                                    </div>-->
                             <!-- Resumen del permiso seleccionado -->
                             <div class="form-group-modern mt-4">
                                 <h4>Resumen del Permiso Seleccionado</h4>
@@ -1538,6 +1532,33 @@
                     </button>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR ENVÍO DE EMAIL PARA APROBAR PLAN -->
+    <div class="modal fade" id="emailConfirmModalPlan" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope mr-2"></i> Notificar por correo
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Deseas enviar un correo al docente informando que su plan de recuperación ha sido aprobado?
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">No enviar</button>
+                    <button class="btn btn-success" onclick="enviarCorreoPlan()">
+                        Enviar correo
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -30,7 +30,7 @@ $(document).ready(function() {
             new PNotify({
                 title: 'Validación',
                 text: 'Por favor seleccione un nuevo estado',
-                type: 'warning'
+                type: 'error'
             });
             return;
         }
@@ -61,8 +61,8 @@ function abrirModalValidacion(idSesion, estadoActual) {
     // Establecer el estado actual
     $('#estadoActual').val(estadoActual);
     
-    // Limpiar y configurar el select de nuevo estado
-    $('#nuevoEstado').val('');
+    // Configurar el select de nuevo estado con el estado actual seleccionado
+    $('#nuevoEstado').val(estadoActual);
     $('#comentario').val('');
     $('#divComentario').hide();
     

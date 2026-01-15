@@ -1,9 +1,6 @@
 @extends('admin.template.layout')
-
 @section('titleGeneral', 'Gestión de Permisos')
-
 @section('sectionGeneral')
-
     <style>
         .card-borde {
             background: #ffffff;
@@ -278,22 +275,18 @@
 
     <section class="content">
         <div class="container-fluid">
-
             <div class="text-right">
                 <!-- Botón Agregar Permiso -->
                 <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#nuevoPermisoModal">
                     <i class="fas fa-plus"></i> Agregar Permiso
                 </button>
             </div>
-
             <!-- TABLA DE PERMISOS -->
             <div class="card card-borde">
                 <div class="card-body table-responsive">
-
                     <h4 class="mb-3">
                         <i class="fas fa-list"></i> Permisos Registrados
                     </h4>
-
                     <table id="tablaExample2" class="table table-bordered table-striped">
                         <thead class="thead-custom">
                             <tr>
@@ -305,12 +298,9 @@
                                 <th>Plan de Recuperación</th>
                                 <th>Estado</th>
                                 <th class="none">Solicitud</th>
-                                <th class="none">Creado</th>
-                                <th class="none">Actualizado</th>
                                 <th class="all">Acciones</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             @foreach($listPermisos as $permiso)
                                 <tr id="permisoRow{{ $permiso->id_permiso }}">
@@ -370,31 +360,20 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <strong>{{ $permiso->created_at->format('d/m/Y') }}</strong><br>
-                                        <small class="text-muted">{{ $permiso->created_at->format('h:i A') }}</small>
-                                    </td>
-                                    <td class="text-center">
-                                        <strong>{{ $permiso->updated_at->format('d/m/Y') }}</strong><br>
-                                        <small class="text-muted">{{ $permiso->updated_at->format('h:i A') }}</small>
-                                    </td>
-                                    <td class="text-center">
                                         <button class="btn btn-sm btn-primary btn-action"
                                             onclick="viewPermiso('{{ $permiso->id_permiso }}')" title="Ver detalles">
                                             <i class="fas fa-eye"></i>
                                         </button>
-
                                         <button class="btn btn-sm btn-warning btn-action"
                                             onclick="editPermiso('{{ $permiso->id_permiso }}')" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </button>
-
                                         @if($permiso->estado_permiso == 'SOLICITADO')
                                             <button class="btn btn-sm btn-success btn-action"
                                                 onclick="aprobarPermiso('{{ $permiso->id_permiso }}')" title="Aprobar">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         @endif
-
                                         <button class="btn btn-sm btn-danger btn-action"
                                             onclick="deletePermiso('{{ $permiso->id_permiso }}')" title="Eliminar">
                                             <i class="fas fa-trash"></i>
@@ -403,15 +382,12 @@
                                 </tr>
                             @endforeach
                         </tbody>
-
                     </table>
-
                 </div>
             </div>
 
         </div>
     </section>
-
     <!-- MODAL NUEVO PERMISO -->
     <div class="modal fade" id="nuevoPermisoModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
@@ -432,45 +408,29 @@
                             <!-- Docente -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Docente: <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text input-group-text-custom">
-                                            <i class="fas fa-user-tie"></i>
-                                        </span>
-                                    </div>
-                                    <select name="id_docente" class="form-control form-control-custom select2" required>
-                                        <option value="">Seleccionar docente...</option>
-                                        @foreach($docentes as $docente)
-                                            <option value="{{ $docente->idDocente }}">
-                                                {{ $docente->user->last_name }}, {{ $docente->user->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <select name="id_docente" class="form-control select2" id="selectDocente" required>
+                                    <option value="">Seleccionar docente...</option>
+                                    @foreach($docentes as $docente)
+                                        <option value="{{ $docente->idDocente }}">
+                                            {{ $docente->user->last_name }}, {{ $docente->user->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-
                             <!-- Tipo de Permiso -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Tipo de Permiso: <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text input-group-text-custom">
-                                            <i class="fas fa-tags"></i>
-                                        </span>
-                                    </div>
-                                    <select name="id_tipo_permiso" class="form-control form-control-custom select2"
-                                        required>
-                                        <option value="">Seleccionar tipo...</option>
-                                        @foreach($tipoPermisos as $tipo)
-                                            <option value="{{ $tipo->id_tipo_permiso }}">
-                                                {{ $tipo->nombre }}
-                                                @if($tipo->con_goce_haber)
-                                                    <span class="text-success"> (Con goce)</span>
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <select name="id_tipo_permiso" class="form-control select2" id="selectTipoPermiso" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    @foreach($tipoPermisos as $tipo)
+                                        <option value="{{ $tipo->id_tipo_permiso }}">
+                                            {{ $tipo->nombre }}
+                                            @if($tipo->con_goce_haber)
+                                                <span class="text-success"> (Con goce)</span>
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
@@ -583,7 +543,6 @@
                                 </div>
                             </div>
                         @endif
-
                         <div class="row">
                             <!-- Motivo -->
                             <div class="col-md-12 mb-3">
@@ -597,7 +556,8 @@
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
                             <i class="fas fa-times mr-2"></i> Cancelar
                         </button>
-                        <button type="submit" class="btn btn-primary-custom" id="btnGuardarPermiso">
+                        <button type="button" class="btn btn-primary-custom" id="btnGuardarPermiso"
+                            onclick="sendFrmPermisoInsert()">
                             <i class="fas fa-save mr-2"></i> Registrar Permiso
                         </button>
                     </div>
@@ -605,169 +565,130 @@
             </div>
         </div>
     </div>
-
     <!-- MODAL DETALLE PERMISO -->
     <div class="modal fade" id="viewPermisoModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content permiso-replica">
-
+            <div class="modal-content">
                 <!-- HEADER -->
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title d-flex align-items-center">
-                        <i class="fas fa-plane-departure text-primary mr-2"></i>
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plane-departure mr-2"></i>
                         Detalle del Permiso
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
-
-                <div class="modal-body pt-3">
-
+                <div class="modal-body">
                     <!-- DOCENTE -->
-                    <div class="docente-box">
-                        <div class="avatar-circle">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="ml-3">
-                            <h6 class="mb-0 font-weight-bold" id="viewDocenteNombre">
+                    <div class="card card-widget widget-user-2">
+                        <div class="widget-user-header bg-info">
+                            <div class="widget-user-image">
+                                <img class="img-circle elevation-2"
+                                    src="{{ asset('plugins/adminlte/dist/img/' . ($docente->gender === 'female' ? 'image.png' : 'avatar5.png')) }}"
+                                    alt="Docente">
+                            </div>
+                            <h3 class="widget-user-username" id="viewDocenteNombre">
                                 Jorge Pérez Castillo
-                            </h6>
-                            <small class="text-muted" id="viewDocenteInfo">
-                                Matemáticas
-                            </small><br>
-                            <span class="badge badge-primary badge-pill mt-1" id="viewDocenteTipo">
+                            </h3>
+                            <span class="badge badge-light mt-1" id="viewDocenteTipo">
                                 Nombrado
                             </span>
                         </div>
                     </div>
-
-                    <!-- INFO -->
-                    <div class="row mt-4">
+                    <!-- INFORMACIÓN -->
+                    <div class="row">
                         <div class="col-md-6">
-                            <small class="label">Tipo de Permiso</small>
-                            <p class="value">
-                                <span id="viewTipoPermiso">Comisión de Servicio</span>
-                            </p>
-
-                            <small class="label">Fecha Inicio</small>
-                            <p class="value" id="viewFechaInicio">
-                                31 de enero, 2024
-                            </p>
+                            <div class="info-box">
+                                <span class="info-box-icon bg-primary">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Tipo de Permiso</span>
+                                    <span class="info-box-number" id="viewTipoPermiso">
+                                        Comisión de Servicio
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-box-icon bg-success">
+                                    <i class="fas fa-calendar-day"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Fecha Inicio</span>
+                                    <span class="info-box-number" id="viewFechaInicio">
+                                        31/01/2024
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-
                         <div class="col-md-6">
-                            <small class="label">Días Solicitados</small>
-                            <p class="value">
-                                <strong id="viewDiasSolicitados">3</strong> días
-                            </p>
-
-                            <small class="label">Fecha Fin</small>
-                            <p class="value" id="viewFechaFin">
-                                02 de febrero, 2024
-                            </p>
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning">
+                                    <i class="fas fa-clock"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Días Solicitados</span>
+                                    <span class="info-box-number">
+                                        <span id="viewDiasSolicitados">3</span> días
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-box">
+                                <span class="info-box-icon bg-danger">
+                                    <i class="fas fa-calendar-check"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Fecha Fin</span>
+                                    <span class="info-box-number" id="viewFechaFin">
+                                        02/02/2024
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                     <!-- MOTIVO -->
-                    <div class="motivo-card mt-3">
-                        <small class="label">Motivo</small>
-                        <p id="viewMotivo" class="mb-0">
-                            Representación institucional en evento académico
-                        </p>
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <strong>Motivo</strong>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0" id="viewMotivo">
+                                Representación institucional en evento académico
+                            </p>
+                        </div>
                     </div>
-
                     <!-- ESTADOS -->
-                    <div class="estado-box mt-4">
-                        <div>
-                            <small class="label">Estado del Permiso</small><br>
-                            <span class="badge badge-success badge-pill px-3 py-2" id="viewEstado">
+                    <div class="row">
+                        <div class="col-md-6 text-center">
+                            <p class="mb-1"><strong>Estado del Permiso</strong></p>
+                            <span class="badge badge-success p-2" id="viewEstado">
                                 ✔ Aprobado
                             </span>
                         </div>
-                        <div>
-                            <small class="label">Estado de Recuperación</small><br>
-                            <span class="badge badge-danger badge-pill px-3 py-2" id="viewEstadoRecuperacion">
+                        <div class="col-md-6 text-center">
+                            <p class="mb-1"><strong>Estado de Recuperación</strong></p>
+                            <span class="badge badge-danger p-2" id="viewEstadoRecuperacion">
                                 Sin Plan
                             </span>
                         </div>
                     </div>
-
-                    <!-- BOTÓN -->
-                    <button class="btn btn-primary btn-block btn-lg mt-4" id="btnRegistrarPlan">
+                </div>
+                <!-- FOOTER -->
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-lg btn-block" id="btnRegistrarPlan">
                         <i class="fas fa-file-alt mr-2"></i>
                         Registrar Plan de Recuperación
                     </button>
-
                 </div>
             </div>
         </div>
     </div>
 
-
-
-    <style>
-        .permiso-replica {
-            border-radius: 16px;
-            padding: 5px;
-        }
-
-        .docente-box {
-            display: flex;
-            align-items: center;
-            background: #f8fafc;
-            padding: 14px;
-            border-radius: 12px;
-        }
-
-        .avatar-circle {
-            width: 48px;
-            height: 48px;
-            background: #e5edff;
-            color: #2563eb;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .label {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        .value {
-            font-size: 15px;
-            font-weight: 500;
-            color: #111827;
-        }
-
-        .motivo-card {
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 10px;
-        }
-
-        .estado-box {
-            display: flex;
-            justify-content: space-between;
-            background: #f8fafc;
-            padding: 14px;
-            border-radius: 12px;
-        }
-
-        .btn-lg {
-            border-radius: 14px;
-            font-weight: 600;
-        }
-    </style>
-
     <!-- MODAL EDITAR ESTADO PERMISO -->
     <div class="modal fade" id="editPermisoModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content shadow-lg border-0">
-
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
                         <i class="fas fa-edit mr-2"></i> Editar estado del permiso
@@ -776,18 +697,14 @@
                         <span>&times;</span>
                     </button>
                 </div>
-
                 <form id="frmPermisoEdit" onsubmit="event.preventDefault(); updatePermiso();">
                     @csrf
                     <input type="hidden" id="editIdPermiso" name="id_permiso">
-
                     <div class="modal-body">
-
                         <div class="form-group">
                             <label class="font-weight-bold" for="editEstadoPermiso">
                                 <i class="fas fa-flag"></i> Estado del permiso
                             </label>
-
                             <select name="estado_permiso" id="editEstadoPermiso" class="form-control" required>
                                 <option value="SOLICITADO">SOLICITADO</option>
                                 <option value="APROBADO">APROBADO</option>
@@ -799,7 +716,7 @@
                         </div>
                         <div class="form-group">
                             <label for="editObservacion">
-                                <i class="fas fa-comment"></i> Observación 
+                                <i class="fas fa-comment"></i> Observación
                                 <small class="text-muted">(opcional)</small>
                             </label>
 
@@ -807,7 +724,6 @@
                                 placeholder="Ingrese una observación si lo considera necesario..."></textarea>
                         </div>
                     </div>
-
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             <i class="fas fa-times mr-2"></i> Cancelar
@@ -817,9 +733,7 @@
                             <i class="fas fa-save mr-2"></i> Guardar cambios
                         </button>
                     </div>
-
                 </form>
-
             </div>
         </div>
     </div>
@@ -828,7 +742,6 @@
     <div class="modal fade" id="emailConfirmModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title">
                         <i class="fas fa-envelope mr-2"></i> Notificar por correo
@@ -837,25 +750,18 @@
                         <span>&times;</span>
                     </button>
                 </div>
-
                 <div class="modal-body">
                     ¿Deseas enviar un correo al docente informando el cambio de estado?
                 </div>
-
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-dismiss="modal">No enviar</button>
-
                     <button class="btn btn-success" onclick="enviarCorreoPermiso()">
                         Enviar correo
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
-
-
-
 @endsection
 
 @section('js')
@@ -863,13 +769,51 @@
     <script src="{{ asset('viewresources/admin/permiso/detalle.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/permiso/update.js?v=' . time()) }}"></script>
     <script src="{{ asset('viewresources/admin/permiso/delete.js?v=' . time()) }}"></script>
-
     <script>
         // Actualizar label del input file cuando se selecciona un archivo
         $(document).ready(function () {
             $('.custom-file-input').on('change', function () {
                 var fileName = $(this).val().split('\\').pop();
                 $(this).siblings('.custom-file-label').addClass("selected").html(fileName);
+            });
+
+            // Inicializar Select2 cuando se abre el modal de nuevo permiso
+            $('#nuevoPermisoModal').on('shown.bs.modal', function () {
+                // Destruir Select2 si ya existe
+                if ($('#selectDocente').hasClass("select2-hidden-accessible")) {
+                    $('#selectDocente').select2('destroy');
+                }
+                if ($('#selectTipoPermiso').hasClass("select2-hidden-accessible")) {
+                    $('#selectTipoPermiso').select2('destroy');
+                }
+
+                // Inicializar Select2 para Docente
+                $('#selectDocente').select2({
+                    theme: 'bootstrap4',
+                    placeholder: 'Seleccionar docente...',
+                    allowClear: true,
+                    dropdownParent: $('#nuevoPermisoModal'),
+                    width: '100%'
+                });
+
+                // Inicializar Select2 para Tipo de Permiso
+                $('#selectTipoPermiso').select2({
+                    theme: 'bootstrap4',
+                    placeholder: 'Seleccionar tipo...',
+                    allowClear: true,
+                    dropdownParent: $('#nuevoPermisoModal'),
+                    width: '100%'
+                });
+            });
+
+            // Limpiar cuando se cierra el modal
+            $('#nuevoPermisoModal').on('hidden.bs.modal', function () {
+                if ($('#selectDocente').hasClass("select2-hidden-accessible")) {
+                    $('#selectDocente').select2('destroy');
+                }
+                if ($('#selectTipoPermiso').hasClass("select2-hidden-accessible")) {
+                    $('#selectTipoPermiso').select2('destroy');
+                }
             });
         });
 

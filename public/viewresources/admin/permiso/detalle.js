@@ -42,6 +42,13 @@ function viewPermiso(id) {
             /* =====================
                DOCENTE
             ====================== */
+            // Cambiar avatar según género
+            const avatarImg = p.docente.gender === 'female' 
+                ? 'plugins/adminlte/dist/img/image.png' 
+                : 'plugins/adminlte/dist/img/avatar5.png';
+            
+            $('.widget-user-image img').attr('src', `/${avatarImg}`);
+            
             $('#viewDocenteNombre').html(
                 `${p.docente.appDocente} ${p.docente.apmDocente}, ${p.docente.nombres}`
             );

@@ -208,7 +208,8 @@ class PermisoController extends Controller
                         'nombres' => $permiso->docente->user->name,
                         'appDocente' => $permiso->docente->user->last_name,
                         'apmDocente' => '',
-                        'numero_documento' => $permiso->docente->user->document_number ?? null
+                        'numero_documento' => $permiso->docente->user->document_number ?? null,
+                        'gender' => $permiso->docente->user->gender ?? 'male'
                     ],
                     'tipoPermiso' => [
                         'id_tipo_permiso' => $permiso->tipoPermiso->id_tipo_permiso,
@@ -232,8 +233,8 @@ class PermisoController extends Controller
     public function actionUpdate($id)
     {
         try {
-            // Buscar el permiso con su plan de recuperación
-            $permiso = Permiso::with('planRecuperacion')->where('id_permiso', $id)->first();
+            // Buscar el permiso con su plan de recuperación y tipo de permiso
+            $permiso = Permiso::with(['planRecuperacion', 'tipoPermiso'])->where('id_permiso', $id)->first();
 
             if (!$permiso) {
                 return response()->json([
@@ -242,12 +243,27 @@ class PermisoController extends Controller
                 ], 404);
             }
 
-            // Validación: Si el permiso tiene un plan de recuperación, no se puede cambiar el estado a SOLICITADO
             $nuevoEstado = request()->input('estado_permiso');
+
+            // Validación: Si el permiso tiene un plan de recuperación, no se puede cambiar el estado a SOLICITADO
             if ($permiso->planRecuperacion && $nuevoEstado === 'SOLICITADO') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Este permiso tiene un plan de recuperación asociado. No se puede cambiar el estado a SOLICITADO.'
+                ], 422);
+            }
+
+            // Validación: Si el permiso requiere recuperación pero no tiene plan de recuperación,
+            // no se puede cambiar a estados relacionados con recuperación
+            $estadosRecuperacion = ['EN_RECUPERACION', 'RECUPERADO', 'CERRADO'];
+            if (
+                $permiso->tipoPermiso->requiere_recupero &&
+                !$permiso->planRecuperacion &&
+                in_array($nuevoEstado, $estadosRecuperacion)
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede cambiar el estado a "' . str_replace('_', ' ', $nuevoEstado) . '" porque este permiso requiere un plan de recuperación que aún no ha sido registrado.'
                 ], 422);
             }
 

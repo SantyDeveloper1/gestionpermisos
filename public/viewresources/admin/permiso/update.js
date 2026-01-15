@@ -198,16 +198,6 @@ function actualizarFilaTabla(permiso) {
         }
         row.find('td:eq(7)').html(fechasHtml);
         
-        // Actualizar created_at (columna 8)
-        if (permiso.created_at) {
-            row.find('td:eq(8)').html(formatearFechaHora(permiso.created_at));
-        }
-        
-        // Actualizar updated_at (columna 9)
-        if (permiso.updated_at) {
-            row.find('td:eq(9)').html(formatearFechaHora(permiso.updated_at));
-        }
-        
         // Actualizar botones de acción si cambió el estado
         if (permiso.estado_permiso !== 'SOLICITADO') {
             // Remover botón de aprobar si existe

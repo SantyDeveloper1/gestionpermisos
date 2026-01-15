@@ -118,6 +118,14 @@ function aprobarPlan(id) {
                         text: 'El plan ha sido aprobado correctamente',
                         type: 'success'
                     });
+
+                    // Guardar el ID del plan para enviar email
+                    window.planActualizadoId = id;
+
+                    // Mostrar modal de confirmación de email con un pequeño delay
+                    setTimeout(function() {
+                        $('#emailConfirmModalPlan').modal('show');
+                    }, 500);
                 },
                 error: function(xhr) {
                     new PNotify({

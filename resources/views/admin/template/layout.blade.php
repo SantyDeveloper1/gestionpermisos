@@ -286,7 +286,6 @@
 				<img src="{{ asset('plugins/adminlte/dist/img/dais.png') }}" alt="Logo EPIIS"
 					style="width: 100%; height: 28px; object-fit: contain;">
 			</a>
-
 			<!-- Sidebar -->
 			<div class="sidebar">
 				<!-- Sidebar user panel (optional) -->
@@ -301,15 +300,14 @@
 						</a>
 					</div>
 				</div>
-
 				<!-- Sidebar Menu -->
 				<nav class="mt-2">
 					<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
 						data-accordion="false">
 						<!-- Add icons to the links using the .nav-icon class
 							 with font-awesome or any other icon font library -->
-						<li class="nav-item {{ request()->is('/') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
+						<li class="nav-item {{ request()->is('admin') ? 'menu-open' : '' }}">
+							<a href="#" class="nav-link {{ request()->is('admin') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-tachometer-alt"></i>
 								<p>
 									Dashboard
@@ -318,7 +316,8 @@
 							</a>
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
-									<a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
+									<a href="{{ url('admin') }}"
+									class="nav-link {{ request()->is('admin') ? 'active' : '' }}">
 										<i class="far fa-circle nav-icon"></i>
 										<p>Página principal</p>
 									</a>
@@ -334,7 +333,6 @@
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
-
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
 									<a href="{{ url('admin/usuarios') }}"
@@ -352,7 +350,6 @@
 								</li>
 							</ul>
 						</li>
-
 						<li class="nav-item {{ request()->is('admin/docente*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('admin/docente*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-user-tie"></i>
@@ -363,7 +360,6 @@
 							</a>
 
 							<ul class="nav nav-treeview">
-
 								<!-- Lista de Docentes -->
 								<li class="nav-item">
 									<a href="{{ url('admin/docente') }}"
@@ -380,7 +376,6 @@
 										<p>Grados Académicos</p>
 									</a>
 								</li>
-
 								<!-- Tipos de Contrato Docente -->
 								<li class="nav-item">
 									<a href="{{ url('admin/docente/tipo_contrato/insert') }}"
@@ -421,7 +416,6 @@
 								</li>
 							</ul>
 						</li>
-
 						{{-- PLAN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('admin/plan_recuperacion*') ? 'menu-open' : '' }}">
 							<a href="#"
@@ -432,7 +426,6 @@
 									<i class="right fas fa-angle-left"></i>
 								</p>
 							</a>
-
 							<ul class="nav nav-treeview">
 								<li class="nav-item">
 									<a href="{{ url('admin/plan_recuperacion') }}"
@@ -542,25 +535,19 @@
 			<div class="content-header">
 				<div class="container-fluid">
 					<div class="row mb-2">
-
 						<div class="col-sm-6">
 							<h1 class="m-0">@yield('titleGeneral')</h1>
 						</div>
-
 						<div class="col-sm-6">
 							<ol class="breadcrumb float-sm-right">
-
 								<li class="breadcrumb-item">
 									<a href="{{ url('/') }}">Home</a>
 								</li>
-
 								<li class="breadcrumb-item active">
 									{{ $title }}
 								</li>
-
 							</ol>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -594,12 +581,11 @@
 		<!-- /.control-sidebar -->
 	</div>
 	<!-- ./wrapper -->
-
+	
 	<!-- MODAL PARA CAMBIAR CONTRASEÑA -->
 	<div id="modal-password" class="modal fade" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-md">
 			<div class="modal-content">
-
 				<div class="modal-header bg-info">
 					<h4 class="modal-title text-white">
 						<i class="fas fa-key"></i> Cambiar Contraseña
@@ -608,11 +594,8 @@
 						&times;
 					</button>
 				</div>
-
 				<div class="modal-body">
-
 					<form id="form_password" class="form-horizontal">
-
 						<div class="form-group row">
 							<label class="col-md-4 col-form-label">Contraseña Actual</label>
 							<div class="col-md-8">
@@ -620,7 +603,6 @@
 									placeholder="Ingrese contraseña actual">
 							</div>
 						</div>
-
 						<div class="form-group row">
 							<label class="col-md-4 col-form-label">Nueva Contraseña</label>
 							<div class="col-md-8">
@@ -628,7 +610,6 @@
 									placeholder="Ingrese nueva contraseña">
 							</div>
 						</div>
-
 						<div class="form-group row">
 							<label class="col-md-4 col-form-label">Repetir Contraseña</label>
 							<div class="col-md-8">
@@ -636,21 +617,16 @@
 									placeholder="Repita nueva contraseña">
 							</div>
 						</div>
-
 						<div class="form-group text-center mt-3">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">
 								<i class="fas fa-times"></i> Cancelar
 							</button>
-
 							<button type="submit" class="btn btn-primary">
 								<i class="fas fa-save"></i> Guardar
 							</button>
 						</div>
-
 					</form>
-
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -746,8 +722,6 @@
 			@endforeach
 		@endif
 	</script>
-
-
 	<!-- SCRIPT PARA DATA TABLES para grados docente-->
 	<script>
 		$(document).ready(function () {
