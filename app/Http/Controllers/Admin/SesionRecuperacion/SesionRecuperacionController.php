@@ -528,6 +528,51 @@ class SesionRecuperacionController extends Controller
 
             \Log::info("Sesión {$sesion->id_sesion} reprogramada. Registro: {$reprogramacion->id_reprogramacion}");
 
+            // Enviar correo electrónico de notificación al docente
+            try {
+                \Log::info("Iniciando envío de correo de reprogramación para sesión: {$sesion->id_sesion}");
+
+                $sesion->load(['planRecuperacion.permiso.docente.user', 'planRecuperacion.permiso.tipoPermiso', 'asignatura']);
+
+                \Log::info("Relaciones cargadas. Plan: " . ($sesion->planRecuperacion ? $sesion->planRecuperacion->id_plan : 'NULL'));
+
+                $docente = $sesion->planRecuperacion->permiso->docente;
+                $user = $docente->user;
+
+                \Log::info("Usuario obtenido: " . ($user ? $user->email : 'NULL'));
+
+                // Verificar que el docente tenga email
+                if ($user && $user->email) {
+                    $datosEmail = [
+                        'docente' => $user->last_name . ' ' . $user->name,
+                        'asignatura' => $sesion->asignatura->nom_asignatura ?? 'No especificada',
+                        'tipoPermiso' => $sesion->planRecuperacion->permiso->tipoPermiso->nom_tipo_permiso ?? 'No especificado',
+                        'fechaOriginal' => \Carbon\Carbon::parse($reprogramacion->fecha_anterior)->format('d/m/Y'),
+                        'fechaNueva' => \Carbon\Carbon::parse($reprogramacion->fecha_nueva)->format('d/m/Y'),
+                        'horaOriginal' => \Carbon\Carbon::parse($reprogramacion->hora_inicio_anterior)->format('H:i') . ' - ' . \Carbon\Carbon::parse($reprogramacion->hora_fin_anterior)->format('H:i'),
+                        'horaNueva' => \Carbon\Carbon::parse($reprogramacion->hora_inicio_nueva)->format('H:i') . ' - ' . \Carbon\Carbon::parse($reprogramacion->hora_fin_nueva)->format('H:i'),
+                        'aulaOriginal' => $reprogramacion->aula_anterior,
+                        'aulaNueva' => $reprogramacion->aula_nueva,
+                        'motivo' => $reprogramacion->motivo,
+                        'planId' => $sesion->planRecuperacion->id_plan,
+                        'horasRecuperadas' => $horasNuevas . ' horas',
+                        'urlSistema' => url('/admin/sesion_recuperacion')
+                    ];
+
+                    \Log::info("Datos del email preparados. Enviando a: {$user->email}");
+
+                    \Mail::to($user->email)->send(new \App\Mail\ReprogramacionSesionMail($datosEmail));
+
+                    \Log::info("Correo de reprogramación enviado exitosamente a: {$user->email}");
+                } else {
+                    \Log::warning("No se pudo enviar correo de reprogramación: docente sin email. Sesión: {$sesion->id_sesion}");
+                }
+            } catch (\Exception $emailException) {
+                // No fallar la reprogramación si falla el envío de correo
+                \Log::error("Error al enviar correo de reprogramación: " . $emailException->getMessage());
+                \Log::error("Stack trace: " . $emailException->getTraceAsString());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Sesión reprogramada exitosamente',

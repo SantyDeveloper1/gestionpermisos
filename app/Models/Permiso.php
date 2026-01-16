@@ -35,10 +35,10 @@ class Permiso extends Model
 
     // Casts de tipos
     protected $casts = [
-        'fecha_inicio' => 'date',
-        'fecha_fin' => 'date',
-        'fecha_solicitud' => 'date',
-        'fecha_resolucion' => 'date',
+        'fecha_inicio' => 'datetime',
+        'fecha_fin' => 'datetime',
+        'fecha_solicitud' => 'datetime',
+        'fecha_resolucion' => 'datetime',
         'dias_permiso' => 'integer',
         'horas_afectadas' => 'decimal:2',
     ];

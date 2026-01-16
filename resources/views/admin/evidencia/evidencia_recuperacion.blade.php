@@ -782,13 +782,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <a href="{{ url('evidencia_recuperacion') }}" class="btn-evidence btn-primary-evidence"
-                                    style="white-space: nowrap;">
-                                    <i class="fas fa-times-circle mr-2"></i>
-                                    Ver Todas las Evidencias
-                                </a>
-                            </div>
                         </div>
                     </div>
                 @endif
@@ -799,7 +792,6 @@
                         <i class="fas fa-cloud-upload-alt"></i>
                         Cargar Nueva Evidencia
                     </div>
-
                     <!-- Zona de Drag & Drop -->
                     <div class="upload-zone" id="uploadZone">
                         <div class="upload-icon">

@@ -7,6 +7,7 @@ use App\Models\Permiso;
 use App\Models\SemestreAcademico;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CambioEstadoPermisoMail;
+use Carbon\Carbon;
 
 class PermisoController extends Controller
 {
@@ -352,8 +353,8 @@ class PermisoController extends Controller
             // Preparar los datos para el correo
             $nombreCompleto = $permiso->docente->user->last_name . ', ' . $permiso->docente->user->name;
 
-            $fechaInicio = $permiso->fecha_inicio ? $permiso->fecha_inicio->format('d/m/Y') : '';
-            $fechaFin = $permiso->fecha_fin ? $permiso->fecha_fin->format('d/m/Y') : '';
+            $fechaInicio = $permiso->fecha_inicio ? Carbon::parse($permiso->fecha_inicio)->format('d/m/Y') : '';
+            $fechaFin = $permiso->fecha_fin ? Carbon::parse($permiso->fecha_fin)->format('d/m/Y') : '';
             $fechaPermiso = $fechaInicio . ' al ' . $fechaFin;
 
             $periodo = $permiso->semestreAcademico
@@ -364,7 +365,7 @@ class PermisoController extends Controller
                 'docente' => $nombreCompleto,
                 'estado' => $permiso->estado_permiso,
                 'tipoPermiso' => $permiso->tipoPermiso->nombre ?? 'No especificado',
-                'fechaSolicitud' => $permiso->fecha_solicitud ? $permiso->fecha_solicitud->format('d/m/Y') : now()->format('d/m/Y'),
+                'fechaSolicitud' => $permiso->fecha_solicitud ? Carbon::parse($permiso->fecha_solicitud)->format('d/m/Y') : now()->format('d/m/Y'),
                 'fechaPermiso' => $fechaPermiso,
                 'periodo' => $periodo,
                 'motivo' => $permiso->motivo ?? 'No especificado',

@@ -518,9 +518,9 @@ $(document).ready(function () {
                 if (response.success) {
                     new PNotify({
                         title: '¡Sesión reprogramada!',
-                        text: response.message || 'La sesión ha sido reprogramada exitosamente',
+                        text: 'La sesión ha sido reprogramada exitosamente. Se ha enviado una notificación por correo al docente.',
                         type: 'success',
-                        delay: 3000
+                        delay: 4000
                     });
                     
                     $('#modalReprogramarSesion').modal('hide');
@@ -573,6 +573,26 @@ $(document).ready(function () {
                                         $cell.text(sesion.horas_recuperadas);
                                     }
                                 });
+                                
+                                // Actualizar el badge de estado a REPROGRAMADA
+                                const estadoBadgeHtml = `
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.2);">
+                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #ff9800;"></span>
+                                        Reprogramada
+                                    </span>
+                                `;
+                                
+                                // Buscar la celda de estado y actualizarla
+                                $cells.each(function() {
+                                    const $cell = $(this);
+                                    // Si la celda contiene un span con estilos de badge (tiene border-radius: 20px)
+                                    if ($cell.find('span[style*="border-radius: 20px"]').length > 0) {
+                                        $cell.html(estadoBadgeHtml);
+                                    }
+                                });
+                                
+                                // Actualizar el data-estado del tr
+                                $row.attr('data-estado', 'REPROGRAMADA');
                                 
                                 // Actualizar los data attributes del botón para futuras reprogramaciones
                                 $btnReprogramar.attr('data-fecha', fechaFormateada);

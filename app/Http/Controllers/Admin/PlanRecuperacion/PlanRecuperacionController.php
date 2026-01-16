@@ -507,7 +507,7 @@ class PlanRecuperacionController extends Controller
                 'docente' => $nombreCompleto,
                 'estado' => $plan->estado_plan,
                 'tipoPermiso' => $plan->permiso->tipoPermiso->nombre ?? 'No especificado',
-                'fechaPresentacion' => $plan->fecha_presentacion ? $plan->fecha_presentacion->format('d/m/Y') : 'No especificada',
+                'fechaPresentacion' => $plan->fecha_presentacion ? \Carbon\Carbon::parse($plan->fecha_presentacion)->format('d/m/Y') : 'No especificada',
                 'totalHoras' => $plan->total_horas_recuperar ?? 'No especificado',
                 // Solo incluir observación si el estado es OBSERVADO
                 'observacion' => ($plan->estado_plan === 'OBSERVADO' && $plan->observacion) ? $plan->observacion : null,

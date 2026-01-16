@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\EvidenciaRecuperacion\EvidenciaRecuperacionContro
 use App\Http\Controllers\Admin\Academico\CicloController;
 use App\Http\Controllers\Admin\Academico\AsignaturaController;
 use App\Http\Controllers\Admin\Academico\SemestreAcademicoController;
+use App\Http\Controllers\Admin\Usuarios\ProfileController;
+use App\Http\Controllers\Admin\Reporte\ReporteController;
 
 use App\Http\Controllers\Docente\Permiso\PermisoController as DocentePermisoController;
 use App\Http\Controllers\Docente\SesionRecuperacion\SesionRecuperacionController as DocenteSesionRecuperacionController;
@@ -76,10 +78,8 @@ Route::middleware('auth')->group(function () {
             Route::post('usuarios/password/update', [UsuarioController::class, 'actionUpdatePassword'])->name('usuarios.password.update');
 
             // Perfil de usuario
-            Route::get('profile', [\App\Http\Controllers\Admin\Usuarios\ProfileController::class, 'index'])->name('admin.profile.index');
-            Route::post('profile/update', [\App\Http\Controllers\Admin\Usuarios\ProfileController::class, 'update'])->name('admin.profile.update');
-
-
+            Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile.index');
+            Route::post('profile/update', [ProfileController::class, 'update'])->name('admin.profile.update');
 
             // DOCENTE
             Route::get('/docente', [DocenteController::class, 'actionDocente'])->name('admin.docentes.index');
@@ -178,17 +178,12 @@ Route::middleware('auth')->group(function () {
             Route::post('academico/semestre_academico/marcar_actual', [SemestreAcademicoController::class, 'marcarComoActual']);
 
             // REPORTES
-            Route::get('reportes', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'index'])->name('admin.reportes.index');
-
-            Route::get('reportes/estadisticas', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'estadisticas'])->name('admin.permisos.estadisticas');
-
-            Route::get('reportes/pdf/semestre/{semestre_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'pdfSemestre'])->name('admin.reportes.pdf.semestre');
-
-            Route::get('reportes/pdf/descargar/semestre/{semestre_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'descargarPdfSemestre'])->name('admin.reportes.pdf.descargar.semestre');
-
-            Route::get('reportes/pdf/docente/{docente_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'pdfDocente'])->name('admin.reportes.pdf.docente');
-
-            Route::get('reportes/pdf/descargar/docente/{docente_id}', [\App\Http\Controllers\Admin\Reporte\ReporteController::class, 'descargarPdfDocente'])->name('admin.reportes.pdf.descargar.docente');
+            Route::get('reportes', [ReporteController::class, 'index'])->name('admin.reportes.index');
+            Route::get('reportes/estadisticas', [ReporteController::class, 'estadisticas'])->name('admin.permisos.estadisticas');
+            Route::get('reportes/pdf/semestre/{semestre_id}', [ReporteController::class, 'pdfSemestre'])->name('admin.reportes.pdf.semestre');
+            Route::get('reportes/pdf/descargar/semestre/{semestre_id}', [ReporteController::class, 'descargarPdfSemestre'])->name('admin.reportes.pdf.descargar.semestre');
+            Route::get('reportes/pdf/docente/{docente_id}', [ReporteController::class, 'pdfDocente'])->name('admin.reportes.pdf.docente');
+            Route::get('reportes/pdf/descargar/docente/{docente_id}', [ReporteController::class, 'descargarPdfDocente'])->name('admin.reportes.pdf.descargar.docente');
 
         });
 
