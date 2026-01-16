@@ -142,9 +142,11 @@ Route::middleware('auth')->group(function () {
             // SESION DE RECUPERACION
             Route::get('sesion_recuperacion', [SesionRecuperacionController::class, 'actionSesionRecuperacion']);
             Route::get('sesion_recuperacion/{id}', [SesionRecuperacionController::class, 'actionShow']);
+            Route::get('sesion_recuperacion/{id}/data', [SesionRecuperacionController::class, 'getSesionData']);
             Route::match(['get', 'post'], 'sesion_recuperacion/insert', [SesionRecuperacionController::class, 'actionInsert']);
             Route::post('sesion_recuperacion/update/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionUpdate']);
             Route::post('sesion_recuperacion/update-estado/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionUpdateEstado']);
+            Route::post('sesion_recuperacion/reprogramar', [SesionRecuperacionController::class, 'actionReprogramar']);
             Route::delete('sesion_recuperacion/delete/{idSesion_recuperacion}', [SesionRecuperacionController::class, 'actionDelete']);
 
             // EVIDENCIA DE RECUPERACION

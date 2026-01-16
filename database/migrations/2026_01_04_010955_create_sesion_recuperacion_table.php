@@ -23,34 +23,16 @@ return new class extends Migration {
                 'EXTRA'
             ]);
 
-            $table->enum('tipo_sesion', [
-                'TEORIA',
-                'PRACTICA',
-                'EXAMEN'
-            ]);
-
             $table->string('aula', 50)->nullable();
 
             $table->string('asignatura', 100)->nullable();
 
-            // 🔹 NUEVO CAMPO
-            $table->enum('semestre', [
-                'PRIMERO',
-                'SEGUNDO',
-                'TERCERO',
-                'CUARTO',
-                'QUINTO',
-                'SEXTO',
-                'SEPTIMO',
-                'OCTAVO',
-                'NOVENO',
-                'DECIMO'
-            ]);
 
             $table->decimal('horas_recuperadas', 5, 2);
 
             $table->enum('estado_sesion', [
                 'PROGRAMADA',
+                'REPROGRAMADA',
                 'REALIZADA',
                 'CANCELADA'
             ]);

@@ -246,7 +246,11 @@ class SesionRecuperacionController extends Controller
     public function actionShow($id_sesion)
     {
         try {
-            $sesion = SesionRecuperacion::with(['planRecuperacion.permiso.docente', 'planRecuperacion.permiso.tipoPermiso'])
+            $sesion = SesionRecuperacion::with([
+                'planRecuperacion.permiso.docente.user',
+                'planRecuperacion.permiso.tipoPermiso',
+                'asignatura'
+            ])
                 ->findOrFail($id_sesion);
 
             return response()->json([
@@ -359,7 +363,7 @@ class SesionRecuperacionController extends Controller
             $sesion = SesionRecuperacion::findOrFail($id_sesion);
 
             $validated = $request->validate([
-                'estado_sesion' => 'required|in:PROGRAMADA,REALIZADA,VALIDADA,CANCELADA',
+                'estado_sesion' => 'required|in:PROGRAMADA,REPROGRAMADA,REALIZADA,VALIDADA,CANCELADA',
                 'comentario' => 'nullable|string|max:500'
             ]);
 
@@ -409,6 +413,182 @@ class SesionRecuperacionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reprogramar una sesión de recuperación
+     */
+    public function actionReprogramar(\Illuminate\Http\Request $request)
+    {
+        try {
+            // Validar los datos
+            $validated = $request->validate([
+                'id_sesion' => 'required|exists:sesion_recuperacion,id_sesion',
+                'fecha_nueva' => 'required|date',
+                'hora_inicio_nueva' => 'required|date_format:H:i',
+                'hora_fin_nueva' => 'required|date_format:H:i|after:hora_inicio_nueva',
+                'aula_nueva' => 'required|string|max:50',
+                'motivo' => 'required|string|max:500'
+            ], [
+                'id_sesion.required' => 'El ID de sesión es requerido.',
+                'id_sesion.exists' => 'La sesión no existe.',
+                'fecha_nueva.required' => 'La nueva fecha es requerida.',
+                'fecha_nueva.date' => 'La fecha no es válida.',
+                'hora_inicio_nueva.required' => 'La hora de inicio es requerida.',
+                'hora_inicio_nueva.date_format' => 'El formato de hora de inicio no es válido (HH:MM).',
+                'hora_fin_nueva.required' => 'La hora de fin es requerida.',
+                'hora_fin_nueva.date_format' => 'El formato de hora de fin no es válido (HH:MM).',
+                'hora_fin_nueva.after' => 'La hora de fin debe ser posterior a la hora de inicio.',
+                'aula_nueva.required' => 'El aula es requerida.',
+                'aula_nueva.max' => 'El aula no puede exceder 50 caracteres.',
+                'motivo.required' => 'El motivo de reprogramación es requerido.',
+                'motivo.max' => 'El motivo no puede exceder 500 caracteres.'
+            ]);
+
+            // Validar que la fecha no sea anterior a hoy
+            $fechaActual = date('Y-m-d');
+            if ($validated['fecha_nueva'] < $fechaActual) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No puede reprogramar a una fecha pasada'
+                ], 422);
+            }
+
+            // Obtener la sesión actual
+            $sesion = SesionRecuperacion::findOrFail($validated['id_sesion']);
+
+            // Validar que la sesión no esté realizada o cancelada
+            if (in_array($sesion->estado_sesion, ['REALIZADA', 'CANCELADA'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede reprogramar una sesión que ya ha sido realizada o cancelada'
+                ], 422);
+            }
+
+            // Calcular las horas de la nueva sesión
+            $horaInicio = \Carbon\Carbon::parse($validated['hora_inicio_nueva']);
+            $horaFin = \Carbon\Carbon::parse($validated['hora_fin_nueva']);
+
+            // Calcular diferencia en minutos (siempre positivo)
+            $diferenciaMinutos = $horaInicio->diffInMinutes($horaFin, false);
+            $horasNuevas = abs($diferenciaMinutos) / 60;
+
+            // Obtener el plan de recuperación para validar horas
+            $planRecuperacion = $sesion->planRecuperacion;
+            if ($planRecuperacion) {
+                $horasTotalesRecuperar = $planRecuperacion->total_horas_recuperar;
+
+                // Calcular el total de horas ya recuperadas en TODAS las sesiones del plan
+                // (excluyendo la sesión actual que se está reprogramando)
+                $horasYaRecuperadas = \App\Models\SesionRecuperacion::where('id_plan', $planRecuperacion->id_plan)
+                    ->where('id_sesion', '!=', $sesion->id_sesion) // Excluir la sesión actual
+                    ->sum('horas_recuperadas');
+
+                // Calcular el total que habría después de esta reprogramación
+                $totalDespuesReprogramacion = $horasYaRecuperadas + $horasNuevas;
+
+                if ($totalDespuesReprogramacion > $horasTotalesRecuperar) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Las horas programadas ({$horasNuevas}h) más las ya recuperadas ({$horasYaRecuperadas}h) superan el total de horas a recuperar del plan ({$horasTotalesRecuperar}h). Horas disponibles: " . ($horasTotalesRecuperar - $horasYaRecuperadas) . "h"
+                    ], 422);
+                }
+            }
+
+            // Crear registro de reprogramación
+            $reprogramacion = new \App\Models\ReprogramacionSesion();
+            $reprogramacion->id_reprogramacion = \App\Models\ReprogramacionSesion::generarId();
+            $reprogramacion->id_sesion = $sesion->id_sesion;
+
+            // Guardar datos anteriores
+            $reprogramacion->fecha_anterior = $sesion->fecha_sesion;
+            $reprogramacion->hora_inicio_anterior = $sesion->hora_inicio;
+            $reprogramacion->hora_fin_anterior = $sesion->hora_fin;
+            $reprogramacion->aula_anterior = $sesion->aula ?? 'No especificada';
+
+            // Guardar datos nuevos
+            $reprogramacion->fecha_nueva = $validated['fecha_nueva'];
+            $reprogramacion->hora_inicio_nueva = $validated['hora_inicio_nueva'];
+            $reprogramacion->hora_fin_nueva = $validated['hora_fin_nueva'];
+            $reprogramacion->aula_nueva = $validated['aula_nueva'];
+            $reprogramacion->motivo = $validated['motivo'];
+
+            $reprogramacion->save();
+
+            // Actualizar la sesión con los nuevos datos
+            $sesion->fecha_sesion = $validated['fecha_nueva'];
+            $sesion->hora_inicio = $validated['hora_inicio_nueva'];
+            $sesion->hora_fin = $validated['hora_fin_nueva'];
+            $sesion->aula = $validated['aula_nueva'];
+            $sesion->horas_recuperadas = $horasNuevas; // Actualizar las horas calculadas
+            $sesion->estado_sesion = 'REPROGRAMADA'; // Cambiar el estado a REPROGRAMADA
+            $sesion->save();
+
+            \Log::info("Sesión {$sesion->id_sesion} reprogramada. Registro: {$reprogramacion->id_reprogramacion}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sesión reprogramada exitosamente',
+                'sesion' => $sesion->load(['planRecuperacion.permiso.docente', 'asignatura']),
+                'reprogramacion' => $reprogramacion
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesión no encontrada'
+            ], 404);
+        } catch (\Exception $e) {
+            \Log::error('Error al reprogramar sesión: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al reprogramar la sesión: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener datos de una sesión para reprogramación
+     * Incluye el cálculo de horas pendientes del plan
+     */
+    public function getSesionData($id)
+    {
+        try {
+            $sesion = SesionRecuperacion::with([
+                'planRecuperacion.permiso.docente.user',
+                'asignatura'
+            ])->findOrFail($id);
+
+            // Calcular el total de horas ya recuperadas en el plan
+            // EXCLUYENDO las horas de la sesión actual (para que se "liberen" al reprogramar)
+            $horasYaRecuperadasPlan = SesionRecuperacion::where('id_plan', $sesion->id_plan)
+                ->where('id_sesion', '!=', $id) // Excluir la sesión actual
+                ->sum('horas_recuperadas');
+
+            // Calcular horas pendientes del plan
+            $totalHorasPlan = $sesion->planRecuperacion->total_horas_recuperar ?? 0;
+            $horasPendientes = max(0, $totalHorasPlan - $horasYaRecuperadasPlan);
+
+            return response()->json([
+                'success' => true,
+                'sesion' => $sesion,
+                'horasYaRecuperadasPlan' => $horasYaRecuperadasPlan,
+                'horasPendientes' => $horasPendientes,
+                'totalHorasPlan' => $totalHorasPlan
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error al obtener datos de sesión: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar datos de la sesión'
             ], 500);
         }
     }

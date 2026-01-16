@@ -872,7 +872,8 @@
                                             <span>{{ $estadisticasPlan['porcentaje_completado'] }}%</span>
                                         </div>
                                         <div class="progress-bar">
-                                            <div class="progress-fill" style="width: {{ $estadisticasPlan['porcentaje_completado'] }}%"></div>
+                                            <div class="progress-fill"
+                                                style="width: {{ $estadisticasPlan['porcentaje_completado'] }}%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1196,23 +1197,31 @@
                                         </div>
                                     </td>
 
-
-
                                     <!-- Estado -->
                                     <td>
                                         @if($sesion->estado_sesion == 'VALIDADA')
-                                            <span class="status-indicator-execution status-completed">
-                                                <span class="dot-status dot-completed"></span>
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0, 139, 220, 0.1); color: #008bdc; border: 1px solid rgba(0, 139, 220, 0.2);">
+                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #008bdc;"></span>
                                                 Validada
                                             </span>
                                         @elseif($sesion->estado_sesion == 'REALIZADA')
-                                            <span class="status-indicator-execution status-in-progress">
-                                                <span class="dot-status dot-in-progress"></span>
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0, 184, 148, 0.1); color: #00b894; border: 1px solid rgba(0, 184, 148, 0.2);">
+                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #00b894;"></span>
                                                 Realizada
                                             </span>
+                                        @elseif($sesion->estado_sesion == 'REPROGRAMADA')
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.2);">
+                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #ff9800;"></span>
+                                                Reprogramada
+                                            </span>
+                                        @elseif($sesion->estado_sesion == 'CANCELADA')
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(225, 112, 85, 0.1); color: #e17055; border: 1px solid rgba(225, 112, 85, 0.2);">
+                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #e17055;"></span>
+                                                Cancelada
+                                            </span>
                                         @else
-                                            <span class="status-indicator-execution status-pending">
-                                                <span class="dot-status dot-pending"></span>
+                                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(253, 203, 110, 0.1); color: #f39c12; border: 1px solid rgba(253, 203, 110, 0.2);">
+                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: #f39c12;"></span>
                                                 Programada
                                             </span>
                                         @endif
@@ -1230,6 +1239,16 @@
                                                     data-sesion-id="{{ $sesion->id_sesion }}"
                                                     data-estado-actual="{{ $sesion->estado_sesion }}" title="Cambiar estado">
                                                     <i class="fas fa-edit"></i>
+                                                </button>
+                                            @endif
+                                            @if(!in_array($sesion->estado_sesion, ['REALIZADA', 'CANCELADA']))
+                                                <button class="btn-icon btn-warning btn-reprogramar"
+                                                    data-sesion-id="{{ $sesion->id_sesion }}"
+                                                    data-fecha="{{ $sesion->fecha_sesion }}"
+                                                    data-hora-inicio="{{ $sesion->hora_inicio }}"
+                                                    data-hora-fin="{{ $sesion->hora_fin }}" data-aula="{{ $sesion->aula }}"
+                                                    title="Reprogramar sesión">
+                                                    <i class="fas fa-calendar-alt"></i>
                                                 </button>
                                             @endif
                                             <button class="btn-icon btn-delete"
@@ -1268,6 +1287,7 @@
                         <select class="form-control" id="nuevoEstado">
                             <option value="">Seleccionar estado</option>
                             <option value="PROGRAMADA">Programada</option>
+                            <option value="REPROGRAMADA">Reprogramada</option>
                             <option value="REALIZADA">Realizada</option>
                             <option value="CANCELADA">Cancelada</option>
                         </select>
@@ -1304,6 +1324,260 @@
         </div>
     </div>
 
+    <!-- MODAL REPROGRAMAR SESIÓN CON PASOS -->
+    <div class="modal fade" id="modalReprogramarSesion" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white"> <i class="fas fa-calendar-alt mr-2"></i> Reprogramar sesión de
+                        recuperación - <span id="modalStepTitle">Paso 1 de 3</span> </h5> <button type="button"
+                        class="close text-white" data-dismiss="modal"> <span>&times;</span> </button>
+                </div>
+                <form id="formReprogramarSesion" novalidate> @csrf <input type="hidden" name="id_sesion" id="rep_id_sesion">
+                    <input type="hidden" name="total_horas_asignatura" id="total_horas_asignatura">
+                    <div class="modal-body"> <!-- Indicador de pasos -->
+                        <div class="steps-progress mb-4">
+                            <div class="step-indicator d-flex justify-content-between">
+                                <div class="step active" data-step="1">
+                                    <div class="step-circle">1</div>
+                                    <div class="step-label">Seleccionar motivo</div>
+                                </div>
+                                <div class="step" data-step="2">
+                                    <div class="step-circle">2</div>
+                                    <div class="step-label">Confirmar asignatura</div>
+                                </div>
+                                <div class="step" data-step="3">
+                                    <div class="step-circle">3</div>
+                                    <div class="step-label">Reprogramar</div>
+                                </div>
+                            </div>
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar" id="stepProgressBar" style="width: 33%;"></div>
+                            </div>
+                        </div> <!-- Paso 1: Selección de motivo -->
+                        <div class="step-content step-1 active">
+                            <div class="text-center mb-4">
+                                <h5>Seleccione el motivo de reprogramación</h5>
+                                <p class="text-muted">Esta selección determinará el proceso a seguir</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card card-option" data-tipo="permiso">
+                                        <div class="card-body text-center"> <i
+                                                class="fas fa-file-contract fa-2x text-primary mb-3"></i>
+                                            <h5>Permiso Institucional</h5>
+                                            <p class="text-muted small"> Seleccione esta opción si cuenta con un permiso
+                                                oficial </p> <button type="button"
+                                                class="btn btn-outline-primary btn-sm btn-select-tipo"> Seleccionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card card-option" data-tipo="plan">
+                                        <div class="card-body text-center"> <i
+                                                class="fas fa-tasks fa-2x text-success mb-3"></i>
+                                            <h5>Plan de Recuperación</h5>
+                                            <p class="text-muted small"> Seleccione esta opción para reprogramar dentro del
+                                                plan de recuperación </p> <button type="button"
+                                                class="btn btn-outline-success btn-sm btn-select-tipo"> Seleccionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-3"> <i class="fas fa-info-circle mr-2"></i>
+                                <strong>Importante:</strong> La reprogramación automática calculará las horas totales
+                                basándose en la asignatura seleccionada.
+                            </div>
+                        </div> <!-- Paso 2: Información de asignatura -->
+                        <div class="step-content step-2 d-none">
+                            <div class="text-center mb-4">
+                                <h5>Información de la asignatura</h5>
+                            </div>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="info-group mb-3"> <label
+                                                    class="font-weight-bold text-muted">Asignatura:</label>
+                                                <div class="info-value" id="infoAsignatura">-</div>
+                                            </div>
+                                            <div class="info-group mb-3"> <label
+                                                    class="font-weight-bold text-muted">Docente:</label>
+                                                <div class="info-value" id="infoDocente">-</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-group mb-3"> <label class="font-weight-bold text-muted">Horas
+                                                    pendientes:</label>
+                                                <div class="info-value"> <span id="infoHorasPendientes">0</span> horas
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-warning mt-3"> <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        <strong>Atención:</strong> El sistema calculará automáticamente las horas necesarias
+                                        para completar la recuperación.
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- Paso 3: Reprogramación -->
+                        <div class="step-content step-3 d-none">
+                            <div class="text-center mb-4">
+                                <h5>Configurar nueva programación</h5>
+                            </div>
+
+                            <div class="row">
+                                <!-- Nueva fecha -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Nueva fecha *</label>
+                                        <input type="date" class="form-control" name="fecha_nueva" id="rep_fecha" required>
+                                    </div>
+                                </div>
+
+                                <!-- Hora inicio -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Hora inicio *</label>
+                                        <input type="time" class="form-control" name="hora_inicio_nueva"
+                                            id="rep_hora_inicio" required>
+                                    </div>
+                                </div>
+
+                                <!-- Hora fin -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Hora fin *</label>
+                                        <input type="time" class="form-control" name="hora_fin_nueva" id="rep_hora_fin"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <!-- Total horas -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Total horas calculadas</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="horas_calculadas" readonly
+                                                value="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">horas</span>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Calculado automáticamente basado en inicio y fin
+                                        </small>
+                                    </div>
+                                </div>
+                                <!-- Nueva aula -->
+                                <div class="col-md-6">
+                                    <div class="form-group"> <label>Nueva aula *</label> <input type="text"
+                                            class="form-control" name="aula_nueva" id="rep_aula" required>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group"> <label>Motivo de reprogramación *</label> <textarea
+                                    class="form-control" name="motivo" rows="2" required id="rep_motivo"></textarea> </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="w-100 d-flex justify-content-between">
+                            <div> <button type="button" class="btn btn-secondary" id="btnStepPrev" style="display: none;">
+                                    <i class="fas fa-arrow-left mr-1"></i> Anterior </button> </div>
+                            <div> <button type="button" class="btn btn-outline-secondary mr-2" data-dismiss="modal">
+                                    Cancelar </button> <button type="button" class="btn btn-primary" id="btnStepNext">
+                                    Siguiente <i class="fas fa-arrow-right ml-1"></i> </button> <button type="button"
+                                    class="btn btn-success" id="btnReprogramar" style="display: none;"> <i
+                                        class="fas fa-save mr-1"></i> Reprogramar </button> </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <style>
+        .step-indicator {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: bold;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .card-option {
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            height: 100%;
+        }
+
+        .card-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-option.selected {
+            border-color: #007bff;
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .info-group {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-group:last-child {
+            border-bottom: none;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #495057;
+        }
+
+        #sesionUnica,
+        #sesionMultiple {
+            transition: all 0.3s;
+        }
+    </style>
 @endsection
 
 @section('js')
@@ -1342,7 +1616,7 @@
                         cargarDetallesPlan();
                     }, 300);
                 @endif
-                                                            });
+                                                                                });
 
             // Limpiar cuando se cierra el modal
             $('#nuevaSesionModal').on('hidden.bs.modal', function () {
@@ -1369,4 +1643,9 @@
         // Variable global para el archivo estado.js
         window.baseUrl = '{{ url('') }}';
     </script>
+
+    <!-- Scripts específicos para sesiones de recuperación -->
+    <script src="{{ asset('viewresources/admin/sesion_recuperacion/estado.js') }}"></script>
+    <script src="{{ asset('viewresources/admin/sesion_recuperacion/reprogramacion.js') }}"></script>
+
 @endsection

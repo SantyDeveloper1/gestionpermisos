@@ -145,7 +145,7 @@
                     <button type="button" class="close text-white" data-dismiss="modal">×</button>
                 </div>
 
-                <form id="frmDocenteInsert" method="POST" action="{{ url('admin/docente/insert') }}">
+                <form id="frmDocenteInsert" method="POST" action="{{ url('admin/docente/insert') }}" novalidate>
                     @csrf
 
 

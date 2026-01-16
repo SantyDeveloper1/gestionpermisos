@@ -164,25 +164,34 @@ function actualizarFilaTablaSesion(sesion) {
         switch(sesion.estado_sesion) {
             case 'PROGRAMADA':
                 estadoIcon = 'fa-clock';
-                estadoColor = 'background: rgba(253, 203, 110, 0.1); color: #f39c12;';
+                estadoColor = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(253, 203, 110, 0.1); color: #f39c12; border: 1px solid rgba(253, 203, 110, 0.2);';
+                estadoDot = '#f39c12';
+                break;
+            case 'REPROGRAMADA':
+                estadoIcon = 'fa-calendar-alt';
+                estadoColor = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(255, 152, 0, 0.1); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.2);';
+                estadoDot = '#ff9800';
                 break;
             case 'REALIZADA':
                 estadoIcon = 'fa-check-circle';
-                estadoColor = 'background: rgba(0, 184, 148, 0.1); color: var(--success-green);';
+                estadoColor = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0, 184, 148, 0.1); color: #00b894; border: 1px solid rgba(0, 184, 148, 0.2);';
+                estadoDot = '#00b894';
                 break;
             case 'VALIDADA':
                 estadoIcon = 'fa-check-double';
-                estadoColor = 'background: rgba(0, 139, 220, 0.1); color: var(--primary-blue);';
+                estadoColor = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0, 139, 220, 0.1); color: #008bdc; border: 1px solid rgba(0, 139, 220, 0.2);';
+                estadoDot = '#008bdc';
                 break;
             case 'CANCELADA':
                 estadoIcon = 'fa-times-circle';
-                estadoColor = 'background: rgba(225, 112, 85, 0.1); color: var(--danger-red);';
+                estadoColor = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(225, 112, 85, 0.1); color: #e17055; border: 1px solid rgba(225, 112, 85, 0.2);';
+                estadoDot = '#e17055';
                 break;
         }
         
         estadoBadge = `
-            <span class="status-indicator-execution" style="${estadoColor}">
-                <i class="fas ${estadoIcon} mr-1"></i>
+            <span style="${estadoColor}">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: ${estadoDot};"></span>
                 ${sesion.estado_sesion}
             </span>
         `;
