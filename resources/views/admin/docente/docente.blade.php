@@ -32,7 +32,7 @@
             <div>
                 <!-- Botón Agregar Docente -->
                 <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#modalAgregarDocente">
-                    <i class="fas fa-plus"></i> Agregar Docente
+                   <i class="fas fa-user-pl|us"></i> Agregar Docente
                 </button>
             </div>
         </div>

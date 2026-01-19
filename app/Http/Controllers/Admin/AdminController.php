@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permiso;
+use App\Models\Docente;
+use App\Models\User;
+use App\Models\PlanRecuperacion;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -39,6 +42,11 @@ class AdminController extends Controller
             ->whereYear('fecha_inicio', Carbon::now()->year)
             ->count();
 
+        // Estadísticas adicionales
+        $totalDocentes = Docente::count();
+        $totalUsuarios = User::count();
+        $totalPlanesRecuperacion = PlanRecuperacion::count();
+
         // Eventos para el calendario
         $eventosCalendario = Permiso::with(['docente.user', 'tipoPermiso'])
             ->get()
@@ -72,6 +80,9 @@ class AdminController extends Controller
             'permisosHoy',
             'permisosSemana',
             'permisosMes',
+            'totalDocentes',
+            'totalUsuarios',
+            'totalPlanesRecuperacion',
             'eventosCalendario'
         ));
     }

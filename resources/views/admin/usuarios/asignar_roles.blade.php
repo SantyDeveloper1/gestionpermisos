@@ -2,35 +2,61 @@
 @section('titleGeneral', 'Asignar Roles')
 @section('sectionGeneral')
 
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3 class="card-title">
-                <i class="fas fa-users"></i> Lista de usuarios con roles
-            </h3>
-            <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal"
-                data-target="#modalCrearUsuario">
-                <i class="fas fa-user-plus"></i> Asignar Rol
-            </button>
+    <style>
+        .card-borde-doc {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 2px solid rgba(0, 139, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+        }
+
+        .thead-custom th {
+            background: linear-gradient(135deg, #008BDC 0%, #00A3E8 100%);
+            color: white;
+            font-weight: 600;
+            padding: 12px 10px;
+            border-bottom: 3px solid #006fa8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    </style>
+
+    <section class="content">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <!-- Botón Agregar rol -->
+                <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#modalCrearUsuario">
+                    <i class="fas fa-user-plus"></i> Asignar Rol
+                </button>
+            </div>
         </div>
 
-        <div class="card-body">
-            <table id="tablaExample3" class="table table-bordered table-striped">
-                <thead class="thead-custom">
-                    <tr class="text-center">
-                        <th class="all">N°</th>
-                        <th>Usuario</th>
-                        <th>Tipo</th>
-                        <th class="all">Acciones</th>
-                    </tr>
-                </thead>
+        <div class="card card-borde-doc">
+            <div class="card-body">
+                <table id="tablaExample3" class="table table-bordered table-striped">
+                    <thead class="thead-custom">
+                        <tr class="text-center">
+                            <th class="all">N°</th>
+                            <th>Usuario</th>
+                            <th>Tipo</th>
+                            <th class="all">Acciones</th>
+                        </tr>
+                    </thead>
 
-            </table>
+                </table>
+            </div>
         </div>
-    </div>
+    </section>
 
     <!-- =========================================
-                        MODAL ASIGNAR ROL
-                    ========================================= -->
+                            MODAL ASIGNAR ROL
+                        ========================================= -->
     <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="modalAsignarRolLabel" aria-hidden="true">
 
         <div class="modal-dialog modal-md modal-dialog-centered">

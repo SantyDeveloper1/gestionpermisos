@@ -45,5 +45,11 @@ class Docente extends Model
     {
         return $this->user ? $this->user->name . ' ' . $this->user->last_name : 'N/A';
     }
+
+    // Accessor para obtener el email del docente desde User
+    public function getEmailAttribute()
+    {
+        return $this->user ? $this->user->email : '';
+    }
 }
 

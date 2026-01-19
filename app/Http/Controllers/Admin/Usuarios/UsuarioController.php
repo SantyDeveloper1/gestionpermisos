@@ -41,6 +41,11 @@ class UsuarioController extends Controller
             ->whereYear('fecha_inicio', \Carbon\Carbon::now()->year)
             ->count();
 
+        // Estadísticas adicionales
+        $totalDocentes = \App\Models\Docente::count();
+        $totalUsuarios = User::count();
+        $totalPlanesRecuperacion = \App\Models\PlanRecuperacion::count();
+
         // Eventos para el calendario
         $eventosCalendario = \App\Models\Permiso::with(['docente.user', 'tipoPermiso'])
             ->get()
@@ -74,6 +79,9 @@ class UsuarioController extends Controller
             'permisosHoy',
             'permisosSemana',
             'permisosMes',
+            'totalDocentes',
+            'totalUsuarios',
+            'totalPlanesRecuperacion',
             'eventosCalendario'
         ));
     }
