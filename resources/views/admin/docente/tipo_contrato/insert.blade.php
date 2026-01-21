@@ -1,6 +1,6 @@
 @extends('admin.template.layout')
 
-@section('titleGeneral', 'Insertar Tipo de Contrato')
+@section('titleGeneral', 'Gestionar Tipos de Contrato')
 
 @section('sectionGeneral')
 

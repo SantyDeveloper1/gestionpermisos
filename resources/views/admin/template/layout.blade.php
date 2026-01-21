@@ -568,7 +568,7 @@
 		<!-- /.content-wrapper -->
 		<footer class="main-footer">
 			<strong>Copyright &copy; 2025-{{date('Y')}}</strong>
-			All rights reserved.
+			SGPD. Todos los derechos reservados.
 			<div class="float-right d-none d-sm-inline-block">
 				<b>Version</b> 5.3.0
 			</div>

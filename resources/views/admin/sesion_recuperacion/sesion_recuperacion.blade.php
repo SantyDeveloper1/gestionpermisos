@@ -101,7 +101,7 @@
         .stat-card-progress {
             background: white;
             border-radius: 12px;
-            padding: 25px;
+            padding: 10px 12px;
             border: 2px solid var(--light-gray);
             transition: all 0.3s ease;
             position: relative;
@@ -115,14 +115,14 @@
         }
 
         .stat-icon-wrapper {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 2rem;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
             color: white;
         }
 
@@ -143,14 +143,14 @@
         }
 
         .stat-content h3 {
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin: 0 0 10px 0;
+            margin: 0 0 3px 0;
             color: var(--dark-gray);
         }
 
         .stat-content h3 span {
-            font-size: 1.5rem;
+            font-size: 0.95rem;
             color: var(--medium-gray);
             font-weight: 500;
         }
@@ -158,27 +158,27 @@
         .stat-content p {
             margin: 0;
             color: var(--medium-gray);
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.8rem;
+            line-height: 1.3;
         }
 
         .progress-bar-container {
-            margin-top: 15px;
+            margin-top: 8px;
         }
 
         .progress-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
             color: var(--medium-gray);
             font-weight: 600;
         }
 
         .progress-bar {
-            height: 12px;
+            height: 8px;
             background: var(--light-gray);
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
         }
 

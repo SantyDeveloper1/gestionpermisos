@@ -34,11 +34,7 @@ function descargarPdfSemestre() {
     // Construir la URL para descargar el PDF
     const url = `/admin/reportes/pdf/descargar/semestre/${semestreId}`;
     
-    // Crear un enlace temporal y hacer clic para descargar
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `reporte_semestre_${semestreId}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Redirigir a la URL de descarga
+    // El servidor enviará las cabeceras correctas para forzar la descarga
+    window.location.href = url;
 }

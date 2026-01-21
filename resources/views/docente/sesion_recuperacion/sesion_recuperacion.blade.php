@@ -759,11 +759,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <a href="{{ url('admin/plan_recuperacion?permiso_id=' . $idPermiso) }}" 
-                                   class="btn-view-details">
-                                    <i class="fas fa-eye"></i>
-                                    Ver Detalles
-                                </a>
+                               
                             </div>
                         </div>
                     @empty

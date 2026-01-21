@@ -1,5 +1,5 @@
 @extends('admin.template.layout')
-@section('titleGeneral', 'Lista de Docentes')
+@section('titleGeneral', 'Gestión de Docentes')
 @section('sectionGeneral')
 
     <style>
@@ -52,8 +52,8 @@
                                         <th>Nombres</th>
                                         <th class="none">Correo</th>
                                         <th class="none">Teléfono</th>
-                                        <th>Grado Académico</th>
-                                        <th class="none">Condición</th>
+                                        <th class="none">Grado Académico</th>
+                                        <th>Condición</th>
                                         <th>Estado</th>
                                         <th class="none">Registrado</th>
                                         <th class="all">Acciones</th>

@@ -62,4 +62,16 @@ class SesionRecuperacion extends Model
             'idAsignatura'
         );
     }
+
+    /**
+     * Relación: una sesión tiene muchas evidencias
+     */
+    public function evidencias()
+    {
+        return $this->hasMany(
+            EvidenciaRecuperacion::class,
+            'id_sesion',
+            'id_sesion'
+        );
+    }
 }

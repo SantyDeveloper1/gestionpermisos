@@ -1,6 +1,6 @@
 @extends('admin.template.layout')
 
-@section('titleGeneral', 'Insertar Grado Académico')
+@section('titleGeneral', 'Gestionar Grados Académicos')
 
 @section('sectionGeneral')
 

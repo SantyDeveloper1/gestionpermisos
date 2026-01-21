@@ -62,7 +62,8 @@ class PlanRecuperacionController extends Controller
                 'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
                 'horas_recuperadas' => 'required|numeric|min:0.5|max:8',
                 'estado_sesion' => 'required|in:PROGRAMADA,REALIZADA,CANCELADA',
-                'aula' => 'nullable|string|max:50'
+                'aula' => 'nullable|string|max:50',
+                'tema' => 'required|string|max:500'
             ]);
 
             // Obtener el permiso para validaciones adicionales
@@ -189,7 +190,8 @@ class PlanRecuperacionController extends Controller
                     'hora_fin' => $validated['hora_fin'],
                     'horas_recuperadas' => $validated['horas_recuperadas'],
                     'estado_sesion' => $validated['estado_sesion'],
-                    'aula' => $validated['aula'] ?? null
+                    'aula' => $validated['aula'] ?? null,
+                    'tema' => $validated['tema']
                 ]);
 
                 // Confirmar transacción

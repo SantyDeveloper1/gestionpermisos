@@ -219,7 +219,7 @@
                   </a>
                 </div>
                 <div class="col-12">
-                  <a href="{{ route('admin.configuracion.index') }}" class="btn btn-secondary btn-block btn-icon-split">
+                  <a href="{{ route('admin.profile.index') }}" class="btn btn-secondary btn-block btn-icon-split">
                     <span class="icon text-white-50">
                       <i class="fas fa-cog"></i>
                     </span>

@@ -28,6 +28,8 @@ use App\Http\Controllers\Docente\SesionRecuperacion\SesionRecuperacionController
 use App\Http\Controllers\Docente\PlanRecuperacion\PlanRecuperacionController as DocentePlanRecuperacionController;
 use App\Http\Controllers\Docente\EvidenciaRecuperacion\EvidenciaRecuperacionController as DocenteEvidenciaRecuperacionController;
 use App\Http\Controllers\Docente\SeguimientoPermiso\SeguimientoPermisoController;
+use App\Http\Controllers\Docente\SeguimientoPlan\SeguimientoPlanController;
+use App\Http\Controllers\Docente\ProfileController as DocenteProfileController;
 use Illuminate\Support\Facades\Hash;
 
 Route::match(['get', 'post'], '/login', [LoginController::class, 'actionLogin'])
@@ -152,6 +154,7 @@ Route::middleware('auth')->group(function () {
             // EVIDENCIA DE RECUPERACION
             Route::get('evidencia_recuperacion', [EvidenciaRecuperacionController::class, 'actionEvidenciaRecuperacion']);
             Route::get('evidencia_recuperacion/ver/{id}', [EvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('evidencia.ver');
+            Route::get('evidencia_recuperacion/download/{id}', [EvidenciaRecuperacionController::class, 'actionDownload'])->name('evidencia.download');
             Route::get('evidencia_recuperacion/{id}', [EvidenciaRecuperacionController::class, 'actionShow']);
             Route::post('evidencia_recuperacion/insert', [EvidenciaRecuperacionController::class, 'actionInsert'])->name('evidencia.store');
             Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [EvidenciaRecuperacionController::class, 'actionUpdate']);
@@ -197,10 +200,22 @@ Route::middleware('auth')->group(function () {
                 return view('docente.index');
             });
 
+            // Cambiar contraseña (disponible para docentes autenticados)
+            Route::post('password/update', [UsuarioController::class, 'actionUpdatePassword'])->name('docente.password.update');
+
+            // Perfil de usuario
+            Route::get('profile', [DocenteProfileController::class, 'index'])->name('docente.profile.index');
+            Route::post('profile/update', [DocenteProfileController::class, 'update'])->name('docente.profile.update');
+
             // SEGUIMIENTO DE PERMISO
             Route::get('seguimiento_permiso', [SeguimientoPermisoController::class, 'actionSeguimientoPermiso']);
             Route::get('seguimiento_permiso/get/{idPermiso}', [SeguimientoPermisoController::class, 'actionGetPermiso']);
             Route::post('seguimiento_permiso/update/{idPermiso}', [SeguimientoPermisoController::class, 'actionUpdate']);
+
+            // SEGUIMIENTO DE PLAN
+            Route::get('seguimiento_plan', [SeguimientoPlanController::class, 'actionSeguimientoPlan']);
+            Route::get('seguimiento_plan/planes', [SeguimientoPlanController::class, 'getPlanes']);
+            Route::get('seguimiento_plan/plan/{idPlan}', [SeguimientoPlanController::class, 'getPlanDetalle']);
 
 
             // PERMISO
@@ -230,6 +245,7 @@ Route::middleware('auth')->group(function () {
             // EVIDENCIA DE RECUPERACION
             Route::get('evidencia_recuperacion', [DocenteEvidenciaRecuperacionController::class, 'actionEvidenciaRecuperacion']);
             Route::get('evidencia_recuperacion/ver/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('evidencia.ver');
+            Route::get('evidencia_recuperacion/download/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionDownload'])->name('evidencia.download');
             Route::get('evidencia_recuperacion/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionShow']);
             Route::post('evidencia_recuperacion/insert', [DocenteEvidenciaRecuperacionController::class, 'actionInsert'])->name('evidencia.store');
             Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [DocenteEvidenciaRecuperacionController::class, 'actionUpdate']);

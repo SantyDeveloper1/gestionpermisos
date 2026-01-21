@@ -14,7 +14,10 @@ $.ajaxSetup({
  */
 function downloadEvidence(evidenceId) {
     const url = `${_urlBase}/admin/evidencia_recuperacion/download/${evidenceId}`;
-    window.open(url, '_blank');
+    
+    // Usar window.location.href para que el servidor fuerce la descarga
+    // El controlador ya envía las cabeceras correctas (Content-Disposition: attachment)
+    window.location.href = url;
     
     new PNotify({
         title: 'Descarga iniciada',

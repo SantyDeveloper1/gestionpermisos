@@ -315,6 +315,63 @@ class PermisoController extends Controller
     }
 
     /**
+     * Eliminar un permiso
+     */
+    public function actionDelete($idPermiso)
+    {
+        try {
+            // Buscar el permiso con sus relaciones
+            $permiso = Permiso::with('planRecuperacion')->where('id_permiso', $idPermiso)->first();
+
+            if (!$permiso) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Permiso no encontrado.'
+                ], 404);
+            }
+
+            // Verificar si tiene un plan de recuperación asociado
+            if ($permiso->planRecuperacion) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se puede eliminar este permiso porque tiene un Plan de Recuperación asociado. Primero debe eliminar el plan de recuperación.'
+                ], 422);
+            }
+
+            // Verificar si el permiso está en un estado que no permite eliminación
+            $estadosNoEliminables = ['EN_RECUPERACION', 'RECUPERADO', 'CERRADO'];
+            if (in_array($permiso->estado_permiso, $estadosNoEliminables)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se puede eliminar este permiso porque está en estado "' . str_replace('_', ' ', $permiso->estado_permiso) . '". Solo se pueden eliminar permisos en estado SOLICITADO, APROBADO o RECHAZADO.'
+                ], 422);
+            }
+
+            // Eliminar el archivo de documento sustento si existe
+            if ($permiso->documento_sustento) {
+                $filePath = public_path($permiso->documento_sustento);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            // Eliminar el permiso
+            $permiso->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Permiso eliminado correctamente.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al eliminar el permiso: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Enviar correo electrónico de notificación de cambio de estado
      */
     public function actionEnviarEmail($id)

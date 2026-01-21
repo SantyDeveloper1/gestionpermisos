@@ -175,39 +175,10 @@
 				<li class="nav-item">
 					<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
 				</li>
-				<li class="nav-item d-none d-sm-inline-block">
-					<a href="index3.html" class="nav-link">Home</a>
-				</li>
-				<li class="nav-item d-none d-sm-inline-block">
-					<a href="#" class="nav-link">Contact</a>
-				</li>
 			</ul>
 
 			<!-- Right navbar links -->
 			<ul class="navbar-nav ml-auto">
-				<!-- Navbar Search -->
-				<li class="nav-item">
-					<a class="nav-link" data-widget="navbar-search" href="#" role="button">
-						<i class="fas fa-search"></i>
-					</a>
-					<div class="navbar-search-block">
-						<form class="form-inline">
-							<div class="input-group input-group-sm">
-								<input class="form-control form-control-navbar" type="search" placeholder="Search"
-									aria-label="Search">
-								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
-										<i class="fas fa-search"></i>
-									</button>
-									<button class="btn btn-navbar" type="button" data-widget="navbar-search">
-										<i class="fas fa-times"></i>
-									</button>
-								</div>
-							</div>
-						</form>
-					</div>
-				</li>
-
 				<!-- Messages Dropdown Menu -->
 				<li class="nav-item dropdown">
 
@@ -227,12 +198,12 @@
 					<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 						<span class="dropdown-item dropdown-header">Cuenta de Usuario</span>
 						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">
+						<a href="{{ route('docente.profile.index') }}" class="dropdown-item">
 							<i class="fas fa-user mr-2"></i> Perfil
 						</a>
 						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">
-							<i class="fas fa-cog mr-2"></i> Configuración
+						<a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal-password">
+							<i class="fas fa-cog mr-2"></i> Cambiar Contraseña
 						</a>
 						<div class="dropdown-divider"></div>
 						<a href="#" class="dropdown-item" id="logout-btn">
@@ -332,7 +303,8 @@
 							 with font-awesome or any other icon font library -->
 						{{-- SEGUIMIENTO DE PERMISO --}}
 						<li class="nav-item {{ request()->is('docente/seguimiento_permiso*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('docente/seguimiento_permiso*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('docente/seguimiento_permiso*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-signature"></i>
 								<p>
 									Seguimiento de Permiso
@@ -349,6 +321,27 @@
 								</li>
 							</ul>
 						</li>
+						{{-- Seguimiento del plan de recuperación de sesión --}}
+						<li class="nav-item {{ request()->is('docente/seguimiento_plan*') ? 'menu-open' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('docente/seguimiento_plan*') ? 'active' : '' }}">
+								<i class="nav-icon fas fa-file-signature"></i>
+								<p>
+									Seguimiento de Plan
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="{{ url('docente/seguimiento_plan') }}"
+										class="nav-link {{ request()->is('docente/seguimiento_plan') ? 'active' : '' }}">
+										<i class="nav-icon fas fa-clipboard-check"></i>
+										<p>Seguimiento del Plan</p>
+									</a>
+								</li>
+							</ul>
+						</li>
+
 						{{-- PERMISO --}}
 						<li class="nav-item {{ request()->is('docente/permiso*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('docente/permiso*') ? 'active' : '' }}">
@@ -371,7 +364,8 @@
 						</li>
 						{{-- PLAN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('docente/plan_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('docente/plan_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('docente/plan_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-clipboard-list"></i>
 								<p>
 									Plan de Recuperación
@@ -391,7 +385,8 @@
 						</li>
 						{{-- SESIÓN DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('docente/sesion_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('docente/sesion_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('docente/sesion_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-calendar-check"></i>
 								<p>
 									Sesión de Recuperación
@@ -411,7 +406,8 @@
 						</li>
 						{{-- EVIDENCIA DE RECUPERACIÓN --}}
 						<li class="nav-item {{ request()->is('docente/evidencia_recuperacion*') ? 'menu-open' : '' }}">
-							<a href="#" class="nav-link {{ request()->is('docente/evidencia_recuperacion*') ? 'active' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('docente/evidencia_recuperacion*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-file-upload"></i>
 								<p>
 									Evidencia de Sesión
@@ -437,8 +433,8 @@
 			<!-- /.sidebar -->
 		</aside>
 
-				<!-- Content Header (Page header) -->
-			@php
+		<!-- Content Header (Page header) -->
+		@php
 			if (request()->is('docente/seguimiento_permiso*')) {
 				$title = 'Seguimiento';
 			} elseif (request()->is('docente/tipo_permiso*')) {
@@ -502,7 +498,7 @@
 		<!-- /.content-wrapper -->
 		<footer class="main-footer">
 			<strong>Copyright &copy; 2025-{{date('Y')}}</strong>
-			All rights reserved.
+			SGPD. Todos los derechos reservados.
 			<div class="float-right d-none d-sm-inline-block">
 				<b>Version</b> 5.3.0
 			</div>
@@ -515,6 +511,54 @@
 		<!-- /.control-sidebar -->
 	</div>
 	<!-- ./wrapper -->
+	<!-- MODAL PARA CAMBIAR CONTRASEÑA -->
+	<div id="modal-password" class="modal fade" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header bg-info">
+					<h4 class="modal-title text-white">
+						<i class="fas fa-key"></i> Cambiar Contraseña
+					</h4>
+					<button type="button" class="close text-white" data-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="form_password" class="form-horizontal">
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Contraseña Actual</label>
+							<div class="col-md-8">
+								<input type="password" name="pass" class="form-control"
+									placeholder="Ingrese contraseña actual">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Nueva Contraseña</label>
+							<div class="col-md-8">
+								<input type="password" name="pass1" class="form-control"
+									placeholder="Ingrese nueva contraseña">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-md-4 col-form-label">Repetir Contraseña</label>
+							<div class="col-md-8">
+								<input type="password" name="pass2" class="form-control"
+									placeholder="Repita nueva contraseña">
+							</div>
+						</div>
+						<div class="form-group text-center mt-3">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">
+								<i class="fas fa-times"></i> Cancelar
+							</button>
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-save"></i> Guardar
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- jQuery -->
 	<script src="{{ asset('plugins/adminlte/plugins/jquery/jquery.min.js') }}"></script>
@@ -965,6 +1009,9 @@
 
 		})
 	</script>
+
+	<!-- Script para cambio de contraseña -->
+	<script src="{{ asset('viewresources/docente/usuario/password_update.js') }}"></script>
 </body>
 
 </html>
