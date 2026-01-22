@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('sesion_recuperacion', function (Blueprint $table) {
             $table->text('tema')->nullable()->after('aula');
         });
-        
+
     }
 
     /**
