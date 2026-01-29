@@ -324,7 +324,67 @@
 								</li>
 							</ul>
 						</li>
-						{{-- ASIGNATURA --}}
+						<li
+							class="nav-item {{ request()->is('admin/academico*') || request()->is('asignatura*') ? 'menu-open' : '' }}">
+							<a href="#"
+								class="nav-link {{ request()->is('admin/academico*') || request()->is('asignatura*') ? 'active' : '' }}">
+								<i class="nav-icon fas fa-university"></i>
+								<p>
+									Gestión Académica
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+
+							<ul class="nav nav-treeview">
+								{{-- SEMESTRES --}}
+								<li class="nav-item">
+									<a href="{{ url('admin/academico/semestre_academico/getall') }}"
+										class="nav-link {{ request()->is('admin/academico/semestre_academico/getall*') ? 'active' : '' }}">
+										<i class="fas fa-clock nav-icon"></i>
+										<p>Semestre Académico</p>
+									</a>
+								</li>
+								{{-- CICLO --}}
+								<li class="nav-item">
+									<a href="{{ url('admin/academico/ciclo/getall') }}"
+										class="nav-link {{ request()->is('admin/academico/ciclo*') ? 'active' : '' }}">
+										<i class="fas fa-sync-alt nav-icon"></i>
+										<p>Ciclo</p>
+									</a>
+								</li>
+								{{-- ASIGNATURA --}}
+								<li
+									class="nav-item {{ request()->is('admin/academico/asignatura*') ? 'menu-open' : '' }}">
+									<a href="#"
+										class="nav-link {{ request()->is('admin/academico/asignatura*') ? 'active' : '' }}">
+										<i class="nav-icon fas fa-book"></i>
+										<p>
+											Asignatura
+											<i class="right fas fa-angle-left"></i>
+										</p>
+									</a>
+
+									<ul class="nav nav-treeview">
+										<li class="nav-item">
+											<a href="{{ url('admin/academico/asignatura') }}"
+												class="nav-link {{ request()->is('admin/academico/asignatura/getall*') ? 'active' : '' }}">
+												<i class="nav-icon fas fa-list"></i>
+												<p>Asignaturas</p>
+											</a>
+										</li>
+
+										<li class="nav-item">
+											<a href="{{ url('admin/academico/asignatura/insert') }}"
+												class="nav-link {{ request()->is('admin/academico/asignatura/insert') ? 'active' : '' }}">
+												<i class="nav-icon fas fa-plus-circle"></i>
+												<p>Crear Nueva Asignatura</p>
+											</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						{{-- USUARIOS --}}
 						<li class="nav-item {{ request()->is('admin/usuarios*') ? 'menu-open' : '' }}">
 							<a href="#" class="nav-link {{ request()->is('admin/usuarios*') ? 'active' : '' }}">
 								<i class="nav-icon fas fa-users"></i>

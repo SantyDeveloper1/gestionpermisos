@@ -111,7 +111,9 @@ class SeguimientoPlanController extends Controller
                         'nombre' => 'Plan #' . substr($plan->id_plan, -3) . ' - ' .
                             ($plan->permiso->tipoPermiso->nombre ?? 'N/A'),
                         'estado_plan' => $plan->estado_plan,
-                        'fecha_presentacion' => $plan->fecha_presentacion->format('d/m/Y'),
+                        'fecha_presentacion' => ($plan->fecha_presentacion && is_object($plan->fecha_presentacion) && method_exists($plan->fecha_presentacion, 'format'))
+                            ? $plan->fecha_presentacion->format('d/m/Y')
+                            : ($plan->fecha_presentacion ?? 'N/A'),
                         'total_horas_recuperar' => $plan->total_horas_recuperar,
                         'observacion' => $plan->observacion,
 
@@ -131,7 +133,7 @@ class SeguimientoPlanController extends Controller
 
                         // Próxima sesión
                         'proxima_sesion' => $proximaSesion ? [
-                            'fecha' => $proximaSesion->fecha_sesion->format('d/m/Y'),
+                            'fecha' => $proximaSesion->fecha_sesion ? $proximaSesion->fecha_sesion->format('d/m/Y') : 'N/A',
                             'tema' => $proximaSesion->tema
                         ] : null,
 

@@ -50,10 +50,6 @@
                 <a href="{{ url('admin/academico/asignatura/insert') }}" class="btn btn-primary mr-2">
                     <i class="fas fa-plus"></i> Agregar asignatura
                 </a>
-
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalSubirArchivo">
-                    <i class="fas fa-upload"></i> Subir Archivo
-                </button>
             </div>
         </div>
 

@@ -416,24 +416,6 @@
         </form>
     </div>
 
-    <div class="footer">
-        <div class="contact-info">
-            <a href="tel:08000018"><i class="fas fa-phone"></i> 0800-00018</a>
-            <a href="tel:016128230"><i class="fas fa-phone"></i> (01) 612-8230</a>
-            <a href="https://wa.me/914121106"><i class="fab fa-whatsapp"></i> 914 121 106</a>
-        </div>
-
-        <hr class="footer-line">
-
-        <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="{{ asset('plugins/adminlte/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('plugins/adminlte/plugins/jquery-ui/jquery-ui.min.js') }}"></script>

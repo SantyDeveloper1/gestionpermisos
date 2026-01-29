@@ -197,6 +197,8 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
 
             Route::get('/', function () {
+                // Eager load docente and contrato relationships
+                auth()->user()->load('docente.contrato');
                 return view('docente.index');
             });
 
@@ -244,10 +246,10 @@ Route::middleware('auth')->group(function () {
 
             // EVIDENCIA DE RECUPERACION
             Route::get('evidencia_recuperacion', [DocenteEvidenciaRecuperacionController::class, 'actionEvidenciaRecuperacion']);
-            Route::get('evidencia_recuperacion/ver/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('evidencia.ver');
-            Route::get('evidencia_recuperacion/download/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionDownload'])->name('evidencia.download');
+            Route::get('evidencia_recuperacion/ver/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionVerEvidencia'])->name('docente.evidencia.ver');
+            Route::get('evidencia_recuperacion/download/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionDownload'])->name('docente.evidencia.download');
             Route::get('evidencia_recuperacion/{id}', [DocenteEvidenciaRecuperacionController::class, 'actionShow']);
-            Route::post('evidencia_recuperacion/insert', [DocenteEvidenciaRecuperacionController::class, 'actionInsert'])->name('evidencia.store');
+            Route::post('evidencia_recuperacion/insert', [DocenteEvidenciaRecuperacionController::class, 'actionInsert'])->name('docente.evidencia.store');
             Route::post('evidencia_recuperacion/update/{idEvidencia_recuperacion}', [DocenteEvidenciaRecuperacionController::class, 'actionUpdate']);
             Route::delete('evidencia_recuperacion/delete/{idEvidencia_recuperacion}', [DocenteEvidenciaRecuperacionController::class, 'actionDelete']);
         });
